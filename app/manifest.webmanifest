@@ -1,0 +1,16 @@
+{
+  "name": "Handlark",
+  "short_name": "Handlark",
+  "description": "Hand off tasks to your remote team and see progress without chasing.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F2F5F6",
+  "theme_color": "#234F5F",
+  "icons": [
+    { "src": "icon_192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon_maskable_512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
