@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Security | Handlark</title>
+<meta name="description" content="How Handlark protects your workspace: two step sign in, encryption, row level security, private files, change history and how to report a problem.">
+<meta name="theme-color" content="#F8F3EC">
+<link rel="icon" href="app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--cream:#F8F3EC;--paper:#FFFFFF;--mist:#EEF3F5;--ink:#13262E;--ink2:#1F3B47;--muted:#6A7C85;--line:#E3E9EC;
+  --orange:#F28F2C;--orange2:#E07A14;--peach:#FDEBD8;--peach2:#F9DDBF;--teal:#234F5F;--teal2:#2F6577;--teal3:#3E8197;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;--body:Poppins,"Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--cream);color:var(--ink2);font:400 15.5px/1.7 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--teal2)}
+a:hover{color:var(--orange2)}
+:focus-visible{outline:2.5px solid var(--orange);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100%);margin:0 auto;padding-inline:20px}
+.top{display:flex;align-items:center;gap:18px;padding:22px 0}
+.top .logo img{display:block;height:36px;width:auto}
+.top nav{display:flex;gap:22px;margin-left:auto;font:500 14px var(--body)}
+.top nav a{color:var(--ink);text-decoration:none}
+.top nav a[aria-current]{color:var(--orange2)}
+.btn{display:inline-flex;align-items:center;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font:600 14px/1 var(--body);padding:12px 20px;box-shadow:4px 4px 0 var(--orange)}
+.btn:hover{color:#fff}
+.hero{background:linear-gradient(120deg,var(--teal),var(--teal3));color:#fff;border-radius:28px;padding:44px 40px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;border:44px solid rgba(255,255,255,.06)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--peach2)}
+.eyebrow:before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+h1,h2,h3{font-family:var(--display);color:var(--ink);text-wrap:balance}
+.hero h1{color:#fff;font-size:clamp(32px,5vw,48px);line-height:1.1;margin:14px 0 10px;font-weight:600;letter-spacing:-.01em}
+.hero p{margin:0;color:#D3E3E9;max-width:62ch}
+.hero .upd{margin-top:16px;font-size:13px;color:var(--peach2)}
+.body{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;margin:36px auto 80px;align-items:start}
+.toc{position:sticky;top:20px;background:var(--paper);border-radius:20px;padding:18px 18px 14px;font-size:13.5px}
+.toc b{display:block;font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.toc ol{margin:0;padding:0 0 0 18px;display:grid;gap:6px}
+.toc a{color:var(--ink2);text-decoration:none}
+.toc a:hover{color:var(--orange2)}
+article{background:var(--paper);border-radius:24px;padding:36px 40px;min-width:0}
+article section{padding:4px 0 10px;scroll-margin-top:20px}
+article section+section{border-top:1px solid var(--line);margin-top:18px;padding-top:22px}
+article h2{font-size:22px;line-height:1.25;margin:0 0 10px;font-weight:600}
+article h3{font-size:16.5px;margin:18px 0 6px;font-weight:600}
+article p{margin:0 0 12px}
+article ul{margin:0 0 12px;padding-left:20px;display:grid;gap:6px}
+.sum{background:var(--peach);border-radius:16px;padding:16px 18px;margin:0 0 22px;color:var(--ink2)}
+.sum b{color:var(--ink)}
+.tbl{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font:600 12.5px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--mist)}
+tr:last-child td{border-bottom:0}
+footer{background:var(--ink);color:#C4D2D8;padding:34px 0;font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:#C4D2D8;text-decoration:none}
+footer a:hover,footer a[aria-current]{color:var(--orange)}
+@media (max-width:900px){
+  .top nav{display:none}
+  .top .btn{margin-left:auto}
+  .body{grid-template-columns:1fr;gap:18px;margin-top:22px}
+  .toc{position:static}
+  .toc ol{grid-template-columns:1fr 1fr;gap:6px 18px}
+}
+@media (max-width:620px){
+  .wrap{padding-inline:16px}
+  .top{padding:16px 0}
+  .top .logo img{height:30px}
+  .top .btn{padding:10px 14px;font-size:13px}
+  .hero{padding:30px 22px;border-radius:22px}
+  article{padding:24px 20px;border-radius:20px}
+  .toc ol{grid-template-columns:1fr}
+  footer .wrap{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="Handlark home"><img src="app/logo.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><a href="security.html" aria-current="page">Security</a></nav>
+    <a class="btn" href="./"><span>Back to <span data-brand>Handlark</span></span></a>
+  </header>
+  <div class="hero">
+    <span class="eyebrow">Trust</span>
+    <h1>Security</h1>
+    <p>How Handlark protects your workspace: two step sign in, encryption, row level security, private files, change history and how to report a problem.</p>
+    <p class="upd">Last updated 14 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#overview">How we keep your work safe</a></li><li><a href="#signin">Sign in and two step sign in</a></li><li><a href="#encryption">Encryption</a></li><li><a href="#access">Who can see what</a></li><li><a href="#files">Private files</a></li><li><a href="#history">History and control</a></li><li><a href="#platform">Platform protections</a></li><li><a href="#disclosure">Reporting a security problem</a></li><li><a href="#incidents">If something goes wrong</a></li></ol></aside>
+    <article>
+<p class="sum"><b>In short:</b> passwords are never stored by us, everything travels and rests encrypted, each workspace is locked to its own members, files open through links that expire in an hour, and you can report a problem to us safely.</p>
+<section id="overview"><h2>How we keep your work safe</h2><p>Your workspace holds client work, staff records and invoices, so security is built into every part of <span data-brand>Handlark</span>. This page explains the main measures in plain words.</p></section>
+<section id="signin"><h2>Sign in and two step sign in</h2><ul><li>Passwords are handled by Google Firebase Authentication. <span data-brand>Handlark</span> never sees or stores your password.</li><li>Every request carries a sign in token, and our server checks its signature against Google's public keys before doing anything.</li><li>Anyone can turn on two step sign in with an authenticator app. Owners can require it for everyone in the workspace.</li><li>After 5 wrong codes, codes pause for 15 minutes, longer if it keeps happening, and the person gets an email.</li><li>Joining a workspace needs a one time invite link or a confirmed email address, so nobody can join by typing someone else's email.</li></ul></section>
+<section id="encryption"><h2>Encryption</h2><ul><li>All traffic to the website, the app and our server uses HTTPS, and browsers are told to always use it.</li><li>The database and file storage are encrypted at rest by our providers.</li><li>Secrets we hold for customers, such as an agency's own Paystack key and authenticator secrets, are encrypted again with our own key before they are stored, and Paystack keys are never sent back to a browser.</li></ul></section>
+<section id="access"><h2>Who can see what</h2><ul><li>Row level security is switched on for every database table, and the public database roles have no access at all. Every read and write goes through our server functions, which check that the person belongs to the workspace.</li><li>Workspace rules are enforced on the server: private tasks, hidden people and owner only settings cannot be reached by changing the app.</li><li>Managers never see a person's private reasons, moods or patterns from the procrastination tools.</li></ul></section>
+<section id="files"><h2>Private files</h2><ul><li>Files are kept in a private storage bucket. Each link to a file lasts one hour and is only given to people who can see the task.</li><li>Uploads are limited to pictures, PDFs, Office documents, text, CSV, zip files and voice notes, up to 10 MB each. The server checks what actually arrived before a file is attached, and files that could run code download instead of opening in the browser.</li></ul></section>
+<section id="history"><h2>History and control</h2><ul><li>Owners can see a history of every change in the workspace, with what it was before and after. Secrets never appear in it.</li><li>Deleted tasks go to a bin for 30 days and can be restored.</li><li>Sign out everywhere, in each person's account, signs out every device at once, including the one in use.</li><li>Owners can export every task as a spreadsheet at any time.</li></ul></section>
+<section id="platform"><h2>Platform protections</h2><ul><li>Payment and WhatsApp notifications are accepted only with a valid signature, and each one is applied once.</li><li>Limits on how often actions can be tried stop people from guessing codes or flooding others with email.</li><li>The website sends strict security headers: it cannot be framed by other sites, it sends no referrer, and only our own scripts may run.</li></ul></section>
+<section id="disclosure"><h2>Reporting a security problem</h2><p>If you believe you have found a security weakness in <span data-brand>Handlark</span>, please email <a data-cfg="email" href="mailto:hello@example.com">hello@example.com</a> with "Security" in the subject. Include what you found, the steps to reproduce it and how it could affect users.</p><ul><li>We will confirm we received your report within 3 business days and keep you updated until it is fixed.</li><li>Give us a reasonable time, normally up to 90 days, to fix the problem before you share it publicly.</li><li>Only test with accounts and workspaces you own. Do not access, change or delete other people's data, do not run denial of service or spam tests, and stop and tell us as soon as you reach data that is not yours.</li><li>If you act in good faith and follow these rules, we will not take legal action against you, and we will thank you publicly if you wish.</li></ul><p>We do not run a paid bug bounty at the moment.</p></section>
+<section id="incidents"><h2>If something goes wrong</h2><p>If a security incident affects your data, we will tell the affected workspace owners without undue delay, explain what happened and what we are doing about it, and notify the Nigeria Data Protection Commission and other authorities where the law requires.</p></section>
+    </article>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="Legal pages"><a href="./">Home</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><a href="security.html" aria-current="page">Security</a></nav>
+  </div>
+</footer>
+<script src="app/config.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

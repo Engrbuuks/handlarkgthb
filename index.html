@@ -1,6 +1,7 @@
 <title>Handlark: hand it over, see it done</title>
 <meta name="description" content="Hand off tasks to your remote team client by client, see progress without chasing, and get a daily handoff email. Built for virtual assistant agencies, firms with remote staff and teams in Nigeria.">
 <meta name="theme-color" content="#F8F3EC">
+<meta name="referrer" content="no-referrer">
 <link rel="icon" href="app/icon.svg" type="image/svg+xml">
 <link rel="icon" href="app/favicon_32.png" sizes="32x32" type="image/png">
 <meta property="og:title" content="Handlark: hand it over, see it done">
@@ -10,7 +11,6 @@
 <link rel="apple-touch-icon" href="app/apple_touch_icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap">
-<script src="app/config.js"></script>
 <style>
 /* Layout: a framed hero with an orbiting orange disc and a dark wave stats band, then alternating mist and white sections,
    each built around a product mockup (phone, task cards, timers), ending in pricing, guides and a newsletter footer. */
@@ -347,12 +347,20 @@ section{position:relative}
 .payline{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:28px;color:var(--muted);font-size:13.5px}
 .payline span{display:inline-flex;align-items:center;gap:8px}
 .payline svg{width:18px;height:18px;color:var(--teal2)}
+.payline a{color:inherit}
+.limits{text-align:center;color:var(--muted);font-size:13.5px;max-width:70ch;margin:14px auto 0}
+.limits a{color:var(--teal2)}
 .compare{margin-top:40px;background:var(--paper);border-radius:22px;overflow-x:auto}
 .compare table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
 .compare th,.compare td{padding:14px 20px;text-align:left;border-bottom:1px solid var(--line)}
 .compare th{font:600 13px var(--display);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .compare td:not(:first-child),.compare th:not(:first-child){text-align:center}
 .compare tr:last-child td{border-bottom:0}
+/* phones: each row's label sits on its own line with the three plans below it, so nothing scrolls sideways */
+@media (max-width:620px){.compare{border-radius:18px}.compare table{min-width:0;font-size:13.5px}
+  .compare tr{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}.compare tbody tr:last-child{border-bottom:0}
+  .compare th,.compare td{padding:6px 8px;border-bottom:0}.compare td:first-child{grid-column:1/-1;padding:12px 16px 2px;font-weight:500}
+  .compare td:not(:first-child){padding-bottom:12px}.compare thead th:first-child{display:none}.compare thead th{padding:14px 8px 12px;font-size:11.5px}}
 .yes{color:var(--green);font-weight:700}
 
 /* ---------- 9. story (testimonial pattern) ---------- */
@@ -414,6 +422,8 @@ section{position:relative}
 .help{background:var(--ink);color:#fff;border-radius:24px;padding:26px;display:grid;gap:10px}
 .help h3{color:#fff;font-size:19px}
 .help p{color:#B9CBD2;font-size:14px}
+.help .hacts{display:flex;gap:10px;flex-wrap:wrap}.help .hacts [hidden]{display:none}
+.faq details p a{color:var(--teal2)}
 .help .addr{font:600 15px var(--body);color:var(--orange);user-select:all;word-break:break-all}
 
 /* ---------- footer ---------- */
@@ -427,6 +437,7 @@ footer a:hover{color:var(--orange)}
 .notice{background:#1C323A;border-radius:22px;padding:22px;display:grid;gap:12px;align-self:start;border-top:3px solid var(--orange)}
 .notice p{font-size:13.5px}
 .notice .mail{background:#13262E}
+.legal-links{display:flex;gap:18px;flex-wrap:wrap}
 .legal{margin-top:50px;border-top:1px solid rgba(255,255,255,.1);padding:22px 0 30px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px}
 
 /* ---------- responsive ---------- */
@@ -466,7 +477,9 @@ footer a:hover{color:var(--orange)}
   .steps{grid-template-columns:1fr 1fr}
   .steps:before{display:none}
   .ctab{grid-template-columns:1fr;padding:34px 26px;text-align:left}
-  .tilt{height:230px}
+  /* one column: the tilted phone is drawn smaller and gets its own room above the heading, so the two never overlap */
+  .tilt{height:320px;margin-top:-4px}
+  .tilt .phone{transform:translate(-50%,-50%) rotate(-12deg) scale(.58)}
   .faq .side{position:static}
   .fgrid2{grid-template-columns:1fr 1fr}
 }
@@ -503,6 +516,8 @@ footer a:hover{color:var(--orange)}
   .legal{flex-direction:column}
 }
 </style>
+<body data-home>
+
 <div class="stage">
 <div class="frame">
   <header class="nav">
@@ -673,7 +688,7 @@ footer a:hover{color:var(--orange)}
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span><h3>Export any time</h3><p>Download every task as a spreadsheet. Your data is always yours.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-13.4 7.9L3 21l1.2-4.4A9 9 0 1121 12z"/><path d="M8.5 10.5c.5 2 2 3.5 4 4l1.2-1.2 2 .8-.4 1.6c-3.5.3-7-3.2-6.7-6.7l1.6-.4.8 2z"/></svg></span><h3>WhatsApp updates</h3><p>New tasks, reminders and approvals arrive on WhatsApp. Reply DONE 2 or IN to update without opening the app.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span><h3>AI daily summary</h3><p>One tap writes a short, honest summary of the day for your boss or client, from what the team actually posted.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v4M8 21h8"/></svg></span><h3>Tasks from voice or chat</h3><p>Speak, or paste a WhatsApp message or meeting notes, and get tasks with people and dates ready to add.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v4M8 21h8"/></svg></span><h3>Tasks from voice or chat</h3><p>Record or upload a voice note, or paste a WhatsApp message or meeting notes. It is transcribed and turned into tasks with people and dates, ready to add.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></span><h3>Client pages</h3><p>A private link for each client to follow progress, comment, approve finished work and see invoices. No login.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h5"/></svg></span><h3>Invoices from tracked hours</h3><p>Turn a client's tracked time into an invoice in dollars or naira, email it, and mark it paid.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 15h3"/></svg></span><h3>Payroll, leave and holidays</h3><p>Monthly hours, overtime and gross pay per person, leave requests with approval, and Nigeria and US public holidays.</p></div>
@@ -683,9 +698,9 @@ footer a:hover{color:var(--orange)}
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v9h14v-9M8 6l4-3 4 3"/></svg></span><h3>Paid online</h3><p>Clients pay invoices by card, transfer or USSD into your own Paystack account, and the invoice marks itself paid.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 012-2h12v18H6a2 2 0 01-2-2z"/><path d="M8 7h6M8 11h6"/></svg></span><h3>Guides</h3><p>Write down how each job is done, client by client, and link it to tasks so anyone can pick the work up.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Expenses</h3><p>Receipts in, approvals out. Billable costs go straight onto the client invoice, and payroll shows what to repay.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span><h3>Your calendar</h3><p>Due tasks, planned starts and leave appear in Google, Apple or Outlook calendar and stay up to date.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span><h3>Your calendar</h3><p>Due tasks, planned starts and leave go into Google, Apple or Outlook calendar through a private feed. The feed updates by itself, and Google or Outlook check it every few hours.</p></div>
       <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Two step sign in</h3><p>A code from an authenticator app on new devices, a history of every change, and the option to require it for everyone.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 14l3-3 3 3 5-6"/></svg></span><h3>Bring your old list</h3><p>Import tasks from Excel, Google Sheets or Trello in one go. New clients are created for you.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 14l3-3 3 3 5-6"/></svg></span><h3>Bring your old list</h3><p>Import tasks from Excel, CSV or Trello in one go. New clients are created for you.</p></div>
     </div>
   </div>
 </section>
@@ -772,23 +787,30 @@ footer a:hover{color:var(--orange)}
       <div class="toggle" role="group" aria-label="Currency"><button type="button" data-cur="usd" aria-pressed="true">US dollars</button><button type="button" data-cur="ngn" aria-pressed="false">Naira</button></div></div></div>
     <div class="plans">
       <div class="plan"><h3>Starter</h3><p class="sub">For a founder and a small team</p><div class="amt" data-usd="15" data-ngn="12000"></div>
-        <ul><li>Up to 5 people</li><li>Unlimited clients and tasks</li><li>Daily handoff email and reminders</li><li>Files up to 10 MB each</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+        <ul><li>Up to 5 people</li><li>Unlimited clients and tasks</li><li>5 GB of files, up to 10 MB each</li><li>300 WhatsApp messages a month</li><li>Daily handoff email and reminders</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
       <div class="plan pop"><span class="badge">Most popular</span><h3>Team</h3><p class="sub">For growing teams and small agencies</p><div class="amt" data-usd="39" data-ngn="30000"></div>
-        <ul><li>Up to 15 people</li><li>Everything in Starter</li><li>Sign off, private work and time tracking for everyone</li><li>Clients can follow their own work</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+        <ul><li>Up to 15 people</li><li>25 GB of files, up to 10 MB each</li><li>1,500 WhatsApp messages a month</li><li>Everything in Starter</li><li>Sign off, private work and time tracking for everyone</li><li>Clients can follow their own work</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
       <div class="plan"><h3>Agency</h3><p class="sub">For agencies serving many clients</p><div class="amt" data-usd="99" data-ngn="75000"></div>
-        <ul><li>Up to 50 people</li><li>Everything in Team</li><li>Room for assistants across all your clients</li><li>Hours by client for billing</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+        <ul><li>Up to 50 people</li><li>100 GB of files, up to 10 MB each</li><li>5,000 WhatsApp messages a month</li><li>Everything in Team</li><li>Room for assistants across all your clients</li><li>Hours by client for billing</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
     </div>
     <div class="payline">
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Naira by card, transfer or USSD with Paystack</span>
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.6-1-1.7-1.5-3-1.5-1.7 0-3 .9-3 2s1.3 1.7 3 2 3 .9 3 2-1.3 2-3 2c-1.3 0-2.4-.5-3-1.5M12 6v12"/></svg>US dollars by card with Lemon Squeezy</span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Cancel any time</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg><a href="terms.html#cancel">Cancel any time</a></span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8"/><path d="M3 3v5h5"/></svg><a href="refunds.html">Refund policy</a></span>
     </div>
+    <p class="limits">Every plan: unlimited clients and tasks, files up to 10 MB each, 60 AI requests a day per workspace, and up to 5 workspaces per owner, each on its own plan. Cancel from Settings, Plan and billing; it takes effect at the end of the period you paid for. See the <a href="refunds.html">refund policy</a> and <a href="terms.html">terms</a>.</p>
     <div class="compare">
       <table>
         <thead><tr><th scope="col">What you get</th><th scope="col">Starter</th><th scope="col">Team</th><th scope="col">Agency</th></tr></thead>
         <tbody>
           <tr><td>People in the workspace</td><td>5</td><td>15</td><td>50</td></tr>
           <tr><td>Clients, tasks and templates</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+          <tr><td>File storage per workspace</td><td>5 GB</td><td>25 GB</td><td>100 GB</td></tr>
+          <tr><td>Largest file</td><td>10 MB</td><td>10 MB</td><td>10 MB</td></tr>
+          <tr><td>WhatsApp messages a month</td><td>300</td><td>1,500</td><td>5,000</td></tr>
+          <tr><td>AI requests a day per workspace</td><td>60</td><td>60</td><td>60</td></tr>
+          <tr><td>Workspaces per owner</td><td>Up to 5</td><td>Up to 5</td><td>Up to 5</td></tr>
           <tr><td>Sign off, private work, hidden people</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Time tracking and insights</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Daily handoff email and reminders</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
@@ -796,7 +818,7 @@ footer a:hover{color:var(--orange)}
           <tr><td>WhatsApp alerts and replies</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>AI summary and tasks from voice or chat</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Client pages and invoices</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Free phone alerts and a calendar link</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Free phone alerts and a calendar feed</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Clients pay invoices online, to your own Paystack</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Client requests and weekly client reports</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Guides, expenses and spreadsheet import</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
@@ -851,21 +873,21 @@ footer a:hover{color:var(--orange)}
     <div class="side">
       <span class="eyebrow">Questions</span>
       <h2>Answers Before You <em>Sign Up</em></h2>
-      <div class="help"><h3>Still wondering?</h3><p>Write to us and a real person replies.</p><span class="addr" id="contact-addr">hello@example.com</span><a class="btn orange sm" id="contact-link" href="mailto:hello@example.com" style="justify-self:start">Email us</a></div>
+      <div class="help"><h3>Still wondering?</h3><p>Write to us and a real person replies.</p><span class="addr" id="contact-addr" data-cfg="email">hello@example.com</span><span class="hacts"><a class="btn orange sm" id="contact-link" data-cfg="mailto" href="mailto:hello@example.com">Email us</a><a class="btn white sm" data-cfg="whatsapp" href="#" hidden>WhatsApp us</a></span></div>
     </div>
     <div>
       <details open><summary>Do I need a card for the free trial?</summary><p>No. Create an account and use everything for 14 days. Choose a plan in Settings when you are ready.</p></details>
-      <details><summary>What happens when the trial ends?</summary><p>Nothing is deleted. The workspace becomes read only until you choose a plan, so you and your team can still see and export everything.</p></details>
+      <details><summary>What happens when the trial ends?</summary><p>Nothing is deleted. The workspace becomes read only until you choose a plan. The owner can still see and export everything, and each person on the team can still see and export everything they can see: their tasks, their time and the meetings they attend.</p></details>
       <details><summary>Is it cheaper to pay yearly?</summary><p>Yes. A yearly plan costs the same as 10 months, so you get 2 months free. If a customer you refer starts paying, you also get a free month.</p></details>
       <details><summary>When my clients pay an invoice online, who holds the money?</summary><p>You do. Clients pay into your own Paystack account using your key. The money never passes through us, and the invoice is marked paid as soon as Paystack confirms it.</p></details>
       <details><summary>Will my team feel watched?</summary><p>No. The procrastination tools are there to help each person, not to grade them. You see which tasks might be stuck and who is in a focus session right now. Why someone felt stuck, how they felt and their personal patterns are private to them.</p></details>
       <details><summary>Can my clients see their tasks?</summary><p>Yes. Each client gets a private link to their own page, with progress, comments, approvals and invoices, and no login. Private tasks never show there.</p></details>
-      <details><summary>How does WhatsApp work?</summary><p>The owner connects a WhatsApp Business number once. Each person turns alerts on for themselves, then gets new tasks, reminders and approvals on WhatsApp and can reply TASKS, DONE 2, UPDATE 2 or IN to work without opening the app.</p></details>
-      <details><summary>What does the AI do, and does it see private work?</summary><p>It writes the daily summary from the updates your team posted, and turns pasted messages or voice notes into tasks you check before adding. Private tasks are never sent to it, and nothing is added without your tap.</p></details>
-      <details><summary>Can we hold meetings in <span data-brand>Handlark</span>?</summary><p>Yes. Set up a meeting with a free video room, or paste your own Zoom, Google Meet or Teams link. Everyone gets an invitation in their own time zone, a reminder the day before and a nudge just before it starts. During the call you tick the agenda and write notes together, then each action item becomes a task and the follow up email goes to everyone. Clients can join from their page and ask for a meeting there too.</p></details>
+      <details><summary>How does WhatsApp work?</summary><p>It works out of the box through the shared <span data-brand>Handlark</span> number. An owner who wants messages to come from their own business can connect their own WhatsApp Business number once instead. Each person turns alerts on for themselves, then gets new tasks, reminders and approvals on WhatsApp and can reply TASKS, DONE 2, UPDATE 2 or IN to work without opening the app.</p></details>
+      <details><summary>What does the AI do, and does it see private work?</summary><p>It writes the daily summary from the updates your team posted, and turns pasted messages or voice notes into tasks you check before adding. Private tasks are never sent to it, and nothing is added without your tap. A voice note sent on WhatsApp comes back as a proposed task, added only when you reply YES.</p></details>
+      <details><summary><span>Can we hold meetings in <span data-brand>Handlark</span>?</span></summary><p>Yes. Set up a meeting with a free video room, or paste your own Zoom, Google Meet or Teams link. Everyone gets an invitation in their own time zone, a reminder the day before and a nudge just before it starts. During the call you tick the agenda and write notes together, then each action item becomes a task and the follow up email goes to everyone. Clients can join from their page and ask for a meeting there too.</p></details>
       <details><summary>Does it work on phones?</summary><p>Yes. It runs in any browser and installs on the home screen of iPhone and Android phones like an app, with deadline alerts.</p></details>
       <details><summary>Will it work on a weak connection?</summary><p>Yes. Changes are kept on the device and sent when the connection returns, and the app opens offline with the last saved view.</p></details>
-      <details><summary>Where is my data kept?</summary><p>In a secure database and private file storage. Each workspace is locked to its own members, files open through short lived links, and you can export all tasks as a spreadsheet at any time.</p></details>
+      <details><summary>Where is my data kept?</summary><p>In a secure database and private file storage. Each workspace is locked to its own members, files open through short lived links, and you can export all tasks as a spreadsheet at any time. The <a href="privacy.html">privacy policy</a> has the details.</p></details>
       <details><summary>Can I pay in naira?</summary><p>Yes. Paystack takes cards, bank transfer and USSD in naira. Teams abroad can pay in US dollars by card.</p></details>
     </div>
   </div>
@@ -881,42 +903,9 @@ footer a:hover{color:var(--orange)}
       <form class="notice" data-mail><h4 style="margin:0">Quick start</h4><p>Enter your email and we will take you straight to your free trial.</p>
         <label class="mail"><span hidden>Email</span><input type="email" id="foot-email" name="email" placeholder="Your email" autocomplete="email" required><button type="submit" aria-label="Start free trial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></label></form>
     </div>
-    <div class="legal"><span>© <span id="yr">2026</span> <span data-brand>Handlark</span>. All rights reserved.</span><span>Made in Nigeria for teams everywhere</span></div>
+    <div class="legal"><span>© <span id="yr">2026</span> <span data-brand>Handlark</span>. All rights reserved.</span><nav class="legal-links" aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><a href="security.html">Security</a></nav><span>Made in Nigeria for teams everywhere</span></div>
   </div>
 </footer>
 
-<script>
-(function(){
-  var cfg=window.APP_CONFIG||{},brand=cfg.brand||'Handlark';
-  document.querySelectorAll('[data-brand]').forEach(function(e){e.textContent=brand;});
-  document.title=brand==='Handlark'?'Handlark: hand it over, see it done':brand;
-  if(cfg.contactEmail){document.getElementById('contact-addr').textContent=cfg.contactEmail;document.getElementById('contact-link').href='mailto:'+cfg.contactEmail;}
-  document.getElementById('yr').textContent=new Date().getFullYear();
-  /* prices */
-  var fmt=function(n){return Number(n).toLocaleString('en-US');};
-  var CUR='usd',PER='month';
-  function show(cur,per){CUR=cur||CUR;PER=per||PER;var y=PER==='year';
-    document.querySelectorAll('.amt').forEach(function(e){e.innerHTML=(CUR==='usd'?'$':'₦')+fmt(e.getAttribute('data-'+CUR)*(y?10:1))+' <small>/ '+(y?'year':'month')+'</small>';});
-    document.querySelectorAll('[data-cur]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-cur')===CUR));});
-    document.querySelectorAll('[data-per]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-per')===PER));});}
-  document.querySelectorAll('[data-cur]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-cur'));});});
-  document.querySelectorAll('[data-per]').forEach(function(b){b.addEventListener('click',function(){show(null,b.getAttribute('data-per'));});});
-  /* a customer's referral link: remember the code for sign up, and say what it is worth */
-  try{var rf=new URLSearchParams(location.search).get('ref');if(/^[A-Za-z2-9]{7}$/.test(rf||''))localStorage.setItem('hv-ref',rf.toUpperCase());
-    if(localStorage.getItem('hv-ref')){var bar=document.createElement('div');bar.className='refbar';bar.setAttribute('role','status');bar.innerHTML='You were invited by a '+brand+' customer: <b>44 days free</b> instead of 14 when you sign up.';document.body.insertBefore(bar,document.body.firstChild);
-      document.querySelectorAll('.lead').forEach(function(e){e.innerHTML=e.innerHTML.replace('14 days free','44 days free');});}}catch(e){}
-  var ng=false;try{ng=/Africa\/Lagos/.test(Intl.DateTimeFormat().resolvedOptions().timeZone);}catch(e){}
-  show(ng?'ngn':'usd');
-  /* live clocks in the hero chip */
-  function clocks(){try{var f=function(tz){return new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());};
-    var c=document.querySelector('.chip.c1 span:last-child');c.innerHTML='<b>'+f('Africa/Lagos')+' Lagos</b><small>'+f('America/Chicago')+' Chicago</small>';}catch(e){}}
-  clocks();setInterval(clocks,30000);
-  /* email boxes go straight to sign up with the email filled in */
-  document.querySelectorAll('form[data-mail]').forEach(function(f){f.addEventListener('submit',function(ev){ev.preventDefault();var v=f.querySelector('input').value.trim();
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){f.querySelector('input').focus();return;}location.href='app/?signup&email='+encodeURIComponent(v);});});
-  /* mobile menu */
-  var m=document.getElementById('menu'),d=document.getElementById('drawer');
-  m.addEventListener('click',function(){var o=!d.classList.contains('open');d.classList.toggle('open',o);m.setAttribute('aria-expanded',String(o));});
-  d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){d.classList.remove('open');m.setAttribute('aria-expanded','false');});});
-})();
-</script>
+<script src="app/config.js"></script>
+<script src="main.js"></script>

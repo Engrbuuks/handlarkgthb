@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Refunds and cancellation | Handlark</title>
+<meta name="description" content="When Handlark refunds a payment, how to cancel and how to ask for your money back.">
+<meta name="theme-color" content="#F8F3EC">
+<link rel="icon" href="app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light;--cream:#F8F3EC;--paper:#FFFFFF;--mist:#EEF3F5;--ink:#13262E;--ink2:#1F3B47;--muted:#6A7C85;--line:#E3E9EC;
+  --orange:#F28F2C;--orange2:#E07A14;--peach:#FDEBD8;--peach2:#F9DDBF;--teal:#234F5F;--teal2:#2F6577;--teal3:#3E8197;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;--body:Poppins,"Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--cream);color:var(--ink2);font:400 15.5px/1.7 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--teal2)}
+a:hover{color:var(--orange2)}
+:focus-visible{outline:2.5px solid var(--orange);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100%);margin:0 auto;padding-inline:20px}
+.top{display:flex;align-items:center;gap:18px;padding:22px 0}
+.top .logo img{display:block;height:36px;width:auto}
+.top nav{display:flex;gap:22px;margin-left:auto;font:500 14px var(--body)}
+.top nav a{color:var(--ink);text-decoration:none}
+.top nav a[aria-current]{color:var(--orange2)}
+.btn{display:inline-flex;align-items:center;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font:600 14px/1 var(--body);padding:12px 20px;box-shadow:4px 4px 0 var(--orange)}
+.btn:hover{color:#fff}
+.hero{background:linear-gradient(120deg,var(--teal),var(--teal3));color:#fff;border-radius:28px;padding:44px 40px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;border:44px solid rgba(255,255,255,.06)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--peach2)}
+.eyebrow:before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+h1,h2,h3{font-family:var(--display);color:var(--ink);text-wrap:balance}
+.hero h1{color:#fff;font-size:clamp(32px,5vw,48px);line-height:1.1;margin:14px 0 10px;font-weight:600;letter-spacing:-.01em}
+.hero p{margin:0;color:#D3E3E9;max-width:62ch}
+.hero .upd{margin-top:16px;font-size:13px;color:var(--peach2)}
+.body{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;margin:36px auto 80px;align-items:start}
+.toc{position:sticky;top:20px;background:var(--paper);border-radius:20px;padding:18px 18px 14px;font-size:13.5px}
+.toc b{display:block;font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.toc ol{margin:0;padding:0 0 0 18px;display:grid;gap:6px}
+.toc a{color:var(--ink2);text-decoration:none}
+.toc a:hover{color:var(--orange2)}
+article{background:var(--paper);border-radius:24px;padding:36px 40px;min-width:0}
+article section{padding:4px 0 10px;scroll-margin-top:20px}
+article section+section{border-top:1px solid var(--line);margin-top:18px;padding-top:22px}
+article h2{font-size:22px;line-height:1.25;margin:0 0 10px;font-weight:600}
+article h3{font-size:16.5px;margin:18px 0 6px;font-weight:600}
+article p{margin:0 0 12px}
+article ul{margin:0 0 12px;padding-left:20px;display:grid;gap:6px}
+.sum{background:var(--peach);border-radius:16px;padding:16px 18px;margin:0 0 22px;color:var(--ink2)}
+.sum b{color:var(--ink)}
+.tbl{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font:600 12.5px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--mist)}
+tr:last-child td{border-bottom:0}
+footer{background:var(--ink);color:#C4D2D8;padding:34px 0;font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:#C4D2D8;text-decoration:none}
+footer a:hover,footer a[aria-current]{color:var(--orange)}
+@media (max-width:900px){
+  .top nav{display:none}
+  .top .btn{margin-left:auto}
+  .body{grid-template-columns:1fr;gap:18px;margin-top:22px}
+  .toc{position:static}
+  .toc ol{grid-template-columns:1fr 1fr;gap:6px 18px}
+}
+@media (max-width:620px){
+  .wrap{padding-inline:16px}
+  .top{padding:16px 0}
+  .top .logo img{height:30px}
+  .top .btn{padding:10px 14px;font-size:13px}
+  .hero{padding:30px 22px;border-radius:22px}
+  article{padding:24px 20px;border-radius:20px}
+  .toc ol{grid-template-columns:1fr}
+  footer .wrap{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="Handlark home"><img src="app/logo.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html" aria-current="page">Refunds</a><a href="security.html">Security</a></nav>
+    <a class="btn" href="./"><span>Back to <span data-brand>Handlark</span></span></a>
+  </header>
+  <div class="hero">
+    <span class="eyebrow">Refunds</span>
+    <h1>Refunds and cancellation</h1>
+    <p>When Handlark refunds a payment, how to cancel and how to ask for your money back.</p>
+    <p class="upd">Last updated 14 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#short">The short version</a></li><li><a href="#first">Full refund within 7 days</a></li><li><a href="#mistakes">Duplicated or mistaken charges</a></li><li><a href="#used">Periods already used</a></li><li><a href="#cancel">How to cancel</a></li><li><a href="#ask">How to ask for a refund</a></li><li><a href="#disputes">Before a chargeback</a></li><li><a href="#rights">Your legal rights</a></li></ol></aside>
+    <article>
+<p class="sum"><b>In short:</b> a full refund within 7 days of your first paid charge, duplicated or mistaken charges always refunded, and no partial refunds for time already used.</p>
+<section id="short"><h2>The short version</h2><ul><li><b>First payment:</b> a full refund if you ask within 7 days of your first paid charge for a workspace.</li><li><b>Duplicated or mistaken charges:</b> the extra amount is always refunded, and your plan continues.</li><li><b>After that:</b> no partial refunds for periods already used. Cancel any time and you keep access until the end of the period you paid for.</li></ul></section>
+<section id="first"><h2>Full refund within 7 days</h2><p>If <span data-brand>Handlark</span> is not right for you, write to us within 7 days of the first paid charge for a workspace and we will refund that charge in full. This applies to monthly and yearly plans. It applies once per workspace and owner, to the first payment only, not to renewals. After the refund the plan ends and the workspace becomes read only.</p></section>
+<section id="mistakes"><h2>Duplicated or mistaken charges</h2><p>If you were charged twice for the same period, charged after you cancelled, or charged a wrong amount because of an error on our side, we refund the extra amount in full, whenever you notice it. Your plan carries on as normal: only a full refund of the payment for your current period ends the plan.</p></section>
+<section id="used"><h2>Periods already used</h2><p>Apart from the cases above, we do not give partial or prorated refunds for the unused part of a month or year, or for downgrades. When you cancel, the plan stays active until the end of the current period and is not renewed.</p></section>
+<section id="cancel"><h2>How to cancel</h2><p>Open the app, go to <b>Settings, Plan and billing</b> and cancel. It takes effect at the end of the period you have already paid for. You can also write to us and we will do it for you.</p></section>
+<section id="ask"><h2>How to ask for a refund</h2><p>Write to <a data-cfg="email" href="mailto:hello@example.com">hello@example.com</a> from the email address you sign in with. Tell us the workspace name, the date and amount of the charge and whether you paid in naira or US dollars.</p><ul><li>Naira payments are refunded through Paystack to the card or account you paid with.</li><li>US dollar payments are refunded through Lemon Squeezy, which is the merchant of record for those payments.</li><li>We confirm within 3 business days. The money usually reaches you within 5 to 10 business days, depending on your bank.</li></ul></section>
+<section id="disputes"><h2>Before a chargeback</h2><p>Please write to us before disputing a charge with your bank. We can usually sort things out faster, and a chargeback may pause the workspace while it is reviewed.</p></section>
+<section id="rights"><h2>Your legal rights</h2><p>This policy does not take away any rights you have under consumer protection law in your country, including the Federal Competition and Consumer Protection Act in Nigeria.</p></section>
+    </article>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="Legal pages"><a href="./">Home</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html" aria-current="page">Refunds</a><a href="security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="app/config.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
