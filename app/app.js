@@ -10,9 +10,9 @@ function h(tag,attrs){var e=document.createElement(tag),val,k,v;
   var kids=Array.prototype.slice.call(arguments,2);
   (function add(a){a.forEach(function(c){if(c==null||c===false)return;if(Array.isArray(c))return add(c);e.append(c.nodeType?c:document.createTextNode(String(c)));});})(kids);
   if(val!==undefined)e.value=val;return e;}
-var P=function(d){return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';};
+var P=function(d){return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';};
 var I={
-  home:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2.5"/><rect x="13" y="3" width="8" height="8" rx="2.5"/><rect x="3" y="13" width="8" height="8" rx="2.5"/><rect x="13" y="13" width="8" height="8" rx="2.5"/></svg>',
+  home:P('<rect x="3.5" y="3.5" width="7" height="7" rx="2.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2.2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2.2"/>'),
   tasks:P('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M3.5 6l1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>'),
   cal:P('<rect x="3" y="5" width="18" height="16" rx="4"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
   chart:P('<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8 16v-3M12 16V8M16 16v-5"/>'),
@@ -23,14 +23,14 @@ var I={
   search:P('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),mic:P('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>'),pin:P('<path d="M12 21s-7-6.2-7-11.2a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.6"/>'),
   check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
-var LOGO='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><rect width="1000" height="1000" rx="220" fill="#234F5F"/><g transform="translate(140.0 214.3) scale(0.8072)"><path fill="#FFFFFF" fill-rule="evenodd" d="M22.7 707.5C13.7 704.4 11.4 697.3 16.6 689.4C24.4 677.6 51.1 654.9 87.2 629.0C102.4 618.2 102.5 618.1 88.5 620.7C73.8 623.5 38.1 623.2 27.2 620.2C7.3 614.8 -2.7 605.6 1.5 596.6C4.1 591.2 10.3 588.8 47.0 578.9C172.7 545.0 237.8 521.1 299.5 486.0C317.6 475.7 317.7 475.5 305.2 474.6C234.8 469.1 166.1 440.7 122.8 399.1C92.7 370.2 82.7 345.4 99.2 340.9C102.8 340.0 105.3 340.1 114.6 341.9C130.8 344.9 131.3 344.7 122.2 337.9C89.5 313.3 59.7 268.6 47.7 226.5C39.9 199.1 40.4 184.7 49.4 181.7C54.5 180.0 58.8 182.0 78.3 194.9C113.5 218.3 142.7 235.2 173.4 250.0C201.7 263.7 233.4 276.9 234.7 275.6C235.1 275.2 232.3 271.9 228.5 268.2C192.0 233.2 170.3 194.4 168.3 160.3C166.3 127.0 180.6 120.0 209.9 139.9C215.7 143.9 218.0 144.8 218.0 143.2C218.0 142.8 215.8 137.0 213.1 130.5C195.1 86.9 192.1 43.0 205.1 15.0C210.2 4.1 216.9 -1.1 224.1 0.5C229.0 1.6 234.9 7.8 250.3 27.8C282.0 69.1 305.2 95.2 360.5 152.0C427.5 220.7 449.7 250.8 465.3 294.0C473.6 317.0 475.4 327.8 475.5 354.8C475.5 367.5 475.8 378.0 476.1 378.0C476.8 378.0 483.4 370.5 494.5 357.0C533.7 309.5 556.4 293.0 589.7 288.1C622.1 283.2 652.6 297.3 670.8 325.5C673.6 329.9 676.6 334.5 677.4 335.6C678.2 336.8 687.8 342.6 698.7 348.5C709.6 354.4 720.9 360.8 723.8 362.7C728.8 365.9 732.1 370.2 730.7 371.6C730.3 372.0 716.7 371.5 700.3 370.5L670.5 368.6L663.0 372.6C658.0 375.2 652.5 379.3 646.6 385.0C631.9 399.0 621.7 413.8 594.5 460.5C568.5 505.0 557.3 520.8 538.1 540.1C517.3 560.9 495.9 575.2 469.0 586.2C427.8 603.1 388.4 607.3 326.0 601.6C287.6 598.0 273.5 597.4 261.5 598.9C231.0 602.8 213.8 611.5 154.5 653.0C101.3 690.3 72.1 704.2 39.1 708.0C28.3 709.2 27.3 709.2 22.7 707.5ZM622.6 358.1C639.6 350.4 634.1 325.0 615.4 325.0C601.3 325.0 592.9 341.4 601.4 352.5C604.6 356.6 610.9 360.0 615.5 360.0C617.1 360.0 620.4 359.1 622.6 358.1Z"/><path fill="#F4A640" fill-rule="evenodd" d="M715.0 551.1C701.4 546.9 693.4 537.2 689.1 519.5C686.2 507.9 669.1 443.8 663.8 425.0C659.1 408.4 658.5 400.6 661.4 392.2C663.7 385.3 669.6 378.0 676.0 374.1C679.0 372.2 680.8 370.5 680.4 369.8C679.9 369.1 681.3 368.9 685.1 369.3C695.8 370.5 730.0 372.3 730.7 371.7C732.2 370.1 728.6 365.7 722.9 362.0C719.5 359.8 717.5 358.0 718.4 358.0C719.4 358.0 743.2 351.6 771.3 343.8C820.8 330.0 822.8 329.5 832.0 329.5C842.8 329.5 846.1 330.8 854.0 337.8C862.9 345.6 861.8 342.1 886.4 445.2C895.5 483.2 895.2 490.9 884.3 503.0C878.4 509.6 873.6 511.9 857.0 516.5C849.6 518.5 831.1 523.7 816.0 528.0C729.6 552.6 724.1 553.8 715.0 551.1Z"/><path fill="#FFFFFF" fill-rule="evenodd" d="M760.5 492.7C751.9 487.7 718.4 465.3 717.1 463.7C713.0 458.7 715.3 448.6 721.3 445.0C727.3 441.3 730.3 442.1 745.6 452.0C753.2 456.9 760.0 461.0 760.6 461.0C761.3 461.0 772.5 444.2 785.5 423.8C798.5 403.3 810.3 385.5 811.6 384.3C819.9 376.6 834.3 384.5 832.7 395.9C832.4 398.3 827.0 407.6 816.5 424.0C807.8 437.5 795.0 457.5 788.0 468.5C780.9 479.5 774.1 489.7 772.9 491.3C769.5 495.1 765.4 495.6 760.5 492.7Z"/></g></svg>';
+var LOGO='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><rect width="1000" height="1000" rx="220" fill="#2E1C47"/><g transform="translate(140.0 214.3) scale(0.8072)"><path fill="#FFFFFF" fill-rule="evenodd" d="M22.7 707.5C13.7 704.4 11.4 697.3 16.6 689.4C24.4 677.6 51.1 654.9 87.2 629.0C102.4 618.2 102.5 618.1 88.5 620.7C73.8 623.5 38.1 623.2 27.2 620.2C7.3 614.8 -2.7 605.6 1.5 596.6C4.1 591.2 10.3 588.8 47.0 578.9C172.7 545.0 237.8 521.1 299.5 486.0C317.6 475.7 317.7 475.5 305.2 474.6C234.8 469.1 166.1 440.7 122.8 399.1C92.7 370.2 82.7 345.4 99.2 340.9C102.8 340.0 105.3 340.1 114.6 341.9C130.8 344.9 131.3 344.7 122.2 337.9C89.5 313.3 59.7 268.6 47.7 226.5C39.9 199.1 40.4 184.7 49.4 181.7C54.5 180.0 58.8 182.0 78.3 194.9C113.5 218.3 142.7 235.2 173.4 250.0C201.7 263.7 233.4 276.9 234.7 275.6C235.1 275.2 232.3 271.9 228.5 268.2C192.0 233.2 170.3 194.4 168.3 160.3C166.3 127.0 180.6 120.0 209.9 139.9C215.7 143.9 218.0 144.8 218.0 143.2C218.0 142.8 215.8 137.0 213.1 130.5C195.1 86.9 192.1 43.0 205.1 15.0C210.2 4.1 216.9 -1.1 224.1 0.5C229.0 1.6 234.9 7.8 250.3 27.8C282.0 69.1 305.2 95.2 360.5 152.0C427.5 220.7 449.7 250.8 465.3 294.0C473.6 317.0 475.4 327.8 475.5 354.8C475.5 367.5 475.8 378.0 476.1 378.0C476.8 378.0 483.4 370.5 494.5 357.0C533.7 309.5 556.4 293.0 589.7 288.1C622.1 283.2 652.6 297.3 670.8 325.5C673.6 329.9 676.6 334.5 677.4 335.6C678.2 336.8 687.8 342.6 698.7 348.5C709.6 354.4 720.9 360.8 723.8 362.7C728.8 365.9 732.1 370.2 730.7 371.6C730.3 372.0 716.7 371.5 700.3 370.5L670.5 368.6L663.0 372.6C658.0 375.2 652.5 379.3 646.6 385.0C631.9 399.0 621.7 413.8 594.5 460.5C568.5 505.0 557.3 520.8 538.1 540.1C517.3 560.9 495.9 575.2 469.0 586.2C427.8 603.1 388.4 607.3 326.0 601.6C287.6 598.0 273.5 597.4 261.5 598.9C231.0 602.8 213.8 611.5 154.5 653.0C101.3 690.3 72.1 704.2 39.1 708.0C28.3 709.2 27.3 709.2 22.7 707.5ZM622.6 358.1C639.6 350.4 634.1 325.0 615.4 325.0C601.3 325.0 592.9 341.4 601.4 352.5C604.6 356.6 610.9 360.0 615.5 360.0C617.1 360.0 620.4 359.1 622.6 358.1Z"/><path fill="#FF7059" fill-rule="evenodd" d="M715.0 551.1C701.4 546.9 693.4 537.2 689.1 519.5C686.2 507.9 669.1 443.8 663.8 425.0C659.1 408.4 658.5 400.6 661.4 392.2C663.7 385.3 669.6 378.0 676.0 374.1C679.0 372.2 680.8 370.5 680.4 369.8C679.9 369.1 681.3 368.9 685.1 369.3C695.8 370.5 730.0 372.3 730.7 371.7C732.2 370.1 728.6 365.7 722.9 362.0C719.5 359.8 717.5 358.0 718.4 358.0C719.4 358.0 743.2 351.6 771.3 343.8C820.8 330.0 822.8 329.5 832.0 329.5C842.8 329.5 846.1 330.8 854.0 337.8C862.9 345.6 861.8 342.1 886.4 445.2C895.5 483.2 895.2 490.9 884.3 503.0C878.4 509.6 873.6 511.9 857.0 516.5C849.6 518.5 831.1 523.7 816.0 528.0C729.6 552.6 724.1 553.8 715.0 551.1Z"/><path fill="#FFFFFF" fill-rule="evenodd" d="M760.5 492.7C751.9 487.7 718.4 465.3 717.1 463.7C713.0 458.7 715.3 448.6 721.3 445.0C727.3 441.3 730.3 442.1 745.6 452.0C753.2 456.9 760.0 461.0 760.6 461.0C761.3 461.0 772.5 444.2 785.5 423.8C798.5 403.3 810.3 385.5 811.6 384.3C819.9 376.6 834.3 384.5 832.7 395.9C832.4 398.3 827.0 407.6 816.5 424.0C807.8 437.5 795.0 457.5 788.0 468.5C780.9 479.5 774.1 489.7 772.9 491.3C769.5 495.1 765.4 495.6 760.5 492.7Z"/></g></svg>';
 /* illustrations: decorative, so they carry no alt text */
 /* Today's Schedule in two staggered columns, like a masonry board: cards 1 and 3 on the left, 2 and 4 on the right */
 var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e){return false;}};
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.6.3';
+var APP_VERSION='1.7.0';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -71,13 +71,13 @@ function saveQ(){if(!qOwner||!wsId)return;if(Q.length)store.set(qKey(),JSON.stri
 function saveState(res){if(!uidNow()||!wsId||!res)return;var keep=Object.assign({},res);delete keep.upload;delete keep.exportData;delete keep.msg;store.set(stKey(),JSON.stringify(keep));}
 function norm(c){c.features=c.features||{mail:true,wa:true,ai:true};c.templates=c.templates||[];c.shifts=c.shifts||[];c.presence=c.presence||[];c.invoices=c.invoices||[];c.leaves=c.leaves||[];c.focusNow=c.focusNow||[];c.guides=c.guides||[];c.meetings=c.meetings||[];c.expenses=c.expenses||[];c.myPush=c.myPush||[];c.myCal=c.myCal||'';c.myFocus=c.myFocus||[];c.myStuck=c.myStuck||[];c.stuckSignals=c.stuckSignals||[];c.myPatterns=c.myPatterns||{hours:[],stuck:{},focus:{}};c.time=c.time||[];c.sheets=c.sheets||[];c.timeTotals=c.timeTotals||[];c.budgets=c.budgets||[];c.trash=c.trash||[];c.settings=c.settings||{};c.settings.workSites=c.settings.workSites||[];c.tasks.forEach(function(t){t.files=t.files||[];t.time=t.time||[];t.updates=t.updates||[];t.checklist=t.checklist||[];});return c;}
 function cached(){if(!uidNow()||!wsId)return null;try{var c=JSON.parse(store.get(stKey())||'null');return c&&c.tasks?norm(c):null;}catch(e){return null;}}
-var COLORS=['#2F6F8F','#F4A640','#E2574C','#7A5CC8','#3FA37C','#234F5F','#D4679A','#8A6D3B'];
+var COLORS=['#5A6FD1','#FF7059','#C93A6B','#8B6CC9','#2E9E7A','#6B4FA0','#E07AB0','#B98A2E'];
 var STAT=[['new','New'],['in_progress','In progress'],['waiting','Waiting'],['done','Done']];
 var FIELDS=['title','subjectId','details','due','start','end','priority','status','waitingOn','assignee','repeat','checklist','private','needsApproval','firstStep','planAt','planWhere','estimateMin','startBy','goodEnough','guideId'];
 
 var subj=function(id){return S.subjects.find(function(s){return s.id===id;});};
 var sName=function(id){var s=subj(id);return s?s.name:'General';};
-var sColor=function(id){var s=subj(id);return s?s.color:'#9AA9B1';};
+var sColor=function(id){var s=subj(id);return s?s.color:'#A79DB5';};
 var person=function(id){return S.people.find(function(p){return p.id===id;});};
 var pName=function(id){var p=person(id);return p?p.name:id?'Former member':'Someone';};
 var initials=function(n){return n.split(/\s+/).map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();};
@@ -303,7 +303,7 @@ function pump(){if(qOwner!==uidNow()){if(!uidNow())return;loadQ();}   // the que
     clearTimeout(pumpT);pumpT=setTimeout(function(){pumpT=null;pump();},Math.min(120000,2000*Math.pow(2,Math.min(it.n-1,6)))+Math.round(Math.random()*800));
     if(offline!==was){render();if(M)renderSheet();}});}
 var pumpT=null;
-function refresh(){if(!wsId||!sess)return;if(Q.length){pump();return;}server('load',{}).then(function(res){if(!Q.length&&accept(res)){pickMe();render();}}).catch(function(err){if(lost(err))return;if(!offline&&!(err&&err.refused)){offline=true;render();}});}
+function refresh(){if(!wsId||!sess||FULL)return;if(Q.length){pump();return;}server('load',{}).then(function(res){if(!Q.length&&accept(res)){pickMe();render();}}).catch(function(err){if(lost(err))return;if(!offline&&!(err&&err.refused)){offline=true;render();}});}
 function pickMe(){me=S.me||'';syncTz();}
 /* each device tells the server its own time zone once per visit, so clocks and "their time" follow people automatically */
 var tzSent=false;
@@ -370,7 +370,7 @@ function greeting(){var p=person(me),hr=new Date().getHours(),part=hr<5?'Still u
     bits.length?h('div',{class:'brief'},h('span',null,'You have'),bits):h('p',{text:line}));}
 function topbar(title,sub,big){var n=S.tasks.filter(function(t){return forMe(t)||toSign(t)||newMentions(t)>0;}).length,p=person(me);
   return h('header',{class:'top'+(big?' home':'')},
-    h('div',{class:'tt'},big?[greeting(),h('h1',{html:"Let's become<br>more <em>Productive</em>"})]:[h('h1',{class:'plain',text:title}),sub?h('p',{text:sub}):null]),
+    h('div',{class:'tt'},big?[greeting(),h('h1',{html:"Let's become<br>more productive"})]:[h('h1',{class:'plain',text:title}),sub?h('p',{text:sub}):null]),
     big?clockRow():null,
     h('div',{class:'tools'},h('span',{class:'logo',html:LOGO,'aria-hidden':'true'}),
       h('div',{class:'appid'},h('b',{text:BRAND}),(S.workspace&&S.workspace.name)?h('small',{text:S.workspace.name}):null),
@@ -400,7 +400,7 @@ function row(t,showSubject){var d=dueText(t),meta=[],cl=t.checklist||[],last=t.u
     h('button',{class:'rb',type:'button',onclick:function(){openTask(t.id);}},h('strong',{text:t.title}),meta.length?h('div',{class:'meta'},meta):null),
     t.assignee&&person(t.assignee)?h('span',{class:'who',title:pName(t.assignee),text:initials(pName(t.assignee))}):null);}
 function ring(pct){var c=2*Math.PI*34;return h('div',{class:'ring'},
-  h('div',{html:'<svg width="84" height="84" viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="8"/>'+(pct?'<circle cx="42" cy="42" r="34" fill="none" stroke="#F4A640" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+(c*pct/100).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 42 42)"/>':'')+'</svg>'}),
+  h('div',{html:'<svg width="84" height="84" viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="8"/>'+(pct?'<circle cx="42" cy="42" r="34" fill="none" stroke="#FF7059" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+(c*pct/100).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 42 42)"/>':'')+'</svg>'}),
   h('b',{text:pct+'%'}));}
 function goTasks(status,subject){V.tab='tasks';V.status=status;V.subject=subject||'all';V.q='';render();window.scrollTo(0,0);}
 
@@ -412,19 +412,19 @@ function viewHome(){var td=today(),p=person(me);
   var sched=plan.slice().sort(sortT),show=sched.slice(0,sched.length>4?3:4);
   var n={late:S.tasks.filter(late).length,wait:S.tasks.filter(function(t){return t.status==='waiting';}).length,mine:S.tasks.filter(forMe).length};
   var cards=show.map(function(t,i){var d=dueText(t),lt=d&&d.cls==='late';return h('button',{class:'sc'+(i%4===1||i%4===2?' p':''),type:'button',onclick:function(){openTask(t.id);}},
-    h('strong',{text:t.title}),h('small',{style:lt?'color:var(--red)':'',text:lt?d.text:t.start?(t.start+(t.end?' to '+t.end:'')):'Any time today'}),
+    h('strong',{text:t.title}),h('small',{style:lt?'color:var(--danger)':'',text:lt?d.text:t.start?(t.start+(t.end?' to '+t.end:'')):'Any time today'}),
     h('span',{class:'tag'},h('i',{class:'dot',style:'background:'+sColor(t.subjectId)}),sName(t.subjectId)),i%4===1?ill('card_meeting','sc-ill'):i%4===2?ill('card_planning','sc-ill'):null);});
   if(sched.length>show.length)cards.push(h('button',{class:'sc more',type:'button',onclick:function(){goTasks('today');}},h('strong',null,'Click to view more'),h('small',{text:'+'+(sched.length-show.length)+' schedule'})));
-  if(!cards.length)cards=[h('div',{class:'empty'},ill('empty_today'),h('b',null,'Nothing due today'),'Use the orange plus to add a task.')];
+  if(!cards.length)cards=[h('div',{class:'empty'},ill('empty_today'),h('b',null,'Nothing due today'),'Use the plus button to add a task.')];
   var next=S.tasks.filter(function(t){return open(t)&&t.due&&t.due>td;}).sort(sortT).slice(0,5),undated=S.tasks.filter(function(t){return open(t)&&!t.due;}).length;
   var subs=liveSubjects().map(function(s){var all=S.tasks.filter(function(t){return t.subjectId===s.id;}),o=all.filter(open).length,pc=all.length?Math.round((all.length-o)/all.length*100):0;
     return h('button',{class:'sb',type:'button',onclick:function(){goTasks('open',s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:12px;height:12px'}),
       h('strong',{text:s.name}),h('small',{text:(s.privateTo?'Private, ':'')+o+' open'+(all.length?', '+pc+'% done':'')}),h('div',{class:'bar'},h('i',{style:'width:'+pc+'%;background:'+s.color})));});
-  subs.push(h('button',{class:'sb add',type:'button',onclick:function(){openSubject();}},'New subject'));
+  subs.push(h('button',{class:'sb add',type:'button',onclick:function(){openSubject();}},'New client'));
   var rn=running(),fNow=myFocusNow();
   var summary=h('div',{class:'hgrid'},
       h('section',{class:'hero'},h('div',null,h('h2',{text:msg}),total?h('small',{text:doneT.length+' of '+total+' done'}):null,
-        h('button',{class:'btn sm',type:'button',onclick:function(){goTasks('today');}},'View Task')),h('div',{class:'hart'},ill(total&&pct===100?'all_done':'home_hero','hero-ill'),ring(pct))),
+        h('button',{class:'btn sm',type:'button',onclick:function(){goTasks('today');}},'View today')),h('div',{class:'hart'},ill(total&&pct===100?'all_done':'home_hero','hero-ill'),ring(pct))),
       h('div',{class:'glance'},
         h('button',{class:'pill r',type:'button',onclick:function(){goTasks('late');}},h('b',{text:n.late}),h('span',null,'Overdue')),
         h('button',{class:'pill o',type:'button',onclick:function(){goTasks('waiting');}},h('b',{text:n.wait}),h('span',null,'Waiting')),
@@ -435,11 +435,11 @@ function viewHome(){var td=today(),p=person(me);
       h('button',{class:'btn sm',type:'button',onclick:function(){send('timerStop',{id:rn.t.id},true);}},'Stop')):null,h('div',{class:'page'},
     ph?null:summary,
     h('div',{class:'hgrid b'},
-      h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,"Today's Schedule"),h('span',{text:DAYL[parse(td).getDay()]+', '+short(td)})),schedCols(cards)),
+      h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,"Today's schedule"),h('span',{text:DAYL[parse(td).getDay()]+', '+short(td)})),schedCols(cards)),
       h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Coming up'),h('button',{type:'button',onclick:function(){V.tab='cal';render();}},'Calendar')),
         next.length?h('div',{class:'rows'},next.map(function(t){return row(t,true);})):h('div',{class:'empty'},h('b',null,'Nothing coming up'),'Tasks with a later due date show here.'),
         undated?h('button',{class:'btn ghost sm',style:'margin-top:12px',type:'button',onclick:function(){goTasks('open');},text:undated+(undated===1?' open task has':' open tasks have')+' no due date'}):null)),
-    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Subjects'),S.owner?h('button',{type:'button',onclick:function(){V.tab='more';render();}},'Manage'):null),h('div',{class:'subs'},subs)))];}
+    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Clients'),S.owner?h('button',{type:'button',onclick:function(){V.tab='more';render();}},'Manage'):null),h('div',{class:'subs'},subs)))];}
 
 /* ---------- beating procrastination ----------
    Putting things off is mostly about feelings, not laziness: a task feels unclear, too big, dull or risky,
@@ -498,8 +498,8 @@ function renderFocus(){var el=$('#fx'),f=S&&myFocusNow();
     FX.park.length?h('ul',null,FX.park.map(function(x){return h('li',{text:'Parked: '+x});}),h('li',null,'These become tasks for you when the session ends.')):null));
   tick();}
 function focusBar(f){var t=f.taskId?S.tasks.find(function(x){return x.id===f.taskId;}):null;
-  return h('div',{class:'runbar',style:'border-left-color:var(--teal)'},h('div',null,h('small',null,'In focus'),h('strong',{text:t?t.title:'Focus time'})),
-    h('b',{'data-cd':String(f.start+f.plannedMin*6e4),'data-fid':f.id},''),h('button',{class:'btn sm teal',type:'button',onclick:function(){FX.hide=false;renderFocus();}},'Open'));}
+  return h('div',{class:'runbar',style:'border-left-color:var(--plum-ink)'},h('div',null,h('small',null,'In focus'),h('strong',{text:t?t.title:'Focus time'})),
+    h('b',{'data-cd':String(f.start+f.plannedMin*6e4),'data-fid':f.id},''),h('button',{class:'btn sm plum',type:'button',onclick:function(){FX.hide=false;renderFocus();}},'Open'));}
 /* the Start here card at the top of Home */
 function startCard(){var f=myFocusNow();if(f)return focusBar(f);
   var list=startList();if(!list.length)return null;var i=(V.si||0)%list.length,t=list[i],pt=S.myPatterns||{},d=dueText(t),td=today();
@@ -524,7 +524,7 @@ function questionsBlock(){var qs=openQuestions();if(!qs.length)return null;V.qa=
       return h('div',{class:'qcard'},h('button',{class:'lk',type:'button',onclick:function(){openTask(x.t.id);},text:x.t.title}),h('p',{text:x.u.text}),
         h('small',{text:pName(x.u.by)+(x.u.kind==='why'?' asked why this matters · ':' asked · ')+stamp(x.u.at)}),
         h('div',{class:'addrow',style:'margin-top:2px'},h('input',{class:'in',id:id,maxlength:2000,placeholder:'Your answer','aria-label':'Answer to '+pName(x.u.by),value:V.qa[k]||'',oninput:function(e){V.qa[k]=e.target.value;}}),
-          h('button',{class:'btn teal sm',type:'button',onclick:function(){var v=(V.qa[k]||'').trim();if(!v)return;V.qa[k]='';send('addUpdate',{id:x.t.id,text:'@'+first(pName(x.u.by))+' '+v},true);toast('Answer sent');}},'Reply')));})));}
+          h('button',{class:'btn plum sm',type:'button',onclick:function(){var v=(V.qa[k]||'').trim();if(!v)return;V.qa[k]='';send('addUpdate',{id:x.t.id,text:'@'+first(pName(x.u.by))+' '+v},true);toast('Answer sent');}},'Reply')));})));}
 /* for the boss: tasks that might be stuck. Never the reason, only the task and how quiet it has been */
 function quietBlock(){var list=(S.stuckSignals||[]).map(function(x){return {x:x,t:S.tasks.find(function(t){return t.id===x.taskId;})};}).filter(function(o){return o.t;});if(!list.length)return null;
   return h('div',{class:'blk',style:'margin-bottom:22px'},h('div',{class:'sec'},h('h3',null,'Might be stuck'),h('span',null,'No movement in 3 days, due soon')),
@@ -621,7 +621,7 @@ function viewPatterns(tabRow){var pt=S.myPatterns||{},hrs=pt.hours||[],hm2=Math.
           pt.bestHours&&pt.bestHours.length?h('p',{class:'note',style:'margin:8px 0 0',text:'Your best hour is around '+pad(pt.bestHours[0])+':00. Put your hardest task there.'}):null]
         :h('p',{class:'note',style:'margin:6px 0 0'},'Use focus sessions or the timer, and this fills in with the hours you get going most easily.')),
       h('div',{class:'panel'},h('strong',null,'What gets in your way'),h('small',{class:'note',style:'display:block'},'Last 30 days'),
-        ks.length?h('div',{style:'margin-top:8px'},ks.map(function(k){return h('div',{class:'hb'},h('div',{class:'nm'},h('span',{text:RLABEL[k]||k})),h('div',{class:'stack',style:'width:'+Math.max(4,st[k]/sm*100)+'%'},h('i',{style:'width:100%;background:var(--orange)'})),h('em',{text:st[k]}));}))
+        ks.length?h('div',{style:'margin-top:8px'},ks.map(function(k){return h('div',{class:'hb'},h('div',{class:'nm'},h('span',{text:RLABEL[k]||k})),h('div',{class:'stack',style:'width:'+Math.max(4,st[k]/sm*100)+'%'},h('i',{style:'width:100%;background:var(--coral)'})),h('em',{text:st[k]}));}))
         :h('p',{class:'note',style:'margin:6px 0 0'},"Nothing yet. When starting feels hard, tap I'm stuck on the task. Over time you will see what usually gets in your way."))),
     h('div',{class:'panel',style:'margin-top:14px'},h('strong',null,'Do first steps help you?'),
       h('p',{style:'margin:6px 0 0',text:pt.firstStep?'With a first step written, you finish tasks in about '+days(pt.firstStep.withDays)+'. Without one, about '+days(pt.firstStep.withoutDays)+'.':'Write a first step on a few tasks. Once you have finished some with and some without, this shows whether they help you.'})),
@@ -640,10 +640,10 @@ setInterval(planCheck,30000);
 var STARTER_NAMES=/^(First client|Second client|General|Internal|Operations|Programmes|Admin|Agency internal|Firm internal)$/;
 function setupSteps(){var others=S.people.filter(function(p){return p.id!==me;});
   return [
-    {done:S.subjects.some(function(s){return !STARTER_NAMES.test(s.name);}),title:'Add your first real client',text:'Rename a sample client or add your own.',go:function(){openSubject(S.subjects[0]&&STARTER_NAMES.test(S.subjects[0].name)?S.subjects[0].id:null);},btn:'Add client'},
-    {done:others.length>0,title:'Invite someone',text:'Copy their invite link and send it on WhatsApp.',go:function(){openPerson();},btn:'Add person'},
+    {done:S.subjects.some(function(s){return !STARTER_NAMES.test(s.name);}),title:'Add your first real client',text:'Rename a sample client or add your own.',go:function(){openSubject(S.subjects[0]&&STARTER_NAMES.test(S.subjects[0].name)?S.subjects[0].id:null);},btn:'New client'},
+    {done:others.length>0,title:'Invite someone',text:'Copy their invite link and send it on WhatsApp.',go:function(){openPerson();},btn:'New person'},
     {done:S.tasks.some(function(t){return t.assignee&&t.assignee!==me;}),title:'Give someone a task',text:'They see it on their home screen straight away.',go:function(){openTask(null,others[0]?{assignee:others[0].id}:{});},btn:'New task'},
-    {done:!!S.settings.digestOn,title:'Turn on the daily handoff',text:'A summary of the day at the hour you choose.',go:function(){V.tab='more';render();setTimeout(function(){var e=$('#dg-on');if(e)e.scrollIntoView({behavior:'smooth',block:'center'});},60);},btn:'Set it up'},
+    {done:!!S.settings.digestOn,title:'Turn on the daily summary',text:'A summary of the day at the hour you choose.',go:function(){V.tab='more';render();setTimeout(function(){var e=$('#dg-on');if(e)e.scrollIntoView({behavior:'smooth',block:'center'});},60);},btn:'Set it up'},
     {done:S.subjects.some(function(s){return !!s.shareToken;}),title:'Share a client page',text:'Your client follows progress without asking.',go:function(){var s=liveSubjects().find(function(x){return !x.privateTo;});openSubject(s?s.id:null);},btn:'Open a client'},
     {done:(S.myPush||[]).length>0||alertsOn(),title:'Get alerts on your phone',text:'New tasks, questions and reminders, free.',go:function(){openMe();},btn:'Turn on'}];}
 function setupCard(){if(!S.owner||S.settings.setupHidden)return null;var steps=setupSteps(),done=steps.filter(function(x){return x.done;}).length;if(done===steps.length)return null;
@@ -660,7 +660,7 @@ function setupCard(){if(!S.owner||S.settings.setupHidden)return null;var steps=s
 function requestsBlock(){if(!S.owner)return null;var list=S.tasks.filter(function(t){return t.request&&t.request.state==='new';});if(!list.length)return null;V.rq=V.rq||{};
   return h('div',{class:'blk',style:'margin-bottom:22px'},h('div',{class:'sec'},h('h3',null,'Client requests'),h('span',{text:list.length+' waiting for you'})),
     h('div',{class:'qlist'},list.map(function(t){var k=V.rq[t.id]=V.rq[t.id]||{who:'',note:'',dec:false};
-      return h('div',{class:'qcard',style:'border-left-color:var(--orange)'},h('button',{class:'lk',type:'button',onclick:function(){openTask(t.id);},text:t.title}),
+      return h('div',{class:'qcard',style:'border-left-color:var(--coral)'},h('button',{class:'lk',type:'button',onclick:function(){openTask(t.id);},text:t.title}),
         t.details?h('p',{text:t.details}):null,
         h('small',{text:t.request.by+' at '+sName(t.subjectId)+' · '+stamp(t.request.at)+(t.due?' · wants it by '+short(t.due):'')+(t.priority==='high'?' · urgent':'')}),
         k.dec?h('div',{class:'addrow',style:'margin-top:2px'},h('input',{class:'in',id:'rq-n-'+t.id,maxlength:300,placeholder:'A short reason the client will see','aria-label':'Reason',value:k.note,oninput:function(e){k.note=e.target.value;}}),
@@ -691,7 +691,7 @@ function openGuide(id,edit){var g=id?(S.guides||[]).find(function(x){return x.id
 function renderGuide(){var d=M.d,g=M.id?(S.guides||[]).find(function(x){return x.id===M.id;}):null;
   if(!M.edit&&g){var linked=S.tasks.filter(function(t){return t.guideId===g.id&&open(t);});
     return [head(g.title),h('small',{class:'note',text:sName(g.subjectId)+' · updated by '+pName(g.updatedBy)+' on '+stamp(g.updatedAt)}),h('div',{class:'panel'},guideHtml(g.body)),
-      linked.length?h('div',{class:'panel'},h('strong',null,'Open tasks that use this guide'),linked.map(function(t){return h('div',{class:'cl'},h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;text-align:left;color:var(--teal);font-weight:600',onclick:function(){openTask(t.id);},text:t.title}));})):null,
+      linked.length?h('div',{class:'panel'},h('strong',null,'Open tasks that use this guide'),linked.map(function(t){return h('div',{class:'cl'},h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;text-align:left;color:var(--plum-ink);font-weight:600',onclick:function(){openTask(t.id);},text:t.title}));})):null,
       h('div',{class:'acts'},S.owner||g.createdBy===me?h('button',{class:'btn sm',type:'button',onclick:function(){M.edit=true;renderSheet();}},'Edit'):h('small',{class:'note'},'Only '+pName(g.createdBy)+' or the owner can edit this guide.'),
         M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var x=g.id;closeSheet();send('deleteGuide',{id:x});}},'Confirm delete'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
           :(S.owner||g.createdBy===me?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Delete'):null))];}
@@ -858,7 +858,7 @@ function parseCsv(text){text=String(text||'').replace(/^﻿/,'');var first=text.
     if(q){if(c==='"'){if(text[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;continue;}
     if(c==='"')q=true;else if(c===delim){row.push(cell);cell='';}else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else cell+=c;}
   if(cell||row.length){row.push(cell);rows.push(row);}return rows.filter(function(r){return r.some(function(x){return String(x).trim();});});}
-var IMPF=[['title','Task title',/^(title|task|name|summary|card name|what)/i],['client','Client or subject',/(client|subject|project|board|list|customer)/i],['assignee','Assigned to',/(assign|owner|who|person|member|responsible)/i],
+var IMPF=[['title','Task title',/^(title|task|name|summary|card name|what)/i],['client','Client',/(client|subject|project|board|list|customer)/i],['assignee','Assigned to',/(assign|owner|who|person|member|responsible)/i],
   ['due','Due date',/(due|deadline|date)/i],['priority','Priority',/(priority|urgent|importance)/i],['status','Status',/(status|state|stage|done|complete)/i],['details','Details',/(detail|desc|note|comment)/i]];
 function impDate(v,fmt){v=String(v||'').trim();if(!v)return '';var m;
   if((m=v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)))return m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]);
@@ -928,7 +928,7 @@ function doImport(items,clients){if(S.workspace&&S.workspace.active===false){toa
 
 /* ---------- expenses ---------- */
 var EXT=[['travel','Travel'],['software','Software'],['supplies','Supplies'],['meals','Meals'],['data and airtime','Data and airtime'],['other','Other']];
-var EXS={pending:['Waiting approval','badge-s o'],approved:['Approved','badge-s g'],rejected:['Declined','badge-s r'],invoiced:['On an invoice','badge-s']};
+var EXS={pending:['Waiting for approval','badge-s o'],approved:['Approved','badge-s g'],rejected:['Declined','badge-s r'],invoiced:['On an invoice','badge-s']};
 function expenseSection(){var f=V.ef||'all',list=(S.expenses||[]).filter(function(e){return f==='all'||e.status===f;}).sort(function(a,b){return b.date.localeCompare(a.date)||(b.createdAt||0)-(a.createdAt||0);});
   var month=today().slice(0,7),sums={},wait={};(S.expenses||[]).forEach(function(e){if(e.date.slice(0,7)===month&&e.status!=='rejected')sums[e.currency]=(sums[e.currency]||0)+e.amount;if(e.status==='pending')wait[e.currency]=(wait[e.currency]||0)+e.amount;});
   var fmt=function(o){return Object.keys(o).map(function(c){return fmtMoney(o[c],c);}).join(' and ')||'Nothing';};
@@ -959,7 +959,7 @@ function renderExpense(){var d=M.d,e=M.id?(S.expenses||[]).find(function(x){retu
       h('input',{class:'in',id:'e-why',maxlength:200,placeholder:'Reason, if declining','aria-label':'Reason',value:M.reason,oninput:bind(M,'reason')}),
       h('div',{class:'acts',style:'margin:0'},e.status!=='approved'?h('button',{class:'btn sm',type:'button',onclick:function(){send('decideExpense',{id:e.id,status:'approved'});closeSheet();}},'Approve'):null,
         e.status!=='rejected'?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideExpense',{id:e.id,status:'rejected',reason:M.reason.trim()});closeSheet();}},'Decline'):null)):null,
-    e&&(S.owner||e.status==='pending'||e.status==='rejected')&&e.status!=='invoiced'?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){closeSheet();send('deleteExpense',{id:e.id});}},'Confirm remove'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
+    e&&(S.owner||e.status==='pending'||e.status==='rejected')&&e.status!=='invoiced'?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){closeSheet();send('deleteExpense',{id:e.id});}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
       :h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Remove expense')):null];}
 function attachReceiptFile(id,f){if(f.size>10*1048576){toast('Files can be up to 10 MB.');return;}if(navigator.onLine===false){toast('You are offline. Receipts can only be added while online.');return;}
   uploads++;toast('Uploading '+f.name);var mime=f.type||'application/octet-stream';
@@ -1044,7 +1044,7 @@ function twofaBlock(){if(!S.features.twofa)return null;var on=!!S.twofa,TF=V.tf=
     :h('button',{class:'btn sm',type:'button',style:'align-self:flex-start',onclick:function(){openTwofaSetup();}},'Turn on'));}
 function proofKey(){return 'hv-2fa-'+(sess&&sess.user?sess.user.id:'');}
 var QRLIB='qrcode.min.js';
-function drawQr(el,text){var go=function(){try{el.innerHTML='';new window.QRCode(el,{text:text,width:176,height:176,colorDark:'#1F3B47',colorLight:'#FFFFFF'});}catch(e){}};
+function drawQr(el,text){var go=function(){try{el.innerHTML='';new window.QRCode(el,{text:text,width:176,height:176,colorDark:'#25173B',colorLight:'#FFFFFF'});}catch(e){}};
   if(window.QRCode)return go();var s=document.createElement('script');s.src=QRLIB;s.onload=go;document.head.appendChild(s);}
 /* The setup steps, used in the account sheet and on the "this workspace requires it" screen. */
 function twofaSetupParts(T,rerender,finish){
@@ -1144,7 +1144,7 @@ function waOwnPanel(){var o=S.settings.waOwn||{},F=V.wa=V.wa||{},form=o.on?!!F.e
         h('div',{class:'copyrow'},inp('test',{type:'tel',placeholder:(person(me)||{}).phone||'Your number, +234…','aria-label':'Number for the test'}),
           h('button',{class:'btn ghost sm',type:'button',disabled:busy,onclick:function(){go('waTest',{phone:val('test')});}},'Send a test')),
         h('div',{class:'acts',style:'margin:0;align-items:center'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){F.edit=true;render();}},'Edit details'),
-          h('button',{class:'linkb',style:'color:var(--red)',type:'button',disabled:busy,onclick:function(){go('saveWaOwn',{off:true},function(){F.open=false;F.edit=false;});}},'Disconnect'))]:null)];}
+          h('button',{class:'linkb',style:'color:var(--danger)',type:'button',disabled:busy,onclick:function(){go('saveWaOwn',{off:true},function(){F.open=false;F.edit=false;});}},'Disconnect'))]:null)];}
 /* work sites: where people are expected to clock in. A shift away from every site that applies is flagged, never blocked */
 function sitesPanel(){var st=S.settings,list=st.workSites||[];
   return [h('div',{class:'sec',id:'sites'},h('h3',null,'Work sites'),h('button',{type:'button',onclick:openSites},list.length?'Edit':'Add a site')),
@@ -1161,7 +1161,7 @@ function renderSites(){var L=M.list;
       function(){M.busy=-1;renderSheet();toast('Could not get your location. Type it in, or allow location for this site.');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});};
   return [head('Work sites'),h('p',{class:'note',style:'margin:0'},'Add the office, a client\'s premises or anywhere people should clock in. Latitude and longitude are on any map app: press and hold the place to see them.'),
     L.map(function(x,i){return h('div',{class:'panel site',style:'display:flex;flex-direction:column;gap:10px'},
-      h('div',{class:'phd'},h('strong',{text:x.name||'Site '+(i+1)}),h('button',{class:'linkb',type:'button',style:'color:var(--red)',onclick:function(){L.splice(i,1);renderSheet();}},'Remove')),
+      h('div',{class:'phd'},h('strong',{text:x.name||'Site '+(i+1)}),h('button',{class:'linkb',type:'button',style:'color:var(--danger)',onclick:function(){L.splice(i,1);renderSheet();}},'Remove')),
       fld('Name',h('input',{class:'in',id:'ws-n'+i,maxlength:80,placeholder:'Head office',value:x.name,oninput:function(e){x.name=e.target.value;}}),true),
       h('div',{class:'frow'},fld('Latitude',h('input',{class:'in',id:'ws-lat'+i,inputmode:'decimal',placeholder:'6.5244',value:String(x.lat),oninput:function(e){x.lat=e.target.value;}})),
         fld('Longitude',h('input',{class:'in',id:'ws-lng'+i,inputmode:'decimal',placeholder:'3.3792',value:String(x.lng),oninput:function(e){x.lng=e.target.value;}})),
@@ -1232,7 +1232,7 @@ function viewAdmin(){if(!S.admin){V.tab='more';return viewMore();}
       h('div',{class:'tile'},h('b',{text:t.paying}),h('span',null,'Paying customers')),h('div',{class:'tile'},h('b',{text:t.trialing}),h('span',null,'On a free trial'))),
     h('div',{class:'two',style:'margin-top:14px'},h('div',{class:'panel'},h('strong',null,'Sign ups per week'),h('div',{class:'cols'},A.weeks.map(function(x,i){return h('div',{class:i===A.weeks.length-1?'t':'',style:'height:'+Math.max(3,x.signups/wm*100)+'%',title:x.signups+' in the week to '+short(dayOf(x.end))},x.signups?h('span',{text:x.signups}):null);})),
         h('div',{class:'axis'},h('span',null,'12 weeks ago'),h('span',null,'This week'))),
-      h('div',{class:'panel',style:'display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start'},[[t.signups7,'New this week'],[t.signups30,'New in 30 days'],[t.atRisk,'Quiet for 7 days or more'],[t.pastDue,'Payment failed'],[t.cancelled,'Cancelled'],[t.credits,'Free months owed']].map(function(x){return h('div',null,h('b',{style:'font:600 22px Poppins,sans-serif;display:block',text:x[0]}),h('small',{class:'note',text:x[1]}));}))),
+      h('div',{class:'panel',style:'display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start'},[[t.signups7,'New this week'],[t.signups30,'New in 30 days'],[t.atRisk,'Quiet for 7 days or more'],[t.pastDue,'Payment failed'],[t.cancelled,'Cancelled'],[t.credits,'Free months owed']].map(function(x){return h('div',null,h('b',{style:'font:650 22px var(--fd);display:block',text:x[0]}),h('small',{class:'note',text:x[1]}));}))),
     h('div',{class:'chips',style:'margin:18px 0 8px'},[['all','All '+A.workspaces.length],['trial','On trial'],['paying','Paying'],['risk','At risk'],['ended','Ended']].map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(f===x[0]),onclick:function(){V.admF=x[0];render();}},x[1]);})),
     h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,['Workspace','Owner','Plan','People','Last active','Referrals','',''].map(function(c){return h('th',{scope:'col',text:c});}))),
       h('tbody',null,list.map(function(w){var left=w.trialEndsAt?Math.ceil((new Date(w.trialEndsAt)-now)/864e5):0;
@@ -1291,7 +1291,7 @@ function teamNow(){var list=S.people.filter(function(p){return S.owner||!p.hidde
     var mine=(S.shifts||[]).filter(function(x){return x.personId===p.id&&dayKey(x.in,p.tz)===dayKey(Date.now(),p.tz);}).reduce(function(a,x){return a+workedMs(x);},0);
     return h('div',{class:'mate '+cls},h('span',{class:'who',text:initials(p.name)}),h('div',null,h('strong',{text:p.name+(p.id===me?' (you)':'')}),
       h('small',{text:(pr?(pr.onBreak?'On a break':'Working since '+tIn(pr.since,p.tz)):'Off the clock')+(mine?' · '+hm(mine)+' today':'')}),
-      focusOf(p.id)?h('small',{style:'color:#2D5F8A;font-weight:600',text:'In focus, '+focusOf(p.id).plannedMin+' minute session'}):null,
+      focusOf(p.id)?h('small',{style:'color:var(--info);font-weight:600',text:'In focus, '+focusOf(p.id).plannedMin+' minute session'}):null,
       p.tz?h('small',{text:theirTime(p)}):null));}));}
 function far(m){return m>=1000?(m/1000).toFixed(m>=10000?0:1)+' km':Math.round(m)+' m';}
 function awayOf(x){return [x.inSite,x.outSite].filter(function(c){return c&&c.away;});}
@@ -1451,7 +1451,7 @@ function paySection(){var cur0=today().slice(0,7);if(!V.payMonth)V.payMonth=cur0
       h('input',{class:'in',type:'month',id:'pay-m','aria-label':'Another month',max:cur0,value:V.payMonth,style:'width:auto;flex:none;padding:7px 10px;border-radius:999px',onchange:function(e){if(/^\d{4}-\d{2}$/.test(e.target.value)){V.payMonth=e.target.value;render();}}})),
     loading?h('p',{class:'note',style:'margin:-6px 0 10px'},'Loading older shifts from the archive…'):null,
     h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,['Person','Days','Hours','Overtime','Late','Leave','Holidays','Expenses to repay','Gross pay'].map(function(c){return h('th',{scope:'col',text:c});}))),
-      h('tbody',null,rows.map(function(x){return h('tr',null,h('td',null,h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;color:var(--teal);font-weight:600;cursor:pointer',onclick:function(){openPerson(x.p.id);}},x.p.name)),
+      h('tbody',null,rows.map(function(x){return h('tr',null,h('td',null,h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;color:var(--plum-ink);font-weight:600;cursor:pointer',onclick:function(){openPerson(x.p.id);}},x.p.name)),
         h('td',{text:x.days}),h('td',{text:hm(x.total)}),h('td',{class:x.ot?'':'z',text:x.ot?hm(x.ot):'0h'}),h('td',{class:x.late?'':'z',text:x.late}),h('td',{class:x.leave?'':'z',text:x.leave}),h('td',{class:x.hol?'':'z',text:x.hol}),h('td',{class:x.exp?'':'z',text:x.exp||'None'}),
         h('td',{class:'tot',text:x.p.payType?fmtMoney(x.gross,x.cur):'Set pay'}));})))),
     h('p',{class:'note',text:'Gross pay before tax, pension and other deductions. '+(Object.keys(sums).length?'Total: '+Object.keys(sums).map(function(c){return fmtMoney(sums[c],c);}).join(' and ')+'. ':'')+'Set each person\'s pay and overtime under Settings, People. Hourly pay uses clocked hours; overtime counts hours past the weekly limit.'})];}
@@ -1463,7 +1463,7 @@ function invoiceSection(){var list=(S.invoices||[]).slice().sort(function(a,b){r
   var owed={};list.filter(function(v){return v.status==='sent';}).forEach(function(v){owed[v.currency]=(owed[v.currency]||0)+(v.total||0);});
   return [h('div',{class:'sec'},h('h3',null,'Invoices'),h('button',{type:'button',onclick:function(){openInvoice();}},'New invoice')),
     Object.keys(owed).length?h('p',{class:'note',style:'margin:-6px 0 12px',text:'Waiting to be paid: '+Object.keys(owed).map(function(c){return fmtMoney(owed[c],c);}).join(' and ')}):null,
-    h('div',{class:'acts',style:'margin:0 0 12px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill('',{});}},'Bill unbilled time'),
+    h('div',{class:'acts',style:'margin:0 0 12px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill('',{});}},'Bill hours'),
       (function(){var u=(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0);return u?h('small',{class:'note',text:mins(u)+' of time is not billed yet'}):null;})()),
     list.length?h('div',{class:'invl'},list.map(function(v){var st=IST[v.status]||IST.draft;return h('button',{class:'inv',type:'button',onclick:function(){viewInvoice(v.id);}},
       h('div',null,h('strong',{text:(v.number||'New')+' · '+v.clientName}),h('br'),h('small',{text:'Issued '+short(v.issued)+' · due '+short(v.due)})),h('span',{class:'money',text:fmtMoney(v.total,v.currency)}),
@@ -1478,7 +1478,7 @@ function renderInvoice(){var d=M.d,t=invTotals(d);
     fld('Client',h('select',{class:'in',id:'iv-sub',value:d.subjectId,onchange:function(e){var sb=subj(e.target.value)||{};d.subjectId=sb.id;d.clientName=sb.name;d.clientEmail=sb.clientEmail||'';d.currency=sb.currency||d.currency;renderSheet();}},liveSubjects().map(function(s){return h('option',{value:s.id,text:s.name});}))),
     h('div',{class:'frow'},fld('Bill to',h('input',{class:'in',id:'iv-name',maxlength:120,value:d.clientName,oninput:bind(d,'clientName')})),fld('Client email',h('input',{class:'in',id:'iv-mail',type:'email',maxlength:120,value:d.clientEmail,oninput:bind(d,'clientEmail')}))),
     h('div',{class:'frow'},fld('Work from',h('input',{class:'in',id:'iv-from',type:'date',value:d.from,onchange:bind(d,'from')})),fld('Work to',h('input',{class:'in',id:'iv-to',type:'date',value:d.to,onchange:bind(d,'to')}))),
-    M.id?null:h('button',{class:'btn ghost sm',type:'button',onclick:function(){var sid=d.subjectId;closeSheet();openBill(sid,{});}},'Bill unbilled time instead'),
+    M.id?null:h('button',{class:'btn ghost sm',type:'button',onclick:function(){var sid=d.subjectId;closeSheet();openBill(sid,{});}},'Bill hours instead'),
     (function(){var ex=billableExpenses(d.subjectId,d.currency).filter(function(e){return (d.expenseIds||[]).indexOf(e.id)<0;});return ex.length?h('button',{class:'btn ghost sm',type:'button',onclick:function(){d.expenseIds=(d.expenseIds||[]).concat(ex.map(function(e){return e.id;}));
       ex.forEach(function(e){d.lines.push({desc:'Expense: '+(e.note||e.category)+' ('+short(e.date)+')',qty:1,rate:e.amount});});renderSheet();toast(ex.length+(ex.length===1?' expense':' expenses')+' added');}},'Add '+ex.length+' billable '+(ex.length===1?'expense':'expenses')):null;})(),
     h('div',{class:'lbl'},'Lines: description, hours or quantity, price'),
@@ -1532,7 +1532,9 @@ function rangeOf(k,from,to){var td=today(),w;
 function inRange(ms,r){var d=dayOf(ms);return (!r.from||d>=r.from)&&(!r.to||d<=r.to);}
 function roundMin(m,step){m=Math.max(0,Math.round(m));step=+step||0;return step&&m?Math.ceil(m/step)*step:m;}
 function eMin(e,now){return Math.max(0,Math.round(((e.end||now||Date.now())-e.start)/6e4));}
-function billDefOf(sb){return sb&&typeof sb.billableDefault==='boolean'?sb.billableDefault:!!sb&&!/^(internal|personal)$/i.test(sb.kind||'');}
+/* one name per client type: Client (an outside customer), Internal (your own company's work), Private (a member's own) */
+function kindOf(sb){return !sb?'Client':sb.privateTo?'Private':/^(internal|personal|team)$/i.test(sb.kind||'')?'Internal':'Client';}
+function billDefOf(sb){return sb&&typeof sb.billableDefault==='boolean'?sb.billableDefault:!!sb&&!/^(internal|personal|team)$/i.test(sb.kind||'');}
 /* what a client pays for an hour of someone's time: their rate on that client, else their own bill rate, else the client rate (owner only) */
 function rateOf(sb,pid){if(!sb)return 0;var o=+((sb.personRates||{})[pid]);if(o>0)return o;var p=person(pid);if(p&&+p.billRate>0)return +p.billRate;return +sb.rate||0;}
 function curOf(sid){var sb=subj(sid);return (sb&&sb.currency)||S.settings.currency||'USD';}
@@ -1569,7 +1571,7 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
     h('div',{class:'tiles',style:'margin-top:12px'},
       h('div',{class:'tile dark'},h('b',{'data-run':sum.run?String(now):null,'data-base':sum.run?String(doneMs+runMs):null,'data-mult':sum.run>1?String(sum.run):null,text:mins(Math.round((doneMs+runMs)/6e4))}),h('span',{text:sum.run?'Total, '+sum.run+' running now':'Total time'})),
       h('div',{class:'tile'},h('b',{text:mins(sum.bill)}),h('span',null,'Billable, rounded')),
-      h('div',{class:'tile'},h('b',{style:sum.unbilled?'color:var(--orange2)':'',text:mins(sum.unbilled)}),h('span',null,'Not billed yet')),
+      h('div',{class:'tile'},h('b',{style:sum.unbilled?'color:var(--coral-ink)':'',text:mins(sum.unbilled)}),h('span',null,'Not billed yet')),
       S.owner?h('div',{class:'tile'},h('b',{style:'font-size:19px',text:amtText(sum.amt)}),h('span',null,'Amount')):h('div',{class:'tile'},h('b',{text:String(list.length)}),h('span',null,'Entries')))];
   if(S.owner&&(S.budgets||[]).length)out.push(h('div',{class:'sec'},h('h3',null,'Retainers this month')),h('div',{class:'panel'},S.budgets.map(budgetRow)));
   var groups={},order=[];list.forEach(function(e){var k=e.subjectId||'';if(!groups[k]){groups[k]=[];order.push(k);}groups[k].push(e);});
@@ -1582,7 +1584,7 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
         open?h('div',{class:'tgb'},pOrd.map(function(pid){var pl=byP[pid],ps=sumUp(pl),byT={},tOrd=[];pl.forEach(function(e){var tk=e.taskHidden?'#private':e.taskId||'';if(!byT[tk]){byT[tk]=0;tOrd.push(tk);}byT[tk]+=eMin(e,now);});
             return [h('div',{class:'tp'},h('span',{text:pName(pid)}),h('span',{text:mins(ps.min)+(S.owner&&Object.keys(ps.amt).length?' · '+amtText(ps.amt):'')})),
               tOrd.map(function(tk){var t=tk&&tk!=='#private'&&S.tasks.find(function(x){return x.id===tk;});return h('div',{class:'tt2'},h('span',{text:tk==='#private'?'Private task':t?t.title:'General work'}),h('span',{text:mins(byT[tk])}));})];}),
-          S.owner&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill unbilled time')):null):null);}))
+          S.owner&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill hours')):null):null);}))
       :h('div',{class:'empty'},ill('empty_time'),h('b',null,'No time in this range'),'Start a timer on a task, clock in for a client, or add time by hand.'));
   if(S.owner&&(S.timeTotals||[]).length){var tt=S.timeTotals.slice().filter(function(x){return x.minutes>0;}).sort(function(a,b){return b.minutes-a.minutes;});
     out.push(h('div',{class:'sec'},h('h3',null,'All time by client'),h('span',null,'Hours, billable, not billed, amount')),h('div',{class:'tsheet'},h('table',null,
@@ -1594,7 +1596,7 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
     cut.length?h('div',{class:'shifts'},cut.map(function(e){return entryRow(e,S.owner);})):h('p',{class:'note',style:'margin:0'},'Nothing in this range yet.'),
     shown.length>cut.length?h('button',{class:'btn ghost sm',type:'button',style:'margin-top:10px',onclick:function(){T.all=true;render();}},'Show all '+shown.length):null);
   return out;}
-function budgetRow(b){var pct=Math.min(100,b.pct),col=b.pct>=100?'var(--red)':b.pct>=80?'var(--orange2)':'var(--green)';
+function budgetRow(b){var pct=Math.min(100,b.pct),col=b.pct>=100?'var(--danger)':b.pct>=80?'var(--coral2)':'var(--ok)';
   return h('div',{class:'bud'},h('span',null,h('i',{class:'dot',style:'background:'+sColor(b.subjectId)+';margin-right:8px'}),sName(b.subjectId)),h('b',{text:b.pct+'%'}),
     h('div',{class:'bar'},h('i',{style:'width:'+pct+'%;background:'+col})),
     h('small',{class:'note',style:'grid-column:1/-1',text:[b.capHours?b.hours+' of '+b.capHours+' hours':'',b.capAmount?fmtMoney(b.amount,b.currency)+' of '+fmtMoney(b.capAmount,b.currency):''].filter(Boolean).join(' · ')+(b.block?' · billing stops at the cap':'')}));}
@@ -1659,7 +1661,7 @@ function renderSendBack(){var x=(S.sheets||[]).find(function(s){return s.id===M.
 function openBill(sid,r){var sb=subj(sid)||liveSubjects().find(function(s){return billDefOf(s);})||{};M={kind:'bill',d:{subjectId:sb.id||'',from:(r&&r.from)||'',to:(r&&r.to)||'',group:'task'},busy:false};$('#ov').hidden=false;renderSheet();}
 function billableEntries(d){return (S.time||[]).filter(function(e){var day=dayOf(e.start);return e.subjectId===d.subjectId&&e.billable&&!e.invoiceId&&e.end&&e.status!=='rejected'&&(!S.settings.billApprovedOnly||e.status==='approved')&&(!d.from||day>=d.from)&&(!d.to||day<=d.to);});}
 function renderBill(){var d=M.d,sb=subj(d.subjectId),list=billableEntries(d),s=sumUp(list),waiting=S.settings.billApprovedOnly?(S.time||[]).filter(function(e){return e.subjectId===d.subjectId&&e.billable&&!e.invoiceId&&e.end&&e.status!=='approved'&&e.status!=='rejected';}).length:0;
-  return [head('Bill unbilled time'),
+  return [head('Bill hours'),
     fld('Client',h('select',{class:'in',id:'bl-sub',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;renderSheet();}},S.subjects.filter(function(x){return !x.privateTo;}).map(function(x){return h('option',{value:x.id,text:x.name});}))),
     h('div',{class:'frow'},fld('From, optional',h('input',{class:'in',id:'bl-from',type:'date',value:d.from,onchange:function(e){d.from=e.target.value;renderSheet();}})),fld('To, optional',h('input',{class:'in',id:'bl-to',type:'date',value:d.to,onchange:function(e){d.to=e.target.value;renderSheet();}}))),
     h('div',{class:'lbl'},'Invoice lines'),h('div',{class:'seg s2'},[['task','A line per task'],['person','A line per person']].map(function(o){return h('button',{type:'button','aria-pressed':String(d.group===o[0]),onclick:function(){d.group=o[0];renderSheet();}},o[1]);})),
@@ -1804,7 +1806,7 @@ function waBlock(){if(!S.features.wa)return null;var p=person(me)||{},d=M&&M.wa?
 /* reminder, handoff, report and meeting emails: each person switches them for themselves */
 function emailBlock(){if(!S.features.mail)return null;var off=!!S.settings.mailOff;
   return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Emails'),
-    h('label',{class:'switch'},h('input',{type:'checkbox',id:'em-on',checked:!off,onchange:function(e){send('setMyEmailPrefs',{mailOff:!e.target.checked});}}),'Reminders, the daily handoff, weekly reports and meeting emails'),
+    h('label',{class:'switch'},h('input',{type:'checkbox',id:'em-on',checked:!off,onchange:function(e){send('setMyEmailPrefs',{mailOff:!e.target.checked});}}),'Reminders, the daily summary, weekly reports and meeting emails'),
     h('p',{class:'note',style:'margin:0'},'Invitations and security emails always arrive, whatever you choose here.'));}
 /* help, contacts, legal pages and a ready made problem report */
 function supportMail(){var e=String(CFG.supportEmail||CFG.contactEmail||'').trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)&&e!=='hello@example.com'?e:'';}
@@ -1826,7 +1828,7 @@ function renderHelp(){var em=supportMail(),wa=String(CFG.supportWhatsApp||'').re
 function openHandoff(){M={kind:'handoff',note:''};$('#ov').hidden=false;renderSheet();var f=$('#ho-note');if(f)f.focus();}
 function renderHandoff(){var sh=myShift();return [head('Clock out'),h('p',{class:'note',style:'margin:0',text:sh?'Worked '+hm(workedMs(sh))+' this shift.':''}),
   fld('Handoff note, optional',h('textarea',{class:'in',id:'ho-note',rows:4,maxlength:200,placeholder:'What you finished, and what is next for whoever picks up',value:M.note,oninput:bind(M,'note')})),
-  h('p',{class:'note',style:'margin:0'},'The note goes on your shift and into the daily handoff email.'),
+  h('p',{class:'note',style:'margin:0'},'The note goes on your shift and into the daily summary email.'),
   h('button',{class:'btn wide',type:'button',onclick:function(){var n=M.note.trim();closeSheet();punch('clockOut',n);}},'Clock out')];}
 
 /* ---------- Tasks ---------- */
@@ -1842,15 +1844,15 @@ function viewTasks(){var list=S.tasks.filter(match),groups={},order=[];
   order.sort(function(a,b){return sName(a).localeCompare(sName(b));});
   var body=order.map(function(k){var g=groups[k].sort(sortT);return h('section',{class:'grp'},
     h('h4',null,h('i',{class:'dot',style:'background:'+sColor(k)}),sName(k),h('span',{text:g.length+(g.length===1?' task':' tasks')})),h('div',{class:'rows'},g.map(function(t){return row(t,false);})));});
-  if(!list.length)body=[h('div',{class:'empty',style:'margin-top:20px'},ill(S.tasks.length?'empty_tasks':'empty_today'),h('b',null,S.tasks.length?'Nothing matches this view':'No tasks yet'),S.tasks.length?'Try another filter, or clear the search.':'Tap the orange plus to add the first task.')];
+  if(!list.length)body=[h('div',{class:'empty',style:'margin-top:20px'},ill(S.tasks.length?'empty_tasks':'empty_today'),h('b',null,S.tasks.length?'Nothing matches this view':'No tasks yet'),S.tasks.length?'Try another filter, or clear the search.':'Tap the plus button to add the first task.')];
   return [topbar('Tasks',list.filter(open).length+' open in this view'),
     h('div',{class:'acts tacts',style:'margin:-6px 0 14px'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){V.tab='guides';render();window.scrollTo(0,0);}},'Guides'+((S.guides||[]).length?' ('+S.guides.length+')':'')),
       h('button',{class:'btn ghost sm',type:'button',onclick:openImport},'Import'),
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){V.tab='archive';render();window.scrollTo(0,0);}},'Archive'),
       (S.trash||[]).length?h('button',{class:'btn ghost sm',type:'button',onclick:openBin},'Bin ('+S.trash.length+')'):null),
-    h('div',{class:'narrow'},h('div',{class:'search'},h('span',{html:I.search}),h('input',{id:'q',type:'search',placeholder:'Search tasks, subjects, notes','aria-label':'Search tasks',value:V.q,oninput:function(e){V.q=e.target.value;render();}})),
+    h('div',{class:'narrow'},h('div',{class:'search'},h('span',{html:I.search}),h('input',{id:'q',type:'search',placeholder:'Search tasks, clients, notes','aria-label':'Search tasks',value:V.q,oninput:function(e){V.q=e.target.value;render();}})),
     h('div',{class:'chips'},FILT.map(function(f){return h('button',{class:'chip o',type:'button','aria-pressed':String(V.status===f[0]),onclick:function(){V.status=f[0];render();}},f[1]);})),
-    h('div',{class:'chips',style:'padding-top:4px'},[h('button',{class:'chip',type:'button','aria-pressed':String(V.subject==='all'),onclick:function(){V.subject='all';render();}},'All subjects')].concat(
+    h('div',{class:'chips',style:'padding-top:4px'},[h('button',{class:'chip',type:'button','aria-pressed':String(V.subject==='all'),onclick:function(){V.subject='all';render();}},'All clients')].concat(
       liveSubjects().map(function(s){return h('button',{class:'chip',type:'button','aria-pressed':String(V.subject===s.id),onclick:function(){V.subject=s.id;render();}},h('i',{class:'dot',style:'background:'+s.color}),s.name);}))),
     body)];}
 
@@ -1873,14 +1875,14 @@ function viewCal(){var sel=V.cal,d=parse(sel),start=addDays(sel,-((d.getDay()+6)
   var right=h('div',null,
     h('div',{class:'sec'},h('h3',{text:DAYL[d.getDay()]+', '+ord(d.getDate())}),h('span',{text:list.length+(list.length===1?' task':' tasks')+(meets.length?', '+meets.length+(meets.length===1?' meeting':' meetings'):'')})),
     hd.map(function(x){return h('div',{class:'hol'},h('b',null,'Public holiday'),h('span',{text:x.name+' · '+x.region}));}),
-    lvs.length?h('div',{class:'hol',style:'background:var(--mist,#EEF3F5)'},h('b',null,'On leave'),h('span',{text:lvs.map(function(l){return pName(l.personId);}).join(', ')})):null,
+    lvs.length?h('div',{class:'hol',style:'background:var(--sunk)'},h('b',null,'On leave'),h('span',{text:lvs.map(function(l){return pName(l.personId);}).join(', ')})):null,
     list.length||meets.length?h('div',{class:'tl'},tl):h('div',{class:'empty'},ill('empty_calendar'),h('b',null,'A clear day'),'Nothing is scheduled. Use the button on the calendar to add a task for this day.'),
     carried.length?[h('div',{class:'sec'},h('h3',null,'Carried over'),h('span',{text:carried.length+' overdue'})),h('div',{class:'rows'},carried.map(function(t){return row(t,true);}))]:null);
   var cal=h('section',{class:'cal'},
     h('div',{class:'calh'},h('button',{type:'button','aria-label':'Previous week',html:I.l,onclick:function(){V.cal=addDays(sel,-7);render();}}),
       h('b',{text:MONL[d.getMonth()]+' '+d.getFullYear()}),h('button',{type:'button','aria-label':'Next week',html:I.r,onclick:function(){V.cal=addDays(sel,7);render();}})),
     h('div',{class:'week'},days.map(function(day){var x=parse(day);return h('button',{class:'dayb'+(day===sel?' sel':'')+(day===td?' tod':'')+(on(day).some(open)?' has':''),type:'button','aria-pressed':String(day===sel),
-      'aria-label':DAYL[x.getDay()]+' '+short(day)+(holidaysOn(day).length?', public holiday':''),onclick:function(){V.cal=day;render();}},h('small',{text:DAY[x.getDay()]}),h('b',{text:x.getDate(),style:holidaysOn(day).length?'color:var(--orange2)':null}),h('i'));})),
+      'aria-label':DAYL[x.getDay()]+' '+short(day)+(holidaysOn(day).length?', public holiday':''),onclick:function(){V.cal=day;render();}},h('small',{text:DAY[x.getDay()]}),h('b',{text:x.getDate(),style:holidaysOn(day).length?'color:var(--coral-ink)':null}),h('i'));})),
     h('div',{class:'acts',style:'margin-top:12px'},h('button',{class:'btn sm',type:'button',onclick:function(){openTask(null,{due:sel});}},'Add task for this day'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){openMeet(null,{day:sel});}},'Set up a meeting')));
   return [topbar('Calendar',sel===td?'Today':diff(sel)===1?'Tomorrow':short(sel)),h('div',{class:'seg s2',style:'margin:-4px 0 14px;max-width:360px'},h('button',{type:'button','aria-pressed':'true'},'Calendar'),h('button',{type:'button','aria-pressed':'false',onclick:function(){V.tab='meet';render();window.scrollTo(0,0);}},'Meetings'+(nextMeeting()?' ·  next '+mHm(nextMeeting().startAt):''))),h('div',{class:'calwrap'},h('div',null,cal,sel!==td?h('button',{class:'btn ghost sm',style:'margin-top:12px',type:'button',onclick:function(){V.cal=td;render();}},'Back to today'):null),right)];}
 
@@ -1914,30 +1916,30 @@ function viewStats(){var td=today(),o=S.tasks.filter(open);
   if(V.ins==='exp')return [topbar('Insights','How the work, hours and money are moving'),tabRow,expenseSection()];
   if(V.ins!=='work')return [topbar('Insights','How the work, hours and money are moving'),tabRow,V.ins==='time'?clockSection():V.ins==='leave'?leaveSection():V.ins==='pay'?paySection():invoiceSection()];
   return [topbar('Insights','How the work, hours and money are moving'),tabRow,
-    S.owner&&S.features.ai?h('div',{class:'runbar',style:'border-left-color:var(--teal)'},h('div',null,h('small',null,'AI writer'),h('strong',null,'Get a short summary of today for your boss or client')),h('button',{class:'btn sm',type:'button',onclick:aiStandup},'Write summary')):null,
+    S.owner&&S.features.ai?h('div',{class:'runbar',style:'border-left-color:var(--plum-ink)'},h('div',null,h('small',null,'AI writer'),h('strong',null,'Get a short summary of today for your boss or client')),h('button',{class:'btn sm',type:'button',onclick:aiStandup},'Write summary')):null,
     h('div',{class:'chips',style:'padding-top:0;margin-bottom:6px'},IRANGES.map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(IR.k===x[0]),onclick:function(){IR.k=x[0];render();}},x[1]);})),
     IR.k==='custom'?h('div',{class:'frow',style:'margin-bottom:12px'},fld('From',h('input',{class:'in',id:'ir-from',type:'date',value:rr.from,onchange:function(e){IR.from=e.target.value;render();}})),fld('To',h('input',{class:'in',id:'ir-to',type:'date',value:rr.to,onchange:function(e){IR.to=e.target.value;render();}}))):null,
     archNote(arch),
     h('div',{class:'tiles'},
       h('div',{class:'tile dark'},h('b',{text:o.length}),h('span',null,'Open tasks')),
-      h('div',{class:'tile'},h('b',{style:'color:var(--red)',text:S.tasks.filter(late).length}),h('span',null,'Overdue')),
+      h('div',{class:'tile'},h('b',{style:'color:var(--danger)',text:S.tasks.filter(late).length}),h('span',null,'Overdue')),
       h('div',{class:'tile'},h('b',{text:done7.length}),h('span',{text:'Done in '+rLabel})),
       h('div',{class:'tile'},h('b',{text:done7.length?Math.round(onTime.length/done7.length*100)+'%':'0%'}),h('span',null,'Finished on time'))),
-    h('div',{class:'sec'},h('h3',null,'By subject')),
-    h('div',{class:'panel'},h('div',{class:'legend'},h('span',null,h('i',{class:'dot',style:'background:var(--teal)'}),'Open'),h('span',null,h('i',{class:'dot',style:'background:var(--orange)'}),'Done')),
+    h('div',{class:'sec'},h('h3',null,'By client')),
+    h('div',{class:'panel'},h('div',{class:'legend'},h('span',null,h('i',{class:'dot',style:'background:var(--plum-ink)'}),'Open'),h('span',null,h('i',{class:'dot',style:'background:var(--coral)'}),'Done')),
       subs.length?subs.map(function(x){return h('div',{class:'hb'},h('div',{class:'nm'},h('i',{class:'dot',style:'background:'+x.s.color}),h('span',{text:x.s.name})),
-        h('div',{class:'stack',style:'width:'+Math.max(4,(x.open+x.done)/mx*100)+'%'},h('i',{style:'width:'+(x.open+x.done?x.open/(x.open+x.done)*100:0)+'%;background:var(--teal)'}),h('i',{style:'flex:1;background:'+(x.done?'var(--orange)':'var(--line)')})),
-        h('em',{text:x.open+' open'+(x.late?', '+x.late+' late':'')}));}):h('p',{class:'note'},'Add a subject to see it here.')),
+        h('div',{class:'stack',style:'width:'+Math.max(4,(x.open+x.done)/mx*100)+'%'},h('i',{style:'width:'+(x.open+x.done?x.open/(x.open+x.done)*100:0)+'%;background:var(--plum-ink)'}),h('i',{style:'flex:1;background:'+(x.done?'var(--coral)':'var(--line)')})),
+        h('em',{text:x.open+' open'+(x.late?', '+x.late+' late':'')}));}):h('p',{class:'note'},'Add a client to see it here.')),
     h('div',{class:'two',style:'margin-top:14px'},
       h('div',{class:'panel'},h('strong',{text:(step===7?'Done per week, ':'Done per day, ')+rLabel}),h('div',{class:'cols'},days.map(function(x){return h('div',{class:x.day<=td&&x.last>=td?'t':'',style:'height:'+Math.max(3,x.n/dm*100)+'%',title:short(x.day)+(step===7?' week':'')+': '+x.n},x.n?h('span',{text:x.n}):null);})),
         h('div',{class:'axis'},h('span',{text:short(days[0].day)}),h('span',{text:days[days.length-1].last>=td?'Today':short(days[days.length-1].last)}))),
       h('div',{class:'panel'},h('strong',null,'Open work by person'),h('div',{style:'margin-top:8px'},load.map(function(x){return h('div',{class:'hb'},h('div',{class:'nm'},h('span',{text:x.p.name})),
-        h('div',{class:'stack',style:'width:'+Math.max(4,x.n/lm*100)+'%'},h('i',{style:'width:100%;background:var(--teal2)'})),h('em',{text:x.n}));})))),
+        h('div',{class:'stack',style:'width:'+Math.max(4,x.n/lm*100)+'%'},h('i',{style:'width:100%;background:var(--plum2)'})),h('em',{text:x.n}));})))),
     (function(){var bySub={},byWho={},tot=0;(S.time||[]).forEach(function(e){if(!inRange(e.start,rr))return;var ms=(e.end||Date.now())-e.start;if(ms<=0)return;var k=subj(e.subjectId)?e.subjectId:'';bySub[k]=(bySub[k]||0)+ms;byWho[e.personId]=(byWho[e.personId]||0)+ms;tot+=ms;});
-      var bar=function(label,ms,max,color){return h('div',{class:'hb'},h('div',{class:'nm'},color?h('i',{class:'dot',style:'background:'+color}):null,h('span',{text:label})),h('div',{class:'stack',style:'width:'+Math.max(4,ms/max*100)+'%'},h('i',{style:'width:100%;background:'+(color||'var(--teal2)')})),h('em',{text:dur(ms)}));};
+      var bar=function(label,ms,max,color){return h('div',{class:'hb'},h('div',{class:'nm'},color?h('i',{class:'dot',style:'background:'+color}):null,h('span',{text:label})),h('div',{class:'stack',style:'width:'+Math.max(4,ms/max*100)+'%'},h('i',{style:'width:100%;background:'+(color||'var(--plum2)')})),h('em',{text:dur(ms)}));};
       var ks=Object.keys(bySub).sort(function(a,b){return bySub[b]-bySub[a];}),ws=Object.keys(byWho).sort(function(a,b){return byWho[b]-byWho[a];}),mx=Math.max.apply(null,ks.map(function(k){return bySub[k];}).concat([1])),wx=Math.max.apply(null,ws.map(function(k){return byWho[k];}).concat([1]));
       return [h('div',{class:'sec'},h('h3',null,'Time tracked'),h('button',{type:'button',onclick:function(){V.ins='hours';render();window.scrollTo(0,0);}},(rLabel.charAt(0).toUpperCase()+rLabel.slice(1))+' · '+dur(tot))),
-        tot?h('div',{class:'two'},h('div',{class:'panel'},h('strong',null,'By subject'),h('div',{style:'margin-top:8px'},ks.map(function(k){return bar(sName(k),bySub[k],mx,sColor(k));}))),
+        tot?h('div',{class:'two'},h('div',{class:'panel'},h('strong',null,'By client'),h('div',{style:'margin-top:8px'},ks.map(function(k){return bar(sName(k),bySub[k],mx,sColor(k));}))),
           h('div',{class:'panel'},h('strong',null,'By person'),h('div',{style:'margin-top:8px'},ws.map(function(k){return bar(pName(k),byWho[k],wx);}))))
         :h('div',{class:'empty'},ill('empty_time'),h('b',null,'No time tracked in '+rLabel),'Start a timer on a task, clock in for a client, or add time by hand.')];})(),
     h('div',{class:'sec'},h('h3',null,'Going quiet'),h('span',null,'Open, no change in 5 days')),
@@ -1973,7 +1975,7 @@ function billCall(action,extra){if(V.billBusy)return;V.billBusy=action;render();
     .catch(function(e){V.billBusy='';render();if(!lost(e))toast(e.message+'.');});}
 function checkout(provider){var plan=V.plan;if(!plan){toast('Choose a plan first.');return;}if(tooSmall(plan)){toast(seatMsg(plan));return;}
   toast('Opening the payment page');billCall('checkout',{plan:plan,provider:provider,interval:V.yearly?'year':'month'});}
-function usageRows(u){var row=function(label,used,limit,text){var pct=limit?Math.min(100,Math.round(used/limit*100)):0,col=pct>=100?'var(--red)':pct>=80?'var(--orange2)':'var(--green)';
+function usageRows(u){var row=function(label,used,limit,text){var pct=limit?Math.min(100,Math.round(used/limit*100)):0,col=pct>=100?'var(--danger)':pct>=80?'var(--coral2)':'var(--ok)';
     return h('div',null,h('div',{class:'hd'},h('strong',{text:label}),h('span',{text:text})),h('div',{class:'bar'},h('i',{style:'width:'+pct+'%;background:'+col})));};
   return h('div',{class:'usg'},row('People',u.seats.used,u.seats.limit,u.seats.used+' of '+u.seats.limit),
     row('File storage',u.storage.used,u.storage.limit,GBtext(u.storage.used)+' of '+u.storage.gb+' GB'),
@@ -2036,7 +2038,7 @@ function wsSwitcher(){return [wsList.length||DELWS.length?h('div',{class:'panel 
   h('div',{class:'acts'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){closeSheet();createScreen(!wsList.length);}},wsList.length?'Create another workspace':'Create a new workspace'))];}
 var DELWS=[];
 function restoreWs(w,btn){busy(btn,true);call('api',{workspace:w.id,action:'restoreWorkspace',payload:{_app:appUrl()}}).then(function(res){DELWS=DELWS.filter(function(x){return x.id!==w.id;});
-    wsId=w.id;store.set('hv-ws',wsId);loadQ();closeSheet();accept(res);pickMe();V.tab='home';render();toast(res.msg||'Workspace restored');})
+    wsId=w.id;store.set('hv-ws',wsId);loadQ();closeSheet();accept(res);pickMe();V.tab='home';FULL=false;render();toast(res.msg||'Workspace restored');})
   .catch(function(err){busy(btn,false);if(!lost(err))toast(err.message+'.');});}
 function videoPanel(){var st=S.settings;return [h('div',{class:'sec'},h('h3',null,'Video calls')),h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},
     h('p',{class:'note',style:'margin:0'},'Meetings get a free video room on meet.jit.si. The first person to arrive may be asked to sign in with Google or GitHub to open the room. If you run your own Jitsi server, type its address here. Anyone can also paste a Zoom, Google Meet or Teams link on a meeting instead.'),
@@ -2046,14 +2048,14 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
   var clk=zoneList();
   return [topbar('Settings',p?'Signed in as '+p.name+(sess&&sess.user?' ('+sess.user.email+')':''):''),
     h('div',{class:'two'},
-      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'People'),S.owner?h('button',{type:'button',onclick:function(){openPerson();}},'Add person'):null),
+      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'People'),S.owner?h('button',{type:'button',onclick:function(){openPerson();}},'New person'):null),
         h('div',{class:'panel list'},S.people.map(function(x){return h(S.owner?'button':'div',{class:'li',type:S.owner?'button':null,onclick:S.owner?function(){openPerson(x.id);}:null},h('span',{class:'who',text:initials(x.name)}),
           h('div',null,h('strong',{text:x.name}),h('small',{text:[x.role,x.email,x.id===me?'':x.joined?'Joined':x.inviteExpired?'Invite expired':'Not joined yet',x.id!==me&&x.tz?tIn(Date.now(),x.tz)+' '+tzCity(x.tz):'',x.workStart&&x.workEnd?'Hours '+x.workStart+' to '+x.workEnd:'',x.canPrivate&&x.id!==me?'Can make private':'',x.hidden?(x.ownerSees?'Hidden, visible to you':'Hidden'):''].filter(Boolean).join(' · ')||'No details yet'})),x.id===me?h('span',{class:'tagr'},'This is you'):null);})),
         S.owner?h('p',{class:'note',text:'Add someone, then open them to copy their invite link and send it, for example on WhatsApp. They join as soon as they create an account from the link.'+(S.features.mail?' If you add their email, they also get the invitation by email.':'')}):null),
-      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Subjects'),h('button',{type:'button',onclick:function(){openSubject();}},'Add subject')),
+      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Clients'),h('button',{type:'button',onclick:function(){openSubject();}},'New client')),
         h('div',{class:'panel list'},S.subjects.map(function(s){return h('button',{class:'li',type:'button',onclick:function(){openSubject(s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:14px;height:14px'}),
-          h('div',null,h('strong',{text:s.name}),h('small',{text:s.kind+', '+S.tasks.filter(function(t){return t.subjectId===s.id&&open(t);}).length+' open'})),h('span',{class:'tagr',text:[s.privateTo?'Private':'',s.archived?'Archived':''].filter(Boolean).join(', ')}));})))),
-    h('div',{class:'sec'},h('h3',null,'Templates'),h('button',{type:'button',onclick:function(){openTemplate();}},'Add template')),
+          h('div',null,h('strong',{text:s.name}),h('small',{text:kindOf(s)+', '+S.tasks.filter(function(t){return t.subjectId===s.id&&open(t);}).length+' open'})),h('span',{class:'tagr',text:s.archived?'Archived':''}));})))),
+    h('div',{class:'sec'},h('h3',null,'Templates'),h('button',{type:'button',onclick:function(){openTemplate();}},'New template')),
     h('div',{class:'panel list'},S.templates.length?S.templates.map(function(x){var n=tplItems(x,'').length;return h('button',{class:'li',type:'button',onclick:function(){openTemplate(x.id);}},h('div',null,h('strong',{text:x.name}),h('small',{text:n+(n===1?' step':' steps')})));})
       :h('p',{class:'note',style:'margin:0'},'A template is a saved list of steps you can turn into tasks in one go.')),
     S.owner?[h('div',{class:'sec'},h('h3',null,'Workspace')),
@@ -2075,8 +2077,8 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
     h('div',{class:'sec',id:'hol-set'},h('h3',null,'WhatsApp, AI, holidays and invoices')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
       h('label',{class:'switch',hidden:!S.features.wa},h('input',{id:'x-wa',type:'checkbox',checked:!!st.waOn}),'Send alerts on WhatsApp to people who turn it on'),
-      h('label',{class:'switch',hidden:!S.features.wa},h('input',{id:'x-dwa',type:'checkbox',checked:!!st.digestWa}),'Send me a short daily handoff on WhatsApp too'),
-      h('label',{class:'switch',hidden:!S.features.ai||!S.features.mail},h('input',{id:'x-ai',type:'checkbox',checked:!!st.aiDigest}),'Start the daily handoff email with an AI written summary'),
+      h('label',{class:'switch',hidden:!S.features.wa},h('input',{id:'x-dwa',type:'checkbox',checked:!!st.digestWa}),'Send me a short daily summary on WhatsApp too'),
+      h('label',{class:'switch',hidden:!S.features.ai||!S.features.mail},h('input',{id:'x-ai',type:'checkbox',checked:!!st.aiDigest}),'Start the daily summary email with an AI written summary'),
       !S.features.wa||!S.features.ai?h('p',{class:'note',style:'margin:0',text:[!S.features.wa?'WhatsApp':'',!S.features.ai?'AI':''].filter(Boolean).join(' and ')+' can be switched on later, once you add the keys in Supabase. See the setup guide.'}):null,
       h('div',{class:'lbl'},'Public holidays to show'),
       h('div',{class:'acts',style:'margin:0'},[['NG','Nigeria'],['US','United States']].map(function(r){var on=String(st.holidayRegions===undefined?'NG,US':st.holidayRegions).split(',').indexOf(r[0])>=0;
@@ -2092,15 +2094,15 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
     st.waOn?waBlock():null,waOwnPanel(),
     h('div',{class:'sec'},h('h3',null,'Emails and deadlines')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
-      S.features.mail?null:h('p',{class:'ok-note',style:'margin:0;background:var(--peach);color:var(--ink)'},'Email is not set up yet, so reminders and the daily handoff email are on hold. Everything else works. Add a domain and Resend when you are ready; see the setup guide.'),
+      S.features.mail?null:h('p',{class:'ok-note',style:'margin:0;background:var(--blush);color:var(--ink)'},'Email is not set up yet, so reminders and the daily handoff email are on hold. Everything else works. Add a domain and Resend when you are ready; see the setup guide.'),
       h('label',{class:'switch'},h('input',{id:'rm-on',type:'checkbox',checked:st.remindOn}),'Email reminders: new assignments, due within 24 hours, due within the hour, overdue'),
       h('p',{class:'note',style:'margin:0'},'Reminders go to the email saved for each person under People.'),
       fld('Deadlines and countdowns use this time zone',h('select',{class:'in',id:'dl-tz',value:st.deadlineTz},tzOptions(st.deadlineTz))),
-      h('label',{class:'switch',style:'margin-top:6px'},h('input',{id:'dg-on',type:'checkbox',checked:st.digestOn}),'Daily handoff email: done, in progress, waiting and overdue'),
+      h('label',{class:'switch',style:'margin-top:6px'},h('input',{id:'dg-on',type:'checkbox',checked:st.digestOn}),'Daily summary email: done, in progress, waiting and overdue'),
       h('div',{class:'frow'},h('label',{class:'f'},'Send at, deadline time',h('select',{class:'in',id:'dg-hour',value:String(st.digestHour)},hours.map(function(x){return h('option',{value:String(x),text:pad(x)+':00'});}))),
         h('label',{class:'f'},'Send to, separate with commas',h('input',{class:'in',id:'dg-to',type:'text',placeholder:'name@example.com',value:st.digestEmails}))),
       h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('saveSettings',{settings:{remindOn:$('#rm-on').checked,deadlineTz:$('#dl-tz').value,digestOn:$('#dg-on').checked,digestHour:Number($('#dg-hour').value),digestEmails:$('#dg-to').value.trim()}});}},'Save'),
-        h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('sendDigestNow',{});}},'Send handoff now')))]:null,
+        h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('sendDigestNow',{});}},'Send summary now')))]:null,
     h('div',{class:'sec'},h('h3',null,'Your workspaces')),wsSwitcher(),S.owner?dangerPanel():null,
     h('div',{class:'sec'},h('h3',null,'Alerts, calendar and sign in')),h('div',{class:'two'},alertsBlock(),calendarBlock()),
     twofaBlock()||emailBlock()?h('div',{class:'two',style:'margin-top:14px'},twofaBlock(),emailBlock()):null,
@@ -2114,7 +2116,7 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
 var VIEWS={home:viewHome,tasks:viewTasks,cal:viewCal,stats:viewStats,more:viewMore,guides:viewGuides,admin:viewAdmin,meet:viewMeet,archive:viewArchive};
 function keep(fn){var a=document.activeElement,id=a&&a.id,ss,se;try{ss=a.selectionStart;se=a.selectionEnd;}catch(e){}
   fn();if(id&&document.activeElement.id!==id){var n=document.getElementById(id);if(n){n.focus();try{if(ss!=null)n.setSelectionRange(ss,se);}catch(e){}}}}
-function render(){if(!S)return;if(V.tab==='more'&&!S.owner)V.tab='home';if(V.tab==='admin'&&!S.admin)V.tab='home';keep(function(){
+function render(){if(!S||FULL)return;if(V.tab==='more'&&!S.owner)V.tab='home';if(V.tab==='admin'&&!S.admin)V.tab='home';keep(function(){
   var app=$('#app'),parts=[];(function f(a){a.forEach(function(x){if(Array.isArray(x))f(x);else if(x!=null&&x!==false)parts.push(x);});})(VIEWS[V.tab]());
   var sl=[].map.call(document.querySelectorAll('#app .chips'),function(c){return c.scrollLeft;});
   if(S.workspace&&S.workspace.active===false)parts.splice(1,0,h('div',{class:'banner ro',role:'status'},S.owner?['Your free trial or plan has ended, so this workspace is read only.',h('button',{class:'btn sm',type:'button',onclick:function(){V.tab='more';render();setTimeout(function(){var b=$('#billing');if(b)b.scrollIntoView({behavior:'smooth'});},50);}},'Choose a plan')]:'This workspace is read only until its owner renews the plan. You can still export what you can see from your account.'));
@@ -2177,7 +2179,7 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
   if(d.status==='waiting')out.push(h('div',{class:'addrow',style:'margin-top:0'},h('input',{class:'in',id:'t-wait',maxlength:200,placeholder:'Waiting on whom or what?','aria-label':'Waiting on',value:d.waitingOn,oninput:bind(d,'waitingOn')}),
     t?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveTask',{task:{id:t.id,waitingOn:d.waitingOn}},true);toast('Saved');}},'Save'):null));
   out.push(h('div',{class:'frow'},
-    fld('Subject',h('select',{class:'in',id:'t-subject',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;renderSheet();}},liveSubjects().concat(subj(d.subjectId)&&subj(d.subjectId).archived?[subj(d.subjectId)]:[]).map(function(s){return h('option',{value:s.id,text:s.name});}),h('option',{value:'',text:'General'}))),
+    fld('Client',h('select',{class:'in',id:'t-subject',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;renderSheet();}},liveSubjects().concat(subj(d.subjectId)&&subj(d.subjectId).archived?[subj(d.subjectId)]:[]).map(function(s){return h('option',{value:s.id,text:s.name});}),h('option',{value:'',text:'General'}))),
     fld('Assigned to',[h('select',{class:'in',id:'t-who',disabled:d.private,value:d.private?me:d.assignee,onchange:function(e){d.assignee=e.target.value;renderSheet();}},h('option',{value:'',text:'Nobody yet'}),S.people.map(function(p){return h('option',{value:p.id,text:p.name+(p.id===me?' (me)':'')});})),
       (function(){var ap=person(d.private?me:d.assignee);return ap&&ap.id!==me&&ap.tz?h('span',{class:'their',style:'margin:2px 0 0',text:'For '+ap.name.split(' ')[0]+' it is '+theirTime(ap)}):null;})()]),
     fld(M.tpl?'Start date':'Due date',h('input',{class:'in',id:'t-due',type:'date',value:d.due,onchange:function(e){d.due=e.target.value;if(M.tpl)renderSheet();}})),
@@ -2195,7 +2197,7 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
         h('button',{class:'ck'+(c.done?' on':''),type:'button','aria-label':(c.done?'Untick: ':'Tick: ')+c.text,html:I.check,onclick:function(){live({checklist:d.checklist.map(function(x){return x.id===c.id?{id:x.id,text:x.text,done:!x.done}:x;})});}}),
         h('span',{text:c.text}),h('button',{class:'rm',type:'button','aria-label':'Remove step: '+c.text,html:I.x,onclick:function(){live({checklist:d.checklist.filter(function(x){return x.id!==c.id;})});}}));}),
       h('div',{class:'addrow'},h('input',{class:'in',id:'t-step',maxlength:300,placeholder:'Add a step','aria-label':'New step',value:M.step,oninput:bind(M,'step'),onkeydown:function(e){if(e.key==='Enter'){e.preventDefault();addStep();}}}),
-        h('button',{class:'btn teal sm',type:'button',onclick:addStep},'Add'))));}
+        h('button',{class:'btn plum sm',type:'button',onclick:addStep},'Add'))));}
   if(!M.multi&&!M.tpl&&(isNew||open(t)))out.push(startPanel(d,t,live));
   if(!M.multi&&!M.tpl&&(S.guides||[]).length){var gopts=S.guides.filter(function(g){return !g.subjectId||g.subjectId===d.subjectId||g.id===d.guideId;});
     out.push(h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Guide'),
@@ -2206,7 +2208,7 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
   if(t){var run=running(),mineRun=run&&run.t.id===t.id,tot=spent(t),who={};t.time.forEach(function(e){who[e.by]=1;});
     out.push(h('div',{class:'panel'},h('strong',null,'Time'),
       h('div',{class:'tm'},h('div',null,h('b',{class:'tmd',text:mineRun?'':dur(tot),'data-run':mineRun?String(run.e.start):null,'data-base':mineRun?String(spent(t)-(Date.now()-run.e.start)):null}),h('small',{text:mineRun?'Timer running':'Tracked on this task'})),
-        mineRun?h('button',{class:'btn danger sm',type:'button',onclick:function(){send('timerStop',{id:t.id},true);}},'Stop timer'):h('button',{class:'btn teal sm',type:'button',onclick:function(){send('timerStart',{id:t.id},true);}},'Start timer')),
+        mineRun?h('button',{class:'btn danger sm',type:'button',onclick:function(){send('timerStop',{id:t.id},true);}},'Stop timer'):h('button',{class:'btn plum sm',type:'button',onclick:function(){send('timerStart',{id:t.id},true);}},'Start timer')),
       S.owner||t.assignee===me||t.createdBy===me?h('div',{class:'acts',style:'margin-top:10px'},[15,30,60].map(function(m){return h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('addTime',{id:t.id,minutes:m},true);toast('Added '+(m===60?'1 hour':m+' minutes'));}},'+ '+(m===60?'1 hr':m+' min'));})):null,
       Object.keys(who).length>1?h('p',{class:'note',style:'margin:8px 0 0',text:Object.keys(who).map(function(id){return pName(id)+' '+dur(spent(t,id));}).join(' · ')}):null));
     out.push(h('div',{class:'panel'},h('strong',null,'Files and links'),
@@ -2214,13 +2216,13 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
         h('small',{class:'note',text:f.link?'Link':f.size?(f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'):''}),
         f.uploading||!(S.owner||t.createdBy===me||f.by===me)?null:h('button',{class:'rm',type:'button','aria-label':'Remove '+f.name,html:I.x,onclick:function(){send('removeFile',{id:t.id,key:f.id||f.url},true);}}));}):h('p',{class:'note',style:'margin:4px 0 0'},'Nothing attached yet.'),
       h('div',{class:'addrow'},h('input',{class:'in',id:'t-link',type:'url',maxlength:1000,placeholder:'Paste a link','aria-label':'Link to add',value:M.link,oninput:bind(M,'link')}),
-        h('button',{class:'btn teal sm',type:'button',onclick:function(){var v=M.link.trim();if(!/^https?:\/\/\S+$/.test(v)){toast('Paste a full link that starts with https://');return;}M.link='';send('addLink',{id:t.id,url:v,name:v.replace(/^https?:\/\/(www\.)?/,'').slice(0,60)},true);}},'Add link')),
+        h('button',{class:'btn plum sm',type:'button',onclick:function(){var v=M.link.trim();if(!/^https?:\/\/\S+$/.test(v)){toast('Paste a full link that starts with https://');return;}M.link='';send('addLink',{id:t.id,url:v,name:v.replace(/^https?:\/\/(www\.)?/,'').slice(0,60)},true);}},'Add link')),
       h('label',{class:'btn ghost sm filebtn'},'Attach a file',h('input',{type:'file',id:'t-file',hidden:true,onchange:function(e){var f=e.target.files[0];if(f)attachFile(t.id,f);e.target.value='';}})),
       h('p',{class:'note',style:'margin:8px 0 0'},'Files up to 10 MB are kept in private storage. Only people who can see this task can open them.')));
     var ups=t.updates.slice().reverse(),others=S.people.filter(function(x){return x.id!==me;});
     out.push(h('div',{class:'panel'},h('strong',null,'Progress updates'),
       h('div',{class:'addrow',style:'margin-bottom:12px'},h('textarea',{class:'in',id:'t-note',rows:2,maxlength:2000,placeholder:'Write a progress update','aria-label':'Progress update',value:M.note,oninput:bind(M,'note')}),
-        h('button',{class:'btn teal sm',type:'button',style:'align-self:flex-end',onclick:function(){var v=M.note.trim();if(!v)return;M.note='';send('addUpdate',{id:t.id,text:v},true);toast('Update posted');}},'Post')),
+        h('button',{class:'btn plum sm',type:'button',style:'align-self:flex-end',onclick:function(){var v=M.note.trim();if(!v)return;M.note='';send('addUpdate',{id:t.id,text:v},true);toast('Update posted');}},'Post')),
       others.length?h('div',{class:'acts',style:'margin:-4px 0 12px'},h('small',{class:'note'},'Mention'),others.map(function(x){return h('button',{class:'gl',type:'button',onclick:function(){M.note=(M.note&&!/\s$/.test(M.note)?M.note+' ':M.note)+'@'+x.name.split(/\s+/)[0]+' ';renderSheet();var f=$('#t-note');if(f){f.focus();try{f.setSelectionRange(f.value.length,f.value.length);}catch(e){}}}},'@'+x.name.split(/\s+/)[0]);})):null,
       ups.length?ups.map(function(u){return h('div',{class:'up'+(u.question?' q':(u.mentions||[]).indexOf(me)>=0?' me':'')},u.question?h('span',{class:'qt',text:(u.kind==='why'?'Asked why, to ':'Question for ')+(u.to===me?'you':pName(u.to))+(u.answeredAt?' · answered':' · waiting for an answer')}):null,h('p',{text:u.text}),h('small',{text:pName(u.by)+' · '+stamp(u.at)+((u.mentions||[]).indexOf(me)>=0?' · mentioned you':'')}));}):h('p',{class:'note',style:'margin:0'},'No updates yet.')));
     out.push(h('p',{class:'note',style:'margin:0',text:'Added by '+pName(t.createdBy)+' on '+stamp(t.createdAt)+(t.assignee&&person(t.assignee)&&t.createdBy!==t.assignee?(t.seenAt?'. Seen by '+pName(t.assignee)+' on '+stamp(t.seenAt):'. Not yet seen by '+pName(t.assignee)):'')+(t.approvedBy?'. Signed off by '+pName(t.approvedBy)+' on '+stamp(t.approvedAt):'')+'.'}));
@@ -2284,15 +2286,15 @@ function moveTimeAsk(t,d){if(!S.owner||!t||t.subjectId===d.subjectId)return null
 
 function openSubject(id){var s=id?subj(id):null;M={kind:'subject',id:id||null,d:s?Object.assign({private:!!s.privateTo},s):{id:uid(),name:'',kind:'Client',color:COLORS[S.subjects.length%COLORS.length],archived:false,private:false}};$('#ov').hidden=false;renderSheet();var f=$('#s-name');if(f&&!id)f.focus();}
 function renderSubject(){var d=M.d;
-  if(M.id&&!S.owner&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:d.kind+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
-    h('p',{class:'panel',style:'margin:0'},'Only the owner can rename, recolour or archive a shared client or project. You can still add tasks to it, and make your own private subjects.'),
+  if(M.id&&!S.owner&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:kindOf(d)+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
+    h('p',{class:'panel',style:'margin:0'},'Only the owner can rename, recolour or archive a shared client. You can still add tasks to it and make your own private clients.'),
     h('button',{class:'btn wide',type:'button',onclick:function(){var id=d.id;closeSheet();goTasks('open',id);}},'See its tasks')];
-  return [head(M.id?'Subject':'New subject'),
-  h('input',{class:'title-in',id:'s-name',maxlength:80,placeholder:'Client, project or area name','aria-label':'Subject name',value:d.name,oninput:bind(d,'name')}),
-  fld('Type',h('select',{class:'in',id:'s-kind',value:d.kind,onchange:bind(d,'kind')},['Client','Project','Internal','Personal'].map(function(k){return h('option',{value:k,text:k});}))),
+  return [head(M.id?'Client':'New client'),
+  h('input',{class:'title-in',id:'s-name',maxlength:80,placeholder:'Client name, or an internal area','aria-label':'Client name',value:d.name,oninput:bind(d,'name')}),
+  d.privateTo||d.private?h('p',{class:'note',style:'margin:0',text:'Type: Private. Only you see it.'}):fld('Type',h('select',{class:'in',id:'s-kind',value:kindOf(d),onchange:bind(d,'kind')},[['Client','Client, an outside customer'],['Internal','Internal, your own company\'s work']].map(function(k){return h('option',{value:k[0],text:k[1]});}))),
   h('div',{class:'lbl'},'Colour'),h('div',{class:'sw'},COLORS.map(function(c){return h('button',{type:'button',style:'background:'+c,'aria-label':'Colour '+c,'aria-pressed':String(d.color===c),onclick:function(){d.color=c;renderSheet();}});})),
-  ((!M.id&&canPriv())||(M.id&&d.privateTo===me))?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-priv',checked:d.private,onchange:function(e){d.private=e.target.checked;}}),'Private to me. Only I can see this subject and its tasks.'):null,
-  M.id?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-arch',checked:d.archived,onchange:function(e){d.archived=e.target.checked;}}),'Archive this subject. Its tasks are kept.'):null,
+  ((!M.id&&canPriv())||(M.id&&d.privateTo===me))?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-priv',checked:d.private,onchange:function(e){d.private=e.target.checked;}}),'Private: only I see this client and its tasks.'):null,
+  M.id?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-arch',checked:d.archived,onchange:function(e){d.archived=e.target.checked;}}),'Archive this client. Its tasks are kept.'):null,
   S.owner&&!d.privateTo&&!d.private?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Billing'),
     h('div',{class:'frow'},fld('Hourly rate',h('input',{class:'in',id:'s-rate',type:'number',min:'0',step:'0.01',value:d.rate||'',oninput:function(e){d.rate=Number(e.target.value)||0;}})),
       fld('Currency',h('select',{class:'in',id:'s-cur',value:d.currency||S.settings.currency||'USD',onchange:bind(d,'currency')},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});})))),
@@ -2309,11 +2311,11 @@ function renderSubject(){var d=M.d;
     fld('Client email, for invoices and reports',h('input',{class:'in',id:'s-mail',type:'email',maxlength:120,value:d.clientEmail||'',oninput:bind(d,'clientEmail')})),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-week',checked:!!d.weeklyReport,onchange:function(e){d.weeklyReport=e.target.checked;}}),'Email this client a weekly report every Friday'),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-daily',checked:!!d.dailySummary,onchange:function(e){d.dailySummary=e.target.checked;renderSheet();}}),'Send this client a daily summary'),
-    d.dailySummary?h('p',{class:'note',style:'margin:0',text:'Every day at '+pad(Number(S.settings.digestHour)||18)+':00, only this client\'s work: no private tasks, hidden people or team notes. Your team\'s daily handoff carries on as before.'+(d.clientEmail?'':' Add the client email below.')}):null,
-    M.id?h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();V.tab='stats';V.ins='hours';V.tm=Object.assign(V.tm||{k:'month',from:'',to:'',open:{},all:false,wk:weekStart(today())},{sid:id});V.tm.open[id]=true;render();window.scrollTo(0,0);}},'See the time'),
-      h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();openBill(id,{});}},'Bill unbilled time'),
+    d.dailySummary?h('p',{class:'note',style:'margin:0',text:'Every day at '+pad(Number(S.settings.digestHour)||18)+':00, only this client\'s work: no private tasks, hidden people or team notes. Your team\'s daily summary carries on as before.'+(d.clientEmail?'':' Add the client email below.')}):null,
+    M.id?h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();V.tab='stats';V.ins='hours';V.tm=Object.assign(V.tm||{k:'month',from:'',to:'',open:{},all:false,wk:weekStart(today())},{sid:id});V.tm.open[id]=true;render();window.scrollTo(0,0);}},'See time'),
+      h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();openBill(id,{});}},'Bill hours'),
       S.features.mail?h('button',{class:'btn ghost sm',type:'button',onclick:function(){if(!d.clientEmail){toast('Add the client email first.');return;}send('saveSubject',{subject:Object.assign({},d,{shareToken:undefined})},true);send('sendClientReport',{id:M.id});}},'Send this week\'s report now'):null,
-      S.features.ai?h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();aiStandup(id);}},'Summary of today with AI'):null):null):null,
+      S.features.ai?h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();aiStandup(id);}},'Write summary with AI'):null):null):null,
   S.owner&&M.id&&!d.privateTo?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Client page'),
     h('p',{class:'note',style:'margin:0'},'A private link where this client sees progress on their work, comments, approves finished tasks and views invoices. No login needed. Private tasks never show.'),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-pts',checked:!!d.portalTimesheet,onchange:function(e){d.portalTimesheet=e.target.checked;}}),'Show a detailed timesheet on the page: date, first name, task and hours. Team only notes stay hidden'),
@@ -2322,7 +2324,7 @@ function renderSubject(){var d=M.d;
         h('a',{class:'btn ghost sm',href:portalLink(d.shareToken),target:'_blank',rel:'noopener noreferrer'},'Open'),
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();send('shareSubject',{id:id,revoke:true});}},'Turn off link'))]
       :h('button',{class:'btn ghost sm',type:'button',style:'align-self:flex-start',onclick:function(){var id=M.id;server('shareSubject',{id:id}).then(function(r){accept(r);render();var sb=subj(id);if(M&&M.kind==='subject'&&sb){M.d.shareToken=sb.shareToken;renderSheet();}toast('Client link ready');}).catch(function(e){if(!lost(e))toast(e.message+'.');});}},'Create client link')):null,
-  h('button',{class:'btn wide',type:'button',onclick:function(){d.name=d.name.trim();if(!d.name){toast('Give the subject a name.');return;}var s=Object.assign({},d);delete s.shareToken;closeSheet();send('saveSubject',{subject:s},true);toast('Subject saved');}},'Save subject')];}
+  h('button',{class:'btn wide',type:'button',onclick:function(){d.name=d.name.trim();if(!d.name){toast('Give the client a name.');return;}var s=Object.assign({},d);delete s.shareToken;closeSheet();send('saveSubject',{subject:s},true);toast('Client saved');}},'Save client')];}
 function portalLink(tok){return appUrl()+'?client='+tok;}
 
 function openPerson(id){var p=id?person(id):null;M={kind:'person',id:id||null,del:false,d:p?Object.assign({},p):{id:uid(),name:'',email:'',role:'',canPrivate:false,hidden:false,ownerSees:false}};$('#ov').hidden=false;renderSheet();var f=$('#p-name');if(f&&!id)f.focus();}
@@ -2353,7 +2355,7 @@ function renderPerson(){var d=M.d,w=S.workspace||{};
         h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){var v=$('#p-link').value;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){toast('Invite link copied');},function(){$('#p-link').select();toast('Selected. Copy it from here.');});}},'Copy invite link'),
           h('a',{class:'btn ghost sm',href:'https://wa.me/?text='+encodeURIComponent('Hi '+(d.name||'').split(' ')[0]+', join our team on '+BRAND+': '+appUrl()+'?invite='+d.inviteToken),target:'_blank',rel:'noopener noreferrer'},'Share on WhatsApp')))
       :h('p',{class:'note',style:'margin:0'},'Save to create their invite link.'),
-      h('label',{class:'switch'},h('input',{type:'checkbox',id:'p-priv',checked:!!d.canPrivate,onchange:function(e){d.canPrivate=e.target.checked;}}),'Can make tasks and subjects private'),
+      h('label',{class:'switch'},h('input',{type:'checkbox',id:'p-priv',checked:!!d.canPrivate,onchange:function(e){d.canPrivate=e.target.checked;}}),'Can make tasks and clients private'),
       h('label',{class:'switch'},h('input',{type:'checkbox',id:'p-hide',checked:!!d.hidden,onchange:function(e){d.hidden=e.target.checked;if(!d.hidden)d.ownerSees=false;renderSheet();}}),'Hidden from others'),
       d.hidden?h('label',{class:'switch',style:'padding-left:30px'},h('input',{type:'checkbox',id:'p-sees',checked:!!d.ownerSees,onchange:function(e){d.ownerSees=e.target.checked;}}),'Let me see their tasks'):null,
       d.hidden?h('p',{class:'note',style:'margin:0'},'Nobody else sees this person or their tasks. Tasks you assign to them always stay visible to you.'):null],
@@ -2371,7 +2373,7 @@ function renderPerson(){var d=M.d,w=S.workspace||{};
   M.xfer?h('div',{class:'panel dz',style:'display:flex;flex-direction:column;gap:10px'},h('strong',{text:'Make '+d.name+' the owner?'}),
     h('p',{style:'margin:0;font-size:14px',text:'They will manage people, settings, the plan and billing, and see every change. You stay in the workspace as a member.'+(xferPlan()?' Your plan for this workspace is cancelled at the end of the period'+(S.workspace.periodEnd?' ('+longDate(S.workspace.periodEnd)+')':'')+', so your card is not charged again; '+d.name.split(' ')[0]+' chooses their own plan before then. We email you both.':'')}),
     h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn danger sm',type:'button',disabled:!!M.busy,onclick:function(){var id=M.id;M.busy=true;renderSheet();
-        server('transferOwnership',{id:id,cancelPlan:xferPlan()}).then(function(r){closeSheet();if(accept(r)){pickMe();V.tab='home';render();}toast(r.msg||'Done');})
+        server('transferOwnership',{id:id,cancelPlan:xferPlan()}).then(function(r){closeSheet();if(accept(r)){pickMe();V.tab='home';FULL=false;render();}toast(r.msg||'Done');})
           .catch(function(e){if(lost(e))return;M.busy=false;renderSheet();toast(e.message+'.');});}},M.busy?'Handing over…':'Yes, make them the owner'),
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.xfer=false;renderSheet();}},'Cancel'))):null];}
 function xferPlan(){var w=S.workspace||{},b=w.billing||{};return !!(b.subscription&&paidLive(w));}
@@ -2445,7 +2447,7 @@ function renderMe(){var p=person(me);return [head(p?'Signed in as '+p.name:'Your
       h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn danger sm',type:'button',disabled:!!M.busy,onclick:function(){M.busy=true;renderSheet();leaveWs();}},M.busy?'Leaving…':'Leave workspace'),
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.leave=false;renderSheet();}},'Stay')))
     :h('div',{class:'acts',style:'justify-content:center'},S.owner?null:h('button',{class:'linkb',type:'button',onclick:function(){M.leave=true;renderSheet();}},'Leave this workspace'),
-      h('button',{class:'linkb',type:'button',style:'color:var(--red)',onclick:openDeleteMe},'Delete my account')),
+      h('button',{class:'linkb',type:'button',style:'color:var(--danger)',onclick:openDeleteMe},'Delete my account')),
   h('p',{class:'note',style:'margin:0;text-align:center',text:BRAND+' version '+APP_VERSION})];}
 
 function renderSheet(){if(!M)return;document.body.style.overflow='hidden';keep(function(){var k=M.kind,kids=k==='task'?renderTask():k==='subject'?renderSubject():k==='person'?renderPerson():k==='me'?renderMe():k==='shift'?renderShift():k==='leave'?renderLeave():k==='invoice'?renderInvoice():k==='invview'?renderInvView():k==='ai'?renderAi():k==='handoff'?renderHandoff():k==='pinv'?renderPinv():k==='stuck'?renderStuck():k==='guide'?renderGuide():k==='import'?renderImport():k==='expense'?renderExpense():k==='history'?renderHistory():k==='twofa'?renderTwofa():k==='meet'?renderMeet():k==='entry'?renderEntry():k==='bill'?renderBill():k==='clockfor'?renderClockFor():k==='sendback'?renderSendBack():k==='delws'?renderDelWs():k==='delme'?renderDelMe():k==='help'?renderHelp():k==='bin'?renderBin():k==='sites'?renderSites():renderTemplate();
@@ -2493,7 +2495,7 @@ function renderPortal(){var P=PT,open=P.tasks.filter(function(t){return t.status
 function portalTime(P){var R=P.retainer,T=P.timesheet;if(!R&&!T)return null;
   return [h('div',{class:'sec'},h('h3',null,'Hours'),h('span',{text:P.hoursThisMonth+' this month, '+P.hoursAllTime+' in all'})),
     R?h('div',{class:'pt'},h('div',{class:'hd'},h('strong',null,'Monthly retainer'),h('b',{class:'badge-s'+(R.pct>=100?' r':R.pct>=80?' o':' g'),text:R.pct+'% used'})),
-      h('div',{class:'bar',style:'height:8px'},h('i',{style:'width:'+Math.min(100,R.pct)+'%;background:'+(R.pct>=100?'var(--red)':R.pct>=80?'var(--orange2)':'var(--green)')})),
+      h('div',{class:'bar',style:'height:8px'},h('i',{style:'width:'+Math.min(100,R.pct)+'%;background:'+(R.pct>=100?'var(--danger)':R.pct>=80?'var(--coral2)':'var(--ok)')})),
       h('small',{class:'note',text:[R.capHours?R.hours+' of '+R.capHours+' hours this month':'',R.capAmount?fmtMoney(R.amount,R.currency)+' of '+fmtMoney(R.capAmount,R.currency):''].filter(Boolean).join(' · ')})):null,
     T&&T.length?h('div',{class:'tsheet'},h('table',{class:'ptab'},h('thead',null,h('tr',null,['Date','Who','Work','Hours'].map(function(c){return h('th',{scope:'col',text:c});}))),
       h('tbody',null,T.map(function(x){return h('tr',null,h('td',{text:short(x.date)}),h('td',{text:x.person}),h('td',{class:'wk',text:x.task+(x.note?' · '+x.note:'')}),h('td',{text:x.running?'running':String(x.hours)}));})))):null];}
@@ -2515,7 +2517,7 @@ function portalMeetings(){var P=PT,list=(P.meetings||[]).filter(function(m){retu
         h('b',{class:'badge-s'+(live?' g':m.answer==='yes'?' g':m.answer==='no'?' r':''),text:live?'Live now':m.answer?RSVPL[m.answer]:'Can you make it?'})),
       m.agenda.length?h('div',{class:'ups'},h('small',null,'Agenda'),m.agenda.map(function(a){return h('div',{text:'· '+a});})):null,
       h('div',{class:'row'},m.joinUrl?h('button',{class:'btn sm'+(live?'':' ghost'),type:'button',onclick:function(){portalCall({token:PT.tok,action:'meetingJoin',payload:{meetingId:m.id,name:pName0()}}).catch(function(){});window.open(m.joinUrl,'_blank','noopener,noreferrer');}},live?'Join now':'Join the call'):null,
-        ['yes','maybe','no'].map(function(a){return h('button',{class:'btn ghost sm',type:'button','aria-pressed':String(m.answer===a),style:m.answer===a?'background:var(--teal);color:#fff;border-color:var(--teal)':'',onclick:function(){portalDo('meetingAnswer',{meetingId:m.id,answer:a});}},a==='yes'?'I will be there':a==='maybe'?'Maybe':'I cannot make it');}),
+        ['yes','maybe','no'].map(function(a){return h('button',{class:'btn ghost sm',type:'button','aria-pressed':String(m.answer===a),style:m.answer===a?'background:var(--plum);color:#fff;border-color:var(--plum)':'',onclick:function(){portalDo('meetingAnswer',{meetingId:m.id,answer:a});}},a==='yes'?'I will be there':a==='maybe'?'Maybe':'I cannot make it');}),
         h('a',{class:'linkb',href:m.gcal,target:'_blank',rel:'noopener noreferrer',style:'font-size:13px'},'Add to calendar'))));});
   reqs.forEach(function(m){out.push(h('div',{class:'pt'},h('div',{class:'hd'},h('div',null,h('strong',{text:m.title}),h('br'),h('small',{class:'note',text:'You suggested: '+((m.request||{}).options||[]).map(function(ms){return pWhen(ms,m.durationMin).replace(' your time','');}).join('; ')})),h('b',{class:'badge-s o',text:'Waiting for the team'}))));});
   if(!R.open)out.push(h('div',{class:'acts',style:'margin:4px 0 0'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){R.open=true;renderPortal();var f=$('#mr-title');if(f)f.focus();}},'Ask for a meeting'),h('small',{class:'note'},'Suggest up to three times. The team picks one and you get the link.')));
@@ -2541,7 +2543,9 @@ function portalRequest(){var R=PT.req=PT.req||{open:false,title:'',details:'',du
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){R.open=false;renderPortal();}},'Cancel')));}
 
 /* ---------- boot ---------- */
-function screen(kids){$('#nav').hidden=true;closeSheet();var app=$('#app');app.replaceChildren.apply(app,kids.filter(Boolean));window.scrollTo(0,0);}
+/* FULL: a full screen form (new workspace, invite, sign in) is showing, so timed refreshes must not redraw the app over it */
+var FULL=false;
+function screen(kids){var k=kids.filter(Boolean);FULL=!(k.length===1&&k[0].classList&&k[0].classList.contains('load'));$('#nav').hidden=true;closeSheet();var app=$('#app');app.replaceChildren.apply(app,kids.filter(Boolean));window.scrollTo(0,0);}
 function shell(title,sub,kids){return h('div',{class:'connect'},h('span',{class:'logo',html:LOGO}),h('h1',null,title),sub?h('p',{style:'margin:0',text:sub}):null,kids);}
 var A0={email:'',name:'',err:'',done:'',invite:'',inv:null,invErr:''};
 /* a pending invite lives in this tab only (sessionStorage), never in storage that outlasts the tab */
@@ -2596,7 +2600,7 @@ function afterSignIn(){A0.err='';
 /* "Join Brightline as kemi@example.com?": nothing is joined until the person says yes */
 function inviteScreen(iv){var email=(sess&&sess.user&&sess.user.email)||'',tok=A0.invite;
   var join=h('button',{class:'btn wide',type:'button',onclick:function(){busy(join,true);
-    call('api',{action:'acceptInvite',payload:{token:tok,_app:appUrl()}}).then(function(res){dropInvite();accept(res);pickMe();V.tab='home';render();toast('Welcome to '+((res.workspace&&res.workspace.name)||iv.workspace));})
+    call('api',{action:'acceptInvite',payload:{token:tok,_app:appUrl()}}).then(function(res){dropInvite();accept(res);pickMe();V.tab='home';FULL=false;render();toast('Welcome to '+((res.workspace&&res.workspace.name)||iv.workspace));})
       .catch(function(e){if(lost(e))return;dropInvite();toast(e.message+'.');pickWorkspace();});}},'Join '+iv.workspace);
   screen([shell(['Join '+iv.workspace+' as ',h('span',{class:'jem',text:email+'?'})],(iv.inviter?iv.inviter+' invited you. ':'')+'You will see the tasks and clients they share with you, and they will see the work you do there.',
     [h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px;text-align:left'},join,
@@ -2624,14 +2628,14 @@ function createScreen(first){var u=sess&&sess.user||{},meta=(A0.name||'').trim()
   var submit=function(ev){ev.preventDefault();var name=nm.value.trim();if(!name){err.textContent='Give the workspace a name.';err.hidden=false;nm.focus();return;}busy(go,true);err.hidden=true;
     var zs=[t1.value,t2.value].filter(function(v,i,a){return v&&a.indexOf(v)===i;});
     call('api',{action:'createWorkspace',payload:{_app:appUrl(),ref:store.get('hv-ref')||'',name:name,kind:kd.value,yourName:yn.value.trim(),deadlineTz:t1.value,clocks:zs.map(function(z){return tzLabel(z)+'|'+z;}).join(', ')}})
-      .then(function(res){wsId=res.workspace.id;store.set('hv-ws',wsId);loadQ();accept(res);pickMe();V.tab='home';render();toast('Your workspace is ready. Add your people under Settings.');})
+      .then(function(res){wsId=res.workspace.id;store.set('hv-ws',wsId);loadQ();accept(res);pickMe();V.tab='home';FULL=false;render();toast('Your workspace is ready. Add your people under Settings.');})
       .catch(function(e){busy(go,false);if(lost(e))return;err.textContent=e.message+'.';err.hidden=false;});};
   var unverified=sess&&sess.user&&sess.user.verified===false;
-  screen([unverified&&first?h('div',{class:'connect',style:'margin-top:4vh;margin-bottom:-4vh'},h('div',{class:'ok-note',style:'background:var(--peach);color:var(--ink);display:flex;flex-direction:column;gap:8px;text-align:left'},
+  screen([unverified&&first?h('div',{class:'connect',style:'margin-top:4vh;margin-bottom:-4vh'},h('div',{class:'ok-note',style:'background:var(--blush);color:var(--ink);display:flex;flex-direction:column;gap:8px;text-align:left'},
       h('span',null,'Invited by email? Confirm your email first using the link we sent, then tap below. Or open the invite link your manager sent you.'),
       h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){checkVerified().then(function(v){if(v){toast('Email confirmed');pickWorkspace();}else toast('Not confirmed yet. Open the link in the email first.');}).catch(function(e){toast(e.message);});}},'I have confirmed my email'),
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){sendVerify().then(function(){toast('Link sent again');}).catch(function(e){toast(e.message);});}},'Send the link again')))):null,
-    shell(first?'Set up your workspace':'New workspace',first?'One workspace holds your clients, people and tasks. You can rename it later.':'Each workspace has its own people, clients, tasks and plan.',
+    shell(first?'Set up your workspace':'New workspace',first?'Your workspace is your company account. It holds your clients, people and tasks. You can rename it later.':'Each workspace has its own people, clients, tasks and plan.',
     [h('form',{class:'panel',style:'display:flex;flex-direction:column;gap:12px;text-align:left',onsubmit:submit,novalidate:true},
       fld('Workspace name, such as your company',nm),fld('What best describes you',kd),fld('Your name, as your team will see it',yn),
       h('div',{class:'frow'},fld('Your time zone, used for deadlines',t1),fld('Second clock, such as your clients',t2)),err,go),
@@ -2640,7 +2644,7 @@ function createScreen(first){var u=sess&&sess.user||{},meta=(A0.name||'').trim()
 /* Loading animation built from the logo: the mark fills from the bottom while an orange arc circles it. */
 function loader(){
   var ghost=h('span',{class:'logo',html:LOGO}),full=h('span',{class:'logo',html:LOGO}),fill=h('div',{class:'ld-fill'},full),
-      arc=h('div',{class:'ld-ring',html:'<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#E4EAED" stroke-width="4"/><circle cx="60" cy="60" r="56" fill="none" stroke="#F4A640" stroke-width="4" stroke-linecap="round" stroke-dasharray="88 264"/></svg>'}),
+      arc=h('div',{class:'ld-ring',html:'<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#EAE4EF" stroke-width="4"/><circle cx="60" cy="60" r="56" fill="none" stroke="#FF7059" stroke-width="4" stroke-linecap="round" stroke-dasharray="88 264"/></svg>'}),
       dots=h('span',{'aria-hidden':'true'}),stage=h('div',{class:'ld-stage'},arc,ghost,fill),
       box=h('div',{class:'load',role:'status','aria-label':'Loading'},h('div',null,stage,h('b',{class:'ld-text'},'Loading',dots)));
   var still=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches,t0=null;
@@ -2657,7 +2661,7 @@ function loader(){
     requestAnimationFrame(frame);}
   requestAnimationFrame(frame);
   return box;}
-function boot(){
+function boot(){FULL=false;
   if(!sess){authScreen(A0.email||A0.invite||/[?&]signup\b/.test(location.search)?'up':'in');return;}
   if(!wsId){pickWorkspace();return;}
   if(!S){var c=cached();if(c){S=c;pickMe();Q.forEach(function(it){try{mutate(it.a,it.p);}catch(e){}});render();}}
