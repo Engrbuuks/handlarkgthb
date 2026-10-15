@@ -866,6 +866,89 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
   .vacts{gap:6px;flex-wrap:nowrap}.vacts .btn.sm{padding:8px 10px;font-size:12px;white-space:nowrap}.vacts .mic .mlb{display:none}.vacts .mic{padding:6px 9px}
   .site .frow{grid-template-columns:1fr 1fr}.site .frow .f:last-child{grid-column:1/-1}
 }
+/* Home header, version 1.9: one line that rotates, your own time, and a Team time pill instead of a card per place */
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.hl{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:14px;max-width:620px}
+.hlbox{position:relative;width:100%;display:grid;min-height:2.45em;font-size:28px;align-items:start}
+.hlbox>*{grid-area:1/1}
+.hlt{margin:0;font:650 1em/1.2 var(--fd);letter-spacing:-.025em;color:var(--plum-ink);text-wrap:balance}
+.hll{justify-self:start;border:0;background:none;padding:0;text-align:left;font:650 1em/1.2 var(--fd);letter-spacing:-.025em;color:var(--plum-ink);text-decoration:underline;text-decoration-color:var(--blush2);text-decoration-thickness:.16em;text-underline-offset:.12em;text-decoration-skip-ink:none}
+.hll:hover{text-decoration-color:var(--coral)}
+.hlc{display:flex;align-items:center;gap:2px;margin-left:-2px}
+.hlb{width:30px;height:30px;border-radius:9px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;padding:0}
+.hlb:hover{background:var(--sunk);color:var(--plum-ink)}
+.hlb svg{width:16px;height:16px}
+.hlb[aria-pressed=true]{background:var(--sunk);color:var(--plum-ink)}
+.hlbar{position:relative;display:block;height:3px;width:44px;margin:0 8px 0 2px;background:var(--line);border-radius:3px;overflow:hidden}
+.hlbar:after{content:'';position:absolute;inset:0;background:var(--coral);transform-origin:left center;transform:scaleX(0);animation-delay:inherit}
+@media (prefers-reduced-motion:no-preference){
+  .hlbar:after{animation:hlfill var(--hl-p,12s) linear forwards}
+  .hl.paused .hlbar:after,.hl.held .hlbar:after{animation-play-state:paused}
+  .hlt.in{animation:hlin .5s cubic-bezier(.2,.7,.2,1) both}
+  .hlt.out{animation:hlout .3s ease forwards;pointer-events:none}
+}
+@keyframes hlfill{to{transform:scaleX(1)}}
+@keyframes hlin{from{opacity:0;transform:translateY(.35em)}to{opacity:1;transform:none}}
+@keyframes hlout{to{opacity:0;transform:translateY(-.25em)}}
+.hclk{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
+.clk.pin{min-width:118px;padding:10px 14px 8px}.clk.pin .hm{font-size:22px}.clk.pin .ss{font-size:12px}
+.tpill{display:inline-flex;align-items:center;gap:10px;border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px 6px 7px;font:500 13px/1.2 var(--fb);color:var(--ink);text-align:left}
+.tpill:hover{box-shadow:var(--ring),var(--shadow)}
+.tpt b{color:var(--plum-ink);font-weight:700;margin-right:5px}
+.tdots{display:flex;flex:none}
+.tdot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 10px/1 var(--fb);font-style:normal;background:var(--sunk);color:var(--muted);box-shadow:0 0 0 2px var(--card);margin-left:-6px}
+.tdot:first-child{margin-left:0}
+.tdot.on{background:var(--ok-soft);color:var(--ok);box-shadow:0 0 0 2px var(--card),inset 0 0 0 1.5px var(--ok)}
+.tdot.away{background:var(--warn-soft);color:var(--warn)}
+/* Team time sheet */
+.ovl{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:16px 18px;display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.ovl small{color:rgba(255,255,255,.78);font-weight:600;font-size:12.5px}
+.ovl strong{font:650 22px/1.2 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ovl span{color:rgba(255,255,255,.84);font-size:13px}
+.ovl .btn{margin-top:10px}
+.tlist{display:flex;flex-direction:column;background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+.trow{display:flex;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.trow:first-child{border-top:0}
+.trow .who{flex:none;width:34px;height:34px;border-radius:50%;line-height:34px;text-align:center}
+.trow.st-working .who{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ok)}
+.trow.st-leave .who,.trow.st-holiday .who{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--warn)}
+.tmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tmain strong{font-weight:650}
+.tmain small{color:var(--muted);font-size:12.5px}
+.trow.st-working .tst{color:var(--ok);font-weight:600}
+.trow.st-leave .tst,.trow.st-holiday .tst{color:var(--warn);font-weight:600}
+.tbadges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tloc{text-align:right;flex:none}
+.tloc b{display:block;font:750 20px/1.1 var(--fb);font-variant-numeric:tabular-nums;color:var(--plum-ink);letter-spacing:-.02em}
+.tloc small{color:var(--muted);font-size:11.5px}
+/* a person's local time wherever people are listed, and the note when they are off */
+.lt{font-size:11.5px;color:var(--muted);font-weight:500;margin-left:6px;white-space:nowrap}
+.lt b{font-weight:700;font-variant-numeric:tabular-nums;color:inherit}
+.lt.off{color:var(--warn)}
+.chip[aria-pressed=true] .lt{color:rgba(255,255,255,.86)}
+.offnote{margin:6px 0 0;background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.4}
+.fs{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fs legend{font-weight:650;color:var(--plum-ink);margin-bottom:6px;padding:0}
+@media (min-width:900px){
+  .top.home{align-items:flex-start}
+  .top.home .tools{margin-top:4px}
+  .top.home .tt{padding-top:2px}
+}
+@media (max-width:899px){
+  .hl{margin-top:12px;gap:4px}
+  .hlbox{font-size:20px;min-height:2.5em}
+  .hlb{width:34px;height:34px}
+  .top .hclk{order:2;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;align-items:stretch}
+  .hclk .clocks{display:contents}
+  .hclk .clk{max-width:none;overflow:hidden}
+  .hclk:has(.clk.pin + .clk.pin){grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tpill{flex-direction:column;justify-content:center;gap:5px;border-radius:14px;box-shadow:none;border:1px solid var(--line);padding:8px 6px;font-size:11.5px;text-align:center}
+  .tpill .tpt b{display:none}
+  .tdot{width:20px;height:20px;font-size:9px;margin-left:-5px}
+  .tdot:nth-child(n+5){display:none}
+  .trow{padding:12px 14px;align-items:flex-start}
+  .tloc b{font-size:18px}
+}
 /* Dark theme: deep aubergine surfaces, coral accents, light text */
 @media (prefers-color-scheme:dark){
   :root{
@@ -969,6 +1052,7 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
 <div id="ov" hidden><div id="sh" role="dialog" aria-modal="true"></div></div>
 <div id="toast" role="status" hidden></div>
 
+<script src="home.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
