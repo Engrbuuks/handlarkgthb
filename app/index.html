@@ -37,6 +37,9 @@
   --shadow:0 0 0 1px rgba(46,28,71,.05),0 1px 2px rgba(46,28,71,.04),0 8px 22px -10px rgba(46,28,71,.14);
   --shadow-lg:0 1px 2px rgba(46,28,71,.08),0 22px 44px -18px rgba(46,28,71,.45);
   --ring:0 0 0 3px rgba(255,112,89,.28);
+  --spot-a:#4A2E72; --spot-b:#2E1C47; --spot-c:#1E1230; --spot-glow:rgba(255,112,89,.22); --spot-ink:#FFFFFF; --spot-soft:#FFD5CB;
+  --spot-chip:rgba(255,255,255,.1); --spot-chip2:rgba(255,255,255,.18); --spot-line:rgba(255,255,255,.24); --spot-track:rgba(255,255,255,.2); --spot-done:#FFD5CB;
+  --spot-shadow:0 1px 2px rgba(46,28,71,.1),0 26px 50px -24px rgba(46,28,71,.6);
 }
 
 *{box-sizing:border-box}
@@ -868,28 +871,48 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
 }
 /* Home header, version 1.9: one line that rotates, your own time, and a Team time pill instead of a card per place */
 .sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.hl{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:14px;max-width:620px}
-.hlbox{position:relative;width:100%;display:grid;min-height:2.45em;font-size:28px;align-items:start}
-.hlbox>*{grid-area:1/1}
-.hlt{margin:0;font:650 1em/1.2 var(--fd);letter-spacing:-.025em;color:var(--plum-ink);text-wrap:balance}
-.hll{justify-self:start;border:0;background:none;padding:0;text-align:left;font:650 1em/1.2 var(--fd);letter-spacing:-.025em;color:var(--plum-ink);text-decoration:underline;text-decoration-color:var(--blush2);text-decoration-thickness:.16em;text-underline-offset:.12em;text-decoration-skip-ink:none}
-.hll:hover{text-decoration-color:var(--coral)}
-.hlc{display:flex;align-items:center;gap:2px;margin-left:-2px}
-.hlb{width:30px;height:30px;border-radius:9px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;padding:0}
-.hlb:hover{background:var(--sunk);color:var(--plum-ink)}
-.hlb svg{width:16px;height:16px}
-.hlb[aria-pressed=true]{background:var(--sunk);color:var(--plum-ink)}
-.hlbar{position:relative;display:block;height:3px;width:44px;margin:0 8px 0 2px;background:var(--line);border-radius:3px;overflow:hidden}
-.hlbar:after{content:'';position:absolute;inset:0;background:var(--coral);transform-origin:left center;transform:scaleX(0);animation-delay:inherit}
+/* The spotlight, version 1.9.1: a plum card under the greeting that holds the rotating line. It spans the content column,
+   says what it is showing ("For you" or "Tip of the moment"), and keeps its controls inside: story segments with the timer, pause and next */
+.top.home{flex-wrap:wrap}
+.spot{order:9;flex:1 0 100%;min-width:0;position:relative;isolation:isolate;overflow:hidden;border-radius:var(--r-xl);padding:20px 22px 20px 28px;color:var(--spot-ink);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"seg seg" "box ctl";column-gap:20px;align-items:end;
+  background:radial-gradient(70% 160% at 100% 0%,var(--spot-glow) 0%,transparent 62%),linear-gradient(118deg,var(--spot-a) 0%,var(--spot-b) 46%,var(--spot-c) 100%);
+  box-shadow:var(--spot-shadow)}
+.spbox{grid-area:box;display:grid;min-width:0}
+.spbox>*{grid-area:1/1}
+.spi{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:24px;row-gap:8px;min-width:0}
+.spot .spk{grid-column:1/-1;margin:0;display:flex;align-items:center;gap:9px;font:600 13px/1.2 var(--fb);color:var(--spot-soft);letter-spacing:.01em}
+.spic{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:var(--coral);color:var(--on-coral);flex:none}
+.spic svg{width:14px;height:14px}
+.spdot{width:9px;height:9px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 5px var(--spot-chip);margin:0 3px 0 5px;flex:none}
+.spot .spt{grid-column:1;margin:0;font:650 27px/1.2 var(--fd);letter-spacing:-.025em;color:var(--spot-ink);text-wrap:balance;min-height:1.2em;max-width:36em}
+.spot .spt.long{font-size:23px}
+.spa{grid-column:2;display:flex;align-items:center;gap:10px}
+.spa:empty{display:none}
+.spot .spgo{min-height:44px;padding:10px 22px;font-size:14px;border-radius:12px;white-space:nowrap;box-shadow:0 10px 24px -10px rgba(255,112,89,.7)}
+.spot .spgo:hover{background:var(--coral-hover)}
+.spsub{min-height:44px;padding:10px 18px;border-radius:12px;border:1px solid var(--spot-line);background:transparent;color:var(--spot-ink);font-weight:600;font-size:14px;white-space:nowrap}
+.spsub:hover{background:var(--spot-chip)}
+.spc{grid-area:ctl;position:relative;z-index:1;display:flex;align-items:center;gap:8px}
+.spseg{grid-area:seg;display:flex;gap:6px;max-width:340px;min-width:0;margin-bottom:16px}
+.spseg i{flex:1;height:4px;border-radius:4px;background:var(--spot-track);position:relative;overflow:hidden}
+.spseg i.done{background:var(--spot-done)}
+.spseg i.now:after{content:'';position:absolute;inset:0;background:var(--spot-soft);border-radius:inherit;transform-origin:left center;transform:scaleX(0);animation-delay:inherit}
+.spb{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--spot-line);background:var(--spot-chip);color:var(--spot-ink);display:grid;place-items:center;padding:0}
+.spb:hover{background:var(--spot-chip2)}
+.spb svg{width:18px;height:18px}
+.spb[aria-pressed=true]{background:var(--coral);border-color:var(--coral);color:var(--on-coral)}
+.spot :focus-visible{outline:2px solid var(--coral);outline-offset:3px}
 @media (prefers-reduced-motion:no-preference){
-  .hlbar:after{animation:hlfill var(--hl-p,12s) linear forwards}
-  .hl.paused .hlbar:after,.hl.held .hlbar:after{animation-play-state:paused}
-  .hlt.in{animation:hlin .5s cubic-bezier(.2,.7,.2,1) both}
-  .hlt.out{animation:hlout .3s ease forwards;pointer-events:none}
+  .spseg i.now:after{animation:hlfill var(--hl-p,12s) linear forwards}
+  .spot.paused .spseg i.now:after,.spot.held .spseg i.now:after{animation-play-state:paused}
+  .spi.enter{animation:spotin .55s cubic-bezier(.2,.7,.2,1) both}
+  .spi.leave{animation:spotout .32s ease forwards;pointer-events:none}
 }
+@media (prefers-reduced-motion:reduce){.spseg i.now:after{transform:none}}
 @keyframes hlfill{to{transform:scaleX(1)}}
-@keyframes hlin{from{opacity:0;transform:translateY(.35em)}to{opacity:1;transform:none}}
-@keyframes hlout{to{opacity:0;transform:translateY(-.25em)}}
+@keyframes spotin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes spotout{to{opacity:0;transform:translateY(-8px)}}
 .hclk{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
 .clk.pin{min-width:118px;padding:10px 14px 8px}.clk.pin .hm{font-size:22px}.clk.pin .ss{font-size:12px}
 .tpill{display:inline-flex;align-items:center;gap:10px;border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:6px 16px 6px 7px;font:500 13px/1.2 var(--fb);color:var(--ink);text-align:left}
@@ -932,13 +955,20 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
 @media (min-width:900px){
   .top.home{align-items:flex-start}
   .top.home .tools{margin-top:4px}
-  .top.home .tt{padding-top:2px}
+  .top.home .tt{padding-top:2px;align-self:center}
+  .top.home .spot{margin-top:6px}
 }
 @media (max-width:899px){
-  .hl{margin-top:12px;gap:4px}
-  .hlbox{font-size:20px;min-height:2.5em}
-  .hlb{width:34px;height:34px}
-  .top .hclk{order:2;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;align-items:stretch}
+  .top .spot{order:2;margin-top:2px;padding:16px 16px 16px 20px;border-radius:20px;grid-template-areas:"seg seg" "box box"}
+  .spseg{max-width:none;margin-bottom:14px}
+  .spi{grid-template-columns:minmax(0,1fr);row-gap:10px}
+  .spot .spt{font-size:21px;min-height:2.4em}
+  .spot .spt.long{font-size:18.5px}
+  .spa,.spa:empty{grid-column:1;display:flex;min-height:44px;margin-right:104px}
+  .spot .spgo,.spsub{padding:10px 18px}
+  .spc{grid-area:box;justify-self:end;align-self:end}
+  .top .hclk{order:3}
+  .top .hclk{order:3;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;align-items:stretch}
   .hclk .clocks{display:contents}
   .hclk .clk{max-width:none;overflow:hidden}
   .hclk:has(.clk.pin + .clk.pin){grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -962,6 +992,8 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
     --shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 24px -12px rgba(0,0,0,.6);
     --shadow-lg:0 0 0 1px rgba(255,255,255,.07),0 22px 44px -18px rgba(0,0,0,.75);
     --ring:0 0 0 3px rgba(255,122,100,.35);
+    --spot-a:#5A3A86; --spot-b:#3A2559; --spot-c:#26173D; --spot-glow:rgba(255,122,100,.2);
+    --spot-shadow:0 0 0 1px rgba(255,255,255,.08),0 26px 50px -22px rgba(0,0,0,.85);
   }
   .hero{background:radial-gradient(120% 150% at 100% 0%,#5A3A86 0%,#3A2559 50%,#2A1A42 100%)}
   .sc.p,.tc.p{background:var(--blush)}

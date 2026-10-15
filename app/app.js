@@ -30,7 +30,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.9.0';
+var APP_VERSION='1.9.1';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -446,27 +446,49 @@ function curItem(lines){var it=ROT.item,ml=meetLine(lines);if(ml){ROT.el=0;retur
   else if(it&&it.kind==='fixed'&&(lines.length||tipsOn()))it=null;
   if(!it){if(ROT.item)ROT.k++;it=pickItem(lines);ROT.el=0;}
   return ROT.item=it;}
-function hlText(it){if(it.kind==='line')return h('button',{class:'hlt hll',type:'button',onclick:function(){goLine(it);}},it.text);
-  return h('p',{class:'hlt'+(it.kind==='tip'?' tip':''),onclick:it.kind==='tip'?function(){ROT.hold=!ROT.hold;var el=$('#hl');if(el)el.classList.toggle('held',ROT.hold);}:null},it.text);}
-function headline(){var lines=myLines(),it=curItem(lines),many=lines.length+(tipsOn()?HL.NUGGETS.length:0)>1,mt=it.id==='meeting'?(S.meetings||[]).find(function(m){return m.id===it.ref;}):null;
-  return h('div',{class:'hl'+(ROT.stop?' paused':''),id:'hl',role:'region','aria-label':'For you today',style:'--hl-p:'+rotPeriod()+'ms'},
-    h('div',{class:'hlbox'},hlText(it)),
-    mt||many?h('div',{class:'hlc'},mt&&mt.joinUrl?h('button',{class:'btn sm hlj',type:'button',onclick:function(){joinM(mt);}},mLive(mt)?'Join now':'Join'):null,
-      mt||!many||rmOn()?null:h('i',{class:'hlbar','aria-hidden':'true',style:'animation-delay:-'+Math.round(ROT.el)+'ms'}),many?[
-      h('button',{class:'hlb',type:'button','aria-label':ROT.stop?'Play tips':'Pause tips','aria-pressed':String(!!ROT.stop),html:ROT.stop?I.play:I.pause,onclick:function(){ROT.stop=!ROT.stop;ROT.hold=false;render();var b=$('#hl .hlb');if(b)b.focus();}}),
-      h('button',{class:'hlb',type:'button','aria-label':'Next',html:I.r,onclick:function(){if(ROT.item&&ROT.item.id==='meeting'){ROT.skipMeet=ROT.item.ref;ROT.k++;ROT.item=pickItem(myLines());ROT.el=0;render();var say=$('#hl-say');if(say)say.textContent=ROT.item.text;var nb=$('#hl .hlb[aria-label=Next]');if(nb)nb.focus();}else rotNext(true);}})]:null):null,
+/* the spotlight card, version 1.9.1: a plum card under the greeting with a label saying what it shows ("For you" or "Tip of the moment"),
+   the line in large type, a coral action for personal lines, and story style segments with the 12 second timer filling the current one */
+var SPARK='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5c.75 5.4 3 7.65 8.4 8.4-5.4.75-7.65 3-8.4 8.4-.75-5.4-3-7.65-8.4-8.4 5.4-.75 7.65-3 8.4-8.4z"/><circle cx="19" cy="19" r="1.9" fill="currentColor"/></svg>';
+/* the word on the coral button for each personal line: it says where the button leads */
+var GOWORD={approvals:'Review',queries:'Review',retainer:'View hours',requests:'Open',questions:'Answer',clock:'Open clock',start:'Start',week:'Plan the week',late:'See tasks',today:'See today'};
+function spotKind(it){return it.id==='meeting'?'meet':it.kind==='tip'?'tip':'line';}
+function spotMeeting(it){return it&&it.id==='meeting'?(S.meetings||[]).find(function(m){return m.id===it.ref;})||null:null;}
+function hlText(it){var kind=spotKind(it),mt=spotMeeting(it),acts=[],word;
+  var label=kind==='tip'?'Tip of the moment':kind==='meet'?(mt&&mLive(mt)?'Meeting now':'Meeting soon'):'For you';
+  var icon=kind==='tip'?h('span',{class:'spic',html:SPARK}):kind==='meet'?h('span',{class:'spic',html:I.video}):h('i',{class:'spdot'});
+  if(kind==='meet'){
+    if(mt&&mt.joinUrl)acts.push(h('button',{class:'btn spgo',type:'button',onclick:function(){joinM(mt);}},mLive(mt)?'Join now':'Join'));
+    acts.push(h('button',{class:mt&&mt.joinUrl?'spsub':'btn spgo',type:'button','aria-label':'Meeting details: '+it.text,onclick:function(){goLine(it);}},'Details'));}
+  else if(kind==='line'&&it.go){word=it.go==='sentback'?(it.ref?'Open task':'See tasks'):GOWORD[it.go]||'Open';
+    acts.push(h('button',{class:'btn spgo',type:'button','aria-label':word+': '+it.text,onclick:function(){goLine(it);}},word));}
+  return h('div',{class:'spi','data-kind':kind},
+    h('p',{class:'spk'},icon,h('span',{text:label})),
+    h('p',{class:'spt'+(it.text.length>64?' long':''),onclick:kind==='tip'?function(){ROT.hold=!ROT.hold;var el=$('#hl');if(el)el.classList.toggle('held',ROT.hold);}:null},it.text),
+    h('div',{class:'spa'},acts));}
+/* the story segments along the top: one per slot in the current round. With personal lines a round is each line with a tip after it; tips alone come in rounds of five */
+function spotSegs(lines){var n,pos,on=tipsOn();
+  if(lines.length){n=on?Math.min(6,lines.length*2):lines.length;pos=on?ROT.k%n:Math.floor(ROT.k/2)%n;}else{n=5;pos=ROT.k%5;}
+  var segs=[];for(var i=0;i<n;i++)segs.push(h('i',{class:i<pos?'done':i===pos?'now':'',style:i===pos?'animation-delay:-'+Math.round(ROT.el)+'ms':null}));
+  return h('div',{class:'spseg','aria-hidden':'true'},segs);}
+function headline(){var lines=myLines(),it=curItem(lines),many=lines.length+(tipsOn()?HL.NUGGETS.length:0)>1,meet=it.id==='meeting';
+  return h('section',{class:'spot'+(ROT.stop?' paused':''),id:'hl',role:'region','aria-label':'For you today','data-kind':spotKind(it),style:'--hl-p:'+rotPeriod()+'ms'},
+    many&&!meet?spotSegs(lines):null,
+    h('div',{class:'spbox'},hlText(it)),
+    many?h('div',{class:'spc'},
+      h('button',{class:'spb',type:'button','aria-label':ROT.stop?'Play tips':'Pause tips','aria-pressed':String(!!ROT.stop),html:ROT.stop?I.play:I.pause,onclick:function(){ROT.stop=!ROT.stop;ROT.hold=false;render();var b=$('#hl .spb');if(b)b.focus();}}),
+      h('button',{class:'spb',type:'button','aria-label':'Next',html:I.r,onclick:function(){if(ROT.item&&ROT.item.id==='meeting'){ROT.skipMeet=ROT.item.ref;ROT.k++;ROT.item=pickItem(myLines());ROT.el=0;render();var say=$('#hl-say');if(say)say.textContent=ROT.item.text;var nb=$('#hl .spb[aria-label=Next]');if(nb)nb.focus();}else rotNext(true);}})):null,
     h('span',{class:'sr',role:'status',id:'hl-say'}));}
-/* the next line; only a change someone asked for is read out by screen readers */
-function rotNext(manual){ROT.k++;ROT.item=pickItem(myLines());ROT.el=0;ROT.hold=false;
-  var el=$('#hl'),box=el&&el.querySelector('.hlbox');if(!box)return;el.classList.remove('held');
+/* the next line, with a cross fade and a slight rise; only a change someone asked for is read out by screen readers */
+function rotNext(manual){ROT.k++;var lines=myLines();ROT.item=pickItem(lines);ROT.el=0;ROT.hold=false;
+  var el=$('#hl'),box=el&&el.querySelector('.spbox');if(!box)return;el.classList.remove('held');el.setAttribute('data-kind',spotKind(ROT.item));
   var nu=hlText(ROT.item),old=box.lastElementChild;
-  if(old&&!rmOn()){[].forEach.call(box.querySelectorAll('.out'),function(x){x.remove();});old.classList.remove('in');old.classList.add('out');old.setAttribute('aria-hidden','true');nu.classList.add('in');box.appendChild(nu);setTimeout(function(){if(old.parentNode)old.remove();},420);}
+  if(old&&!rmOn()){[].forEach.call(box.querySelectorAll('.leave'),function(x){x.remove();});old.classList.remove('enter');old.classList.add('leave');old.setAttribute('aria-hidden','true');old.inert=true;nu.classList.add('enter');box.appendChild(nu);setTimeout(function(){if(old.parentNode)old.remove();},420);}
   else box.replaceChildren(nu);
-  var bar=el.querySelector('.hlbar');if(bar){var b2=bar.cloneNode(false);b2.style.animationDelay='0ms';bar.replaceWith(b2);}
+  var seg=el.querySelector('.spseg');if(seg)seg.replaceWith(spotSegs(lines));
   var say=$('#hl-say');if(say)say.textContent=manual?ROT.item.text:'';}
 function rotTick(){var el=document.getElementById('hl'),now=Date.now(),dt=ROT.t?Math.min(2000,Math.max(0,now-ROT.t)):0;ROT.t=now;if(!el||!S)return;
   var a=document.activeElement,paused=ROT.stop||ROT.hold||(!!ROT.item&&ROT.item.id==='meeting')||!!M||document.hidden||el.matches(':hover')||(!!a&&a!==document.body&&el.contains(a));
-  el.classList.toggle('paused',paused);if(paused||!el.querySelector('.hlb'))return;
+  el.classList.toggle('paused',paused);if(paused||!el.querySelector('.spb'))return;
   ROT.el+=dt;if(ROT.el>=rotPeriod())rotNext(false);}
 /* where each personal line leads */
 function goLine(it){var g=it.go,top=function(){render();window.scrollTo(0,0);},jump=function(sel){var t=document.querySelector(sel);if(!t)return;t.scrollIntoView({behavior:rmOn()?'auto':'smooth',block:'start'});var f=t.querySelector('input,button');if(f)try{f.focus({preventScroll:true});}catch(e){}};
@@ -495,8 +517,8 @@ function greeting(){var p=person(me),st=statusOf(p)||{},hr=st.min!=null?Math.flo
     bits.length?h('div',{class:'brief'},h('span',null,resting?'For when you are back':'You have'),bits):h('p',{text:line}));}
 function topbar(title,sub,big){var n=S.tasks.filter(function(t){return forMe(t)||toSign(t)||newMentions(t)>0;}).length,p=person(me);
   return h('header',{class:'top'+(big?' home':'')},
-    h('div',{class:'tt'},big?[greeting(),h('h1',{class:'sr'},'Home'),headline()]:[h('h1',{class:'plain',text:title}),sub?h('p',{text:sub}):null]),
-    big?h('div',{class:'hclk'},clockRow(),teamPill()):null,
+    h('div',{class:'tt'},big?[greeting(),h('h1',{class:'sr'},'Home')]:[h('h1',{class:'plain',text:title}),sub?h('p',{text:sub}):null]),
+    big?headline():null,big?h('div',{class:'hclk'},clockRow(),teamPill()):null,
     h('div',{class:'tools'},h('span',{class:'logo',html:LOGO,'aria-hidden':'true'}),
       h('div',{class:'appid'},h('b',{text:BRAND}),(S.workspace&&S.workspace.name)?h('small',{text:S.workspace.name}):null),
       h('div',{class:'tl a'},h('button',{class:'ic',type:'button','aria-label':n+' things need you',html:I.bell,onclick:function(){V.tab='tasks';V.status='needme';V.subject='all';V.q='';render();}},n?h('span',{class:'badge',text:n}):null),h('small',null,'Alerts')),
