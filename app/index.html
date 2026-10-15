@@ -624,6 +624,59 @@ td.aw{position:relative}.awd{display:inline-block;width:8px;height:8px;border-ra
 .who.pin{background:var(--sunk);color:var(--plum-ink)}.who.pin svg{width:18px;height:18px}
 a.li{text-decoration:none;color:inherit}
 
+/* time assurance: the still working check, time budgets, proof of work, review flags, the estimate report, client approval of hours */
+.still{display:flex;flex-direction:column;gap:12px;background:var(--card);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow);border-left:4px solid var(--coral);margin-bottom:18px}
+.still .sti{display:flex;flex-direction:column;gap:2px;min-width:0}
+.still .sti small{font-size:12px;font-weight:600;color:var(--coral-ink)}
+.still .sti strong{font:600 16px/1.3 var(--fd);color:var(--plum-ink);overflow-wrap:anywhere}
+.still .sti span{font-size:13px;color:var(--muted)}
+.still .stb,.still .stf{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.still .stf .f{flex:1;min-width:140px}
+@media (min-width:900px){.still{flex-direction:row;align-items:center;justify-content:space-between}.still .stb,.still .stf{flex:none}}
+.bbar{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.bbar .bh{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--muted)}
+.bbar .bh b{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bbar .bar{height:8px}.bbar.sm{margin-top:6px}.bbar.sm .bar{height:6px}
+.bbar.g .bar i{background:var(--ok)}.bbar.o .bar i{background:var(--warn)}.bbar.r .bar i{background:var(--danger)}
+.bbar.g .bh b{color:var(--ok)}.bbar.o .bh b{color:var(--warn)}.bbar.r .bh b{color:var(--danger)}
+.bcard{display:flex;flex-direction:column;padding:6px 18px}
+.brow{display:flex;flex-direction:column;gap:2px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:11px 0;width:100%;color:inherit}
+.brow:last-child{border-bottom:0}.brow strong{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.brow small{color:var(--muted);font-size:12px}
+.orl{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.orl div{display:flex;flex-direction:column;font-size:13.5px}.orl small{color:var(--muted);font-size:12px}
+.pft{font-weight:600;color:var(--plum-ink);margin:0}
+.badge-s.fg{font-weight:600}
+button.fgb{border:0;cursor:pointer;font:inherit;font-size:11px}
+.flp{display:flex;flex-direction:column;gap:10px}
+.flr{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:13px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.flr:last-child{border-bottom:0;padding-bottom:0}.flr .addrow{width:100%}
+.tview{margin:2px 0 14px}
+.evh{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:16px 0 8px}.evh strong{font:600 15px var(--fd);color:var(--plum-ink)}.evh span{font-size:12.5px;color:var(--muted)}
+.evtab tr.hi td{background:var(--danger-soft)}
+@media (max-width:640px){.tsheet table.evtab{min-width:0}.evtab th:nth-child(2),.evtab td:nth-child(2){display:none}.evtab th,.evtab td{padding-left:8px;padding-right:8px}.evtab td:first-child{white-space:normal}}
+.cq{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;background:var(--card);border-radius:var(--r-lg);padding:13px 15px;box-shadow:var(--shadow)}
+.cq .cqq{grid-column:1/-1;margin:0;font-size:13.5px;color:var(--ink);background:var(--sunk);border-radius:12px;padding:8px 12px;overflow-wrap:anywhere}
+.cq .frow,.cq .acts{grid-column:1/-1}
+.chkl{display:flex;flex-direction:column;gap:6px}.chkl div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+.chkl span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}.chkl b{font-weight:600;white-space:nowrap}
+.capt .ptab td.act{white-space:nowrap;text-align:right}.capt .ptab td.act .btn,.capt .ptab td.act .badge-s{margin-left:6px}
+.capt tr.thr td{text-align:left;white-space:normal;background:var(--sunk)}
+.capt .tm{display:flex;flex-direction:column;gap:2px;padding:3px 0;font-size:13px}.capt .tm small{color:var(--muted);font-size:11.5px}.capt .tm.team span{color:var(--plum-ink);font-weight:500}
+.capt tr.st-approved td.wk{color:var(--muted)}
+.capt .tm{text-align:left;align-items:flex-start}.capt td.hrs .u{display:none}
+.lv.wkf{grid-template-columns:minmax(0,1fr)}.lv.wkf>.fl{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:640px){
+  .capt td.hrs .u{display:inline}
+  .capt .ptab thead{display:none}
+  .capt .ptab,.capt .ptab tbody{display:block}
+  .capt .ptab tr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .capt .ptab td{display:block;border:0;padding:0;text-align:left;white-space:normal;font-size:13px}
+  .capt .ptab td.wk{order:-1;flex:1 1 100%;font-weight:600;color:var(--plum-ink)}
+  .capt .ptab td.act{flex:1 1 100%;text-align:left;display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px}.capt .ptab td.act .btn,.capt .ptab td.act .badge-s{margin:0}
+  .capt .ptab tr.thr{display:block;padding:8px 14px}.capt .ptab tr.thr td{background:none}
+  .capt tr.st-approved td.wk{color:var(--muted)}
+}
+
 /* Plum and Coral: type, surfaces and controls */
 body{font:400 14.5px/1.55 var(--fb);font-feature-settings:"cv11","ss01"}
 h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.paper h3,.greet .hi,.setup .sh1 strong,.start .stt,.planrow b,.tools .appid b,#nav .brand,.grp h4,.gbody h4,.plan b,.wkn strong,.calh b{font-family:var(--fd);letter-spacing:-.015em}
@@ -850,6 +903,7 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
     <div class="dm-menu">
       <a href="./?client=b7d1c0a9e8f7a6b5c4d3e2f1" id="demo-client">Open the client page</a>
       <a href="../" id="demo-home">Back to the sales page</a>
+      <button type="button" id="demo-still">Try the still working check</button>
       <button type="button" id="demo-reset">Reset the demo</button>
     </div>
   </details>
