@@ -30,7 +30,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.8.2';
+var APP_VERSION='1.8.3';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -76,7 +76,7 @@ var STAT=[['new','New'],['in_progress','In progress'],['waiting','Waiting'],['do
 var FIELDS=['title','subjectId','details','due','start','end','priority','status','waitingOn','assignee','repeat','checklist','private','needsApproval','firstStep','planAt','planWhere','estimateMin','startBy','goodEnough','guideId','type','budgetMin'];
 
 var subj=function(id){return S.subjects.find(function(s){return s.id===id;});};
-var sName=function(id){var s=subj(id);return s?s.name:'General';};
+var sName=function(id){var s=subj(id);return s?s.name:'No client';};
 var sColor=function(id){var s=subj(id);return s?s.color:'#A79DB5';};
 var person=function(id){return S.people.find(function(p){return p.id===id;});};
 var pName=function(id){var p=person(id);return p?p.name:id?'Former member':'Someone';};
@@ -325,6 +325,9 @@ function newMentions(t){var s=seenM()[t.id]||0;return (t.updates||[]).filter(fun
 function markMentions(t){var s=seenM();s[t.id]=Date.now();store.set('hv-seen-m',JSON.stringify(s));}
 var toSign=function(t){return t.status==='review'&&t.createdBy===me;};
 var canPriv=function(){var p=person(me);return !!(S.owner||(p&&p.canPrivate));};
+/* who may add a shared client (type Client or Internal): the owner, or members when the owner allows it. Anyone allowed private work may make a private client */
+var canAddClients=function(){return !!(S.owner||(S.settings&&S.settings.membersAddClients));};
+var newClientLabel=function(){return canAddClients()?'New client':canPriv()?'New private client':'';};
 var hidden=function(t){var sb=subj(t.subjectId);return !!(t.private||(sb&&sb.privateTo));};
 
 /* ---------- shared pieces ---------- */
@@ -431,7 +434,7 @@ function viewHome(){var td=today(),p=person(me);
   var subs=liveSubjects().map(function(s){var all=S.tasks.filter(function(t){return t.subjectId===s.id;}),o=all.filter(open).length,pc=all.length?Math.round((all.length-o)/all.length*100):0;
     return h('button',{class:'sb',type:'button',onclick:function(){goTasks('open',s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:12px;height:12px'}),
       h('strong',{text:s.name}),h('small',{text:(s.privateTo?'Private, ':'')+o+' open'+(all.length?', '+pc+'% done':'')}),h('div',{class:'bar'},h('i',{style:'width:'+pc+'%;background:'+s.color})));});
-  subs.push(h('button',{class:'sb add',type:'button',onclick:function(){openSubject();}},'New client'));
+  if(newClientLabel())subs.push(h('button',{class:'sb add',type:'button',onclick:function(){openSubject();}},newClientLabel()));
   var rn=running(),fNow=myFocusNow();
   var summary=h('div',{class:'hgrid'},
       h('section',{class:'hero'},h('div',null,h('h2',{text:msg}),total?h('small',{text:doneT.length+' of '+total+' done'}):null,
@@ -899,8 +902,13 @@ function impSheet(i){M.sheet=i;M.busy=true;renderSheet();return M.wb.rows(i).the
 function trelloNow(){return HLImport.trelloItems(M.board,{status:M.tstat,archived:M.tarch,client:M.tclient,person:impPeople,day:function(iso){var t=Date.parse(iso);return isNaN(t)?'':dayOf(t);}});}
 function impPreview(items){var newClients={};items.forEach(function(x){if(x.client&&!S.subjects.some(function(s){return s.name.toLowerCase()===x.client.toLowerCase();}))newClients[x.client]=1;});
   return {clients:Object.keys(newClients),parts:[h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,['Task','Client','Assigned to','Due','Status'].map(function(c){return h('th',{scope:'col',text:c});}))),
-      h('tbody',null,items.slice(0,6).map(function(x){return h('tr',null,h('td',{text:x.title+((x.checklist||[]).length?' ('+x.checklist.length+' steps)':'')}),h('td',{text:x.client||'General'}),h('td',{text:x.assignee?pName(x.assignee):''}),h('td',{text:x.due?short(x.due):''}),h('td',{text:STLABEL[x.status]}));})))),
-    h('p',{class:'note',style:'margin:0',text:items.length+(items.length===1?' task':' tasks')+' ready'+(Object.keys(newClients).length?'. New clients to add: '+Object.keys(newClients).slice(0,8).join(', ')+(Object.keys(newClients).length>8?' and more':''):'')+'. Names that match nobody here are left unassigned.'})]};}
+      h('tbody',null,items.slice(0,6).map(function(x){return h('tr',null,h('td',{text:x.title+((x.checklist||[]).length?' ('+x.checklist.length+' steps)':'')}),h('td',{text:x.client||'No client'}),h('td',{text:x.assignee?pName(x.assignee):''}),h('td',{text:x.due?short(x.due):''}),h('td',{text:STLABEL[x.status]}));})))),
+    h('p',{class:'note',style:'margin:0',text:items.length+(items.length===1?' task':' tasks')+' ready'+(Object.keys(newClients).length&&canAddClients()?'. New clients to add: '+Object.keys(newClients).slice(0,8).join(', ')+(Object.keys(newClients).length>8?' and more':''):'')+'. Names that match nobody here are left unassigned.'}),
+    Object.keys(newClients).length&&!canAddClients()?impUnknown(Object.keys(newClients)):null]};}
+/* a member who may not add clients: clients the file names that are not here are never made; their tasks go to No client or a client the member picks */
+function impUnknown(names){return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:8px'},
+  h('p',{style:'margin:0',text:'Not in your clients: '+names.slice(0,8).join(', ')+(names.length>8?' and more':'')+'. Only the owner adds clients, so these tasks go to the client you choose here.'}),
+  fld('Put these tasks under',h('select',{class:'in',id:'imp-unknown',value:M.unknownTo||'',onchange:function(e){M.unknownTo=e.target.value;}},[h('option',{value:'',text:'No client'})].concat(liveSubjects().map(function(x){return h('option',{value:x.id,text:x.name});})))));}
 function impGo(items,clients,again){return h('div',{class:'acts'},h('button',{class:'btn',type:'button',disabled:!items.length||M.busy,onclick:function(){doImport(items,clients);}},M.busy?'Importing…':'Import '+items.length+(items.length===1?' task':' tasks')),
   h('button',{class:'btn ghost sm',type:'button',onclick:again},'Start again'));}
 function renderImport(){var out=[head(M.board?'Import from Trello':'Import tasks')],restart=function(){var t=M.text;openImport();M.text=t;renderSheet();};
@@ -928,14 +936,14 @@ function renderImport(){var out=[head(M.board?'Import from Trello':'Import tasks
       fld('Dates are written as',h('select',{class:'in',id:'imp-fmt',value:M.fmt,onchange:function(e){M.fmt=e.target.value;renderSheet();}},h('option',{value:'dmy',text:'Day first, 31/10/2026'}),h('option',{value:'mdy',text:'Month first, 10/31/2026'})))),
     pv2.parts,impGo(items2,pv2.clients,restart));return out;}
 function doImport(items,clients){if(S.workspace&&S.workspace.active===false){toast('This workspace is read only until the plan is renewed.');return;}
-  var ids={};S.subjects.forEach(function(s){ids[s.name.toLowerCase()]=s.id;});
-  clients.forEach(function(name,i){var id=uid();ids[name.toLowerCase()]=id;send('saveSubject',{subject:{id:id,name:name.slice(0,80),kind:'Client',color:COLORS[(S.subjects.length+i)%COLORS.length],archived:false}},true);});
+  var ids={},made=canAddClients(),to=made?'':(subj(M.unknownTo)?M.unknownTo:''),toName=to?subj(to).name:'No client';S.subjects.forEach(function(s){ids[s.name.toLowerCase()]=s.id;});
+  clients.forEach(function(name,i){if(!made){ids[name.toLowerCase()]=to;return;}var id=uid();ids[name.toLowerCase()]=id;send('saveSubject',{subject:{id:id,name:name.slice(0,80),kind:'Client',color:COLORS[(S.subjects.length+i)%COLORS.length],archived:false}},true);});
   var batch=[],size=0,flushB=function(){if(batch.length)send('bulkAdd',{base:{subjectId:'',priority:'normal',status:'new',repeat:'none'},items:batch},true);batch=[];size=0;};
   items.forEach(function(x){var it={id:uid(),title:x.title,subjectId:x.client?ids[x.client.toLowerCase()]||'':'',assignee:x.assignee,due:x.due,priority:x.priority,status:x.status,details:x.details};
     if((x.checklist||[]).length)it.checklist=x.checklist.map(function(c,j){return {id:it.id.slice(-6)+j,text:c.text,done:!!c.done};});
     var n=JSON.stringify(it).length;if(batch.length>=50||size+n>300000)flushB();batch.push(it);size+=n;});   // each request stays well under the server's size limit
   flushB();
-  closeSheet();toast(items.length+(items.length===1?' task':' tasks')+' imported'+(clients.length?', with '+clients.length+' new '+(clients.length===1?'client':'clients'):''));V.tab='tasks';V.status='all';render();}
+  closeSheet();toast(items.length+(items.length===1?' task':' tasks')+' imported'+(clients.length?made?', with '+clients.length+' new '+(clients.length===1?'client':'clients'):'. '+clients.length+(clients.length===1?' client was':' clients were')+' not in your clients, so '+(clients.length===1?'its':'their')+' tasks went to '+toName:''));V.tab='tasks';V.status='all';render();}
 
 /* ---------- expenses ---------- */
 var EXT=[['travel','Travel'],['software','Software'],['supplies','Supplies'],['meals','Meals'],['data and airtime','Data and airtime'],['other','Other']];
@@ -2265,7 +2273,9 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
         h('div',{class:'panel list'},S.people.map(function(x){return h(S.owner?'button':'div',{class:'li',type:S.owner?'button':null,onclick:S.owner?function(){openPerson(x.id);}:null},h('span',{class:'who',text:initials(x.name)}),
           h('div',null,h('strong',{text:x.name}),h('small',{text:[x.role,x.email,x.id===me?'':x.joined?'Joined':x.inviteExpired?'Invite expired':'Not joined yet',x.id!==me&&x.tz?tIn(Date.now(),x.tz)+' '+tzCity(x.tz):'',x.workStart&&x.workEnd?'Hours '+x.workStart+' to '+x.workEnd:'',x.canPrivate&&x.id!==me?'Can make private':'',x.hidden?(x.ownerSees?'Hidden, visible to you':'Hidden'):''].filter(Boolean).join(' · ')||'No details yet'})),x.id===me?h('span',{class:'tagr'},'This is you'):null);})),
         S.owner?h('p',{class:'note',text:'Add someone, then open them to copy their invite link and send it, for example on WhatsApp. They join as soon as they create an account from the link.'+(S.features.mail?' If you add their email, they also get the invitation by email.':'')}):null),
-      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Clients'),h('button',{type:'button',onclick:function(){openSubject();}},'New client')),
+      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Clients'),newClientLabel()?h('button',{type:'button',onclick:function(){openSubject();}},newClientLabel()):null),
+        S.owner?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:6px;margin-bottom:10px'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-madd',checked:!!S.settings.membersAddClients,onchange:function(e){send('saveSettings',{settings:{membersAddClients:e.target.checked}});}}),'Members can add clients'),
+          h('p',{class:'note',style:'margin:0',text:S.settings.membersAddClients?'Members can add Client and Internal clients. Rates, billing, client page links, retainers and client emails stay yours.':'Only you add clients. Members pick from your clients, or make a private one of their own if you allow private work.'})):null,
         h('div',{class:'panel list'},S.subjects.map(function(s){return h('button',{class:'li',type:'button',onclick:function(){openSubject(s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:14px;height:14px'}),
           h('div',null,h('strong',{text:s.name}),h('small',{text:kindOf(s)+', '+S.tasks.filter(function(t){return t.subjectId===s.id&&open(t);}).length+' open'})),h('span',{class:'tagr',text:s.archived?'Archived':''}));})))),
     h('div',{class:'sec'},h('h3',null,'Templates'),h('button',{type:'button',onclick:function(){openTemplate();}},'New template')),
@@ -2394,7 +2404,7 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
   if(d.status==='waiting')out.push(h('div',{class:'addrow',style:'margin-top:0'},h('input',{class:'in',id:'t-wait',maxlength:200,placeholder:'Waiting on whom or what?','aria-label':'Waiting on',value:d.waitingOn,oninput:bind(d,'waitingOn')}),
     t?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveTask',{task:{id:t.id,waitingOn:d.waitingOn}},true);toast('Saved');}},'Save'):null));
   out.push(h('div',{class:'frow'},
-    fld('Client',h('select',{class:'in',id:'t-subject',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;renderSheet();}},liveSubjects().concat(subj(d.subjectId)&&subj(d.subjectId).archived?[subj(d.subjectId)]:[]).map(function(s){return h('option',{value:s.id,text:s.name});}),h('option',{value:'',text:'General'}))),
+    fld('Client',h('select',{class:'in',id:'t-subject',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;renderSheet();}},liveSubjects().concat(subj(d.subjectId)&&subj(d.subjectId).archived?[subj(d.subjectId)]:[]).map(function(s){return h('option',{value:s.id,text:s.name});}),h('option',{value:'',text:'No client'}))),
     fld('Assigned to',[h('select',{class:'in',id:'t-who',disabled:d.private,value:d.private?me:d.assignee,onchange:function(e){d.assignee=e.target.value;renderSheet();}},h('option',{value:'',text:'Nobody yet'}),S.people.map(function(p){return h('option',{value:p.id,text:p.name+(p.id===me?' (me)':'')});})),
       (function(){var ap=person(d.private?me:d.assignee);return ap&&ap.id!==me&&ap.tz?h('span',{class:'their',style:'margin:2px 0 0',text:'For '+ap.name.split(' ')[0]+' it is '+theirTime(ap)}):null;})()]),
     fld(M.tpl?'Start date':'Due date',h('input',{class:'in',id:'t-due',type:'date',value:d.due,onchange:function(e){d.due=e.target.value;if(M.tpl)renderSheet();}})),
@@ -2505,16 +2515,17 @@ function moveTimeAsk(t,d){if(!S.owner||!t||t.subjectId===d.subjectId)return null
   var n=(S.time||[]).filter(function(e){return e.taskId===t.id&&!e.invoiceId&&(e.status==='submitted'||e.status==='approved');}).length;if(!n)return null;
   return h('label',{class:'switch'},h('input',{type:'checkbox',id:'t-moveall',checked:!!M.moveAll,onchange:function(e){M.moveAll=e.target.checked;}}),'Also move '+n+' sent or approved time '+(n===1?'entry':'entries')+' to the new client');}
 
-function openSubject(id){var s=id?subj(id):null;M={kind:'subject',id:id||null,d:s?Object.assign({private:!!s.privateTo},s):{id:uid(),name:'',kind:'Client',color:COLORS[S.subjects.length%COLORS.length],archived:false,private:false}};$('#ov').hidden=false;renderSheet();var f=$('#s-name');if(f&&!id)f.focus();}
+function openSubject(id){var s=id?subj(id):null;if(!s&&!canAddClients()&&!canPriv()){toast('Only the owner can add clients.');return;}
+  M={kind:'subject',id:id||null,d:s?Object.assign({private:!!s.privateTo},s):{id:uid(),name:'',kind:'Client',color:COLORS[S.subjects.length%COLORS.length],archived:false,private:!canAddClients()}};$('#ov').hidden=false;renderSheet();var f=$('#s-name');if(f&&!id)f.focus();}
 function renderSubject(){var d=M.d;
   if(M.id&&!S.owner&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:kindOf(d)+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
     h('p',{class:'panel',style:'margin:0'},'Only the owner can rename, recolour or archive a shared client. You can still add tasks to it and make your own private clients.'),
     h('button',{class:'btn wide',type:'button',onclick:function(){var id=d.id;closeSheet();goTasks('open',id);}},'See its tasks')];
-  return [head(M.id?'Client':'New client'),
+  return [head(M.id?'Client':newClientLabel()||'New client'),
   h('input',{class:'title-in',id:'s-name',maxlength:80,placeholder:'Client name, or an internal area','aria-label':'Client name',value:d.name,oninput:bind(d,'name')}),
   d.privateTo||d.private?h('p',{class:'note',style:'margin:0',text:'Type: Private. Only you see it.'}):fld('Type',h('select',{class:'in',id:'s-kind',value:kindOf(d),onchange:bind(d,'kind')},[['Client','Client, an outside customer'],['Internal','Internal, your own company\'s work']].map(function(k){return h('option',{value:k[0],text:k[1]});}))),
   h('div',{class:'lbl'},'Colour'),h('div',{class:'sw'},COLORS.map(function(c){return h('button',{type:'button',style:'background:'+c,'aria-label':'Colour '+c,'aria-pressed':String(d.color===c),onclick:function(){d.color=c;renderSheet();}});})),
-  ((!M.id&&canPriv())||(M.id&&d.privateTo===me))?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-priv',checked:d.private,onchange:function(e){d.private=e.target.checked;}}),'Private: only I see this client and its tasks.'):null,
+  ((!M.id&&canPriv()&&canAddClients())||(M.id&&d.privateTo===me&&canAddClients()))?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-priv',checked:d.private,onchange:function(e){d.private=e.target.checked;}}),'Private: only I see this client and its tasks.'):null,
   M.id?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-arch',checked:d.archived,onchange:function(e){d.archived=e.target.checked;}}),'Archive this client. Its tasks are kept.'):null,
   S.owner&&!d.privateTo&&!d.private?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Billing'),
     h('div',{class:'frow'},fld('Hourly rate',h('input',{class:'in',id:'s-rate',type:'number',min:'0',step:'0.01',value:d.rate||'',oninput:function(e){d.rate=Number(e.target.value)||0;}})),
