@@ -29,7 +29,7 @@
       if (!link) { sel.value = cur || 'out'; open('note', 'Client page', [el('p', { text: 'Brooks Dental has no client page link right now. As Ada, open Settings, Clients, Brooks Dental and choose Create client link, then try again.' })]); return; }
       location.href = link; return;
     }
-    if (v === 'owner' || v === 'member') { D.signInAs(v); location.href = D.page; }
+    if (v === 'owner' || v === 'member' || v === 'amara' || v === 'tunde') { D.signInAs(v); location.href = D.page; }
   });
 
   /* ---------- the panel ---------- */

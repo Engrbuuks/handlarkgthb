@@ -1004,6 +1004,90 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
   img.ill{filter:brightness(.92)}
 }
 @media (prefers-color-scheme:dark) and (min-width:900px){#nav{box-shadow:inset -1px 0 0 rgba(255,255,255,.07)}}
+
+/* Proof mode (1.10.0): the banner while proof time runs, consent, the tray, timelines. Tokens only, so the dark theme follows */
+.pfv{position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;top:-10px}
+.pban{display:flex;flex-direction:column;gap:10px;background:var(--card);border-radius:var(--r-lg);padding:12px 16px;box-shadow:var(--shadow);border-left:4px solid var(--ok);margin-bottom:18px}
+.pban.off{border-left-color:var(--warn)}.pban.pa{border-left-color:var(--info)}.pban.ph{border-left-color:var(--line2)}
+.pban .pbi{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pban .pbi small{font-size:12px;font-weight:600;color:var(--muted)}
+.pban .pbi strong{font:600 15px/1.3 var(--fd);color:var(--plum-ink)}
+.pban .pbi span{font-size:13px;color:var(--muted)}
+.pban .pbb{display:flex;gap:8px;flex-wrap:wrap}
+@media (min-width:900px){.pban{flex-direction:row;align-items:center;justify-content:space-between}.pban .pbb{flex:none;justify-content:flex-end;max-width:52%}}
+.pnote{background:var(--blush);border-radius:12px;padding:10px 14px}.pnote small{font-size:12px;font-weight:600;color:var(--coral-ink)}.pnote p{margin:2px 0 0;color:var(--ink);font-size:13.5px}
+.pcon{margin:0;display:flex;flex-direction:column;gap:10px}
+.pcon div{background:var(--sunk);border-radius:12px;padding:10px 14px}
+.pcon dt{font-weight:700;color:var(--plum-ink);font-size:13.5px}.pcon dd{margin:2px 0 0;font-size:13px;color:var(--ink)}
+.pagree{background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;font-weight:600}
+.pagree input{width:20px;height:20px;flex:none;accent-color:var(--coral2)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pgrid.sm{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));margin-top:6px}
+.pshot{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pimg{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;width:100%;border:0;padding:0;border-radius:10px;overflow:hidden;background:var(--sunk);color:var(--muted);font-size:12px;box-shadow:var(--hair)}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block}
+.pimg.rm{border:2px dashed var(--line2);background:var(--card);text-align:center;padding:8px;font-weight:600}
+.pshot figcaption{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:12px;color:var(--muted)}
+.pshot figcaption b{color:var(--ink);font-variant-numeric:tabular-nums}
+.pshot .pleft{color:var(--coral-ink);font-weight:600;font-variant-numeric:tabular-nums}
+.pshot figcaption .btn{margin-left:auto}
+.pbig{width:100%;border-radius:12px;box-shadow:var(--hair);background:var(--sunk)}
+.ptl{display:flex;flex-direction:column;gap:14px}
+.pent{background:var(--card);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.peh{display:flex;flex-direction:column;gap:6px}.peh>div:first-child{display:flex;flex-direction:column;min-width:0}
+.peh strong{color:var(--plum-ink);overflow-wrap:anywhere}.peh small{color:var(--muted);font-size:12.5px}
+.peh .fl{display:flex;flex-wrap:wrap;gap:6px;color:inherit;font-weight:inherit}
+.pbar{position:relative;height:30px;background:var(--sunk);border-radius:8px;margin:2px 0 16px}
+.pbar .gap{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,var(--danger) 0 4px,var(--danger-soft) 4px 8px);border-radius:4px}
+.pbar .tk{position:absolute;top:5px;bottom:5px;width:3px;margin-left:-1.5px;background:var(--plum-ink);border-radius:2px}
+.pbar .tk.rm{background:var(--warn);width:6px;margin-left:-3px;top:9px;bottom:9px;border-radius:50%}
+.pbar .pt0,.pbar .pt1{position:absolute;top:100%;margin-top:2px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}.pbar .pt0{left:0}.pbar .pt1{right:0}
+.pgaps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.pgaps li{display:flex;gap:8px;flex-wrap:wrap}.pgaps b{color:var(--danger);font-variant-numeric:tabular-nums}.pgaps span{color:var(--muted)}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.prow>div{display:flex;flex-direction:column;min-width:0}.prow small{color:var(--muted);font-size:12px}.prow .switch{flex:none}
+.ppl{display:flex;flex-direction:column}
+.prow2{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.prow2 .f{flex:1;min-width:160px}
+.pday{display:flex;gap:6px;align-items:center}.pday .in{flex:1;min-width:0}
+.seg.s4{grid-template-columns:repeat(4,1fr)}
+.pshr{display:flex;flex-direction:column;gap:2px}
+@media (max-width:899px){.prow2 .f{flex-basis:100%}.seg.s4 button{font-size:12px;padding-left:4px;padding-right:4px}.pgrid{grid-template-columns:repeat(2,1fr)}.pgrid.sm{grid-template-columns:repeat(3,1fr)}}
+/* version 1.11.0: planned shifts, attendance, leave balances and types, roles */
+.seg.s3{grid-template-columns:repeat(3,1fr)}
+.lvbal{margin:0;padding:10px 13px;border-radius:12px;background:var(--blush);color:var(--ink);font-size:14px;line-height:1.45}
+.lvbal b{color:var(--plum-ink)}
+.baltiles{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.baltiles .tile{border:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.baltiles .tile:hover{box-shadow:var(--shadow-lg)}
+.tsheet td.neg,.tsheet td.bad{color:var(--danger);font-weight:700}
+.tsheet td.warn{color:var(--warn);font-weight:700}
+.tsheet td.mu{color:var(--muted)}
+.tsheet td.otc{color:var(--coral-ink);font-weight:700}
+.sgrid table{min-width:780px}
+.sgrid td{vertical-align:top;padding:8px 6px}
+.scell{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;min-width:94px;margin:0 0 4px;padding:7px 9px;border-radius:10px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font:600 12px/1.25 Manrope,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;text-align:left}
+.scell .st{font-style:normal;font-weight:600;font-size:11px;color:var(--muted)}
+.scell.onTime,.scell.working{background:var(--ok-soft);border-color:transparent}.scell.onTime .st,.scell.working .st{color:var(--ok)}
+.scell.late,.scell.early,.scell.lateEarly{background:var(--warn-soft);border-color:transparent}.scell.late .st,.scell.early .st,.scell.lateEarly .st{color:var(--warn)}
+.scell.missed,.scell.notIn{background:var(--danger-soft);border-color:transparent}.scell.missed .st,.scell.notIn .st{color:var(--danger)}
+.lv.occ small{line-height:1.45}
+.attn .qcard{border-left-color:var(--coral2)}
+.attn .qcard strong{font-size:15px;color:var(--plum-ink)}
+.attn .qcard small{color:var(--muted)}
+.attn .qcard + .qcard{margin-top:10px}
+.ltrow{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(210px,1.3fr) repeat(2,minmax(110px,.7fr));gap:8px 12px;align-items:end;padding:0 0 12px;border-bottom:1px solid var(--line)}
+.ltrow .f{margin:0}
+.ltrow .ltsw{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+.ltrow .switch{white-space:nowrap}
+.ltrow .ltsw .btn{margin-left:auto}
+.hol b{white-space:nowrap}
+#at-team{margin-bottom:12px}
+@media (min-width:900px){.tiles.t5{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (max-width:560px){.tiles.t5 .tile:last-child{grid-column:1/-1}}
+@media (max-width:560px){.otrow .f:last-child{grid-column:1/-1}}
+.hcs{flex-wrap:wrap;gap:6px 16px}
+@media (max-width:899px){.ltrow{grid-template-columns:1fr 1fr}.ltrow>input.in{grid-column:1/-1}}
+@media (max-width:560px){.baltiles{grid-template-columns:1fr 1fr}.lv.occ{grid-template-columns:1fr}.lv.occ>b{justify-self:start}}
 </style>
 </head>
 <body>
@@ -1012,6 +1096,8 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
   <select id="demo-who" aria-label="Viewing as">
     <option value="owner">Viewing as Ada, owner</option>
     <option value="member">Viewing as Kemi, assistant</option>
+    <option value="amara">Viewing as Amara, manager</option>
+    <option value="tunde">Viewing as Tunde, team lead</option>
     <option value="client">Viewing as Daniel, client</option>
   </select>
   <details id="demo-more"><summary aria-label="More demo options">More <span id="demo-count" class="dm-n" hidden></span></summary>

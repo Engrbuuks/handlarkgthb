@@ -30,7 +30,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.9.2';
+var APP_VERSION='1.11.0';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -69,7 +69,7 @@ function loadQ(){qOwner=uidNow();Q=[];if(!qOwner||!wsId)return;try{Q=JSON.parse(
 function saveQ(){if(!qOwner||!wsId)return;if(Q.length)store.set(qKey(),JSON.stringify(Q));else store.del(qKey());}
 /* the cached copy of the workspace, for opening fast and offline; kept per person and workspace like the queue */
 function saveState(res){if(!uidNow()||!wsId||!res)return;var keep=Object.assign({},res);delete keep.upload;delete keep.exportData;delete keep.msg;store.set(stKey(),JSON.stringify(keep));}
-function norm(c){c.features=c.features||{mail:true,wa:true,ai:true};c.templates=c.templates||[];c.shifts=c.shifts||[];c.presence=c.presence||[];c.invoices=c.invoices||[];c.leaves=c.leaves||[];c.focusNow=c.focusNow||[];c.guides=c.guides||[];c.meetings=c.meetings||[];c.expenses=c.expenses||[];c.myPush=c.myPush||[];c.myCal=c.myCal||'';c.myFocus=c.myFocus||[];c.myStuck=c.myStuck||[];c.stuckSignals=c.stuckSignals||[];c.myPatterns=c.myPatterns||{hours:[],stuck:{},focus:{}};c.time=c.time||[];c.sheets=c.sheets||[];c.timeTotals=c.timeTotals||[];c.budgets=c.budgets||[];c.trash=c.trash||[];c.settings=c.settings||{};c.settings.workSites=c.settings.workSites||[];c.tasks.forEach(function(t){t.files=t.files||[];t.time=t.time||[];t.updates=t.updates||[];t.checklist=t.checklist||[];});return c;}
+function norm(c){c.features=c.features||{mail:true,wa:true,ai:true};c.myShots=c.myShots||[];c.proofMe=c.proofMe||{};c.templates=c.templates||[];c.shifts=c.shifts||[];c.presence=c.presence||[];c.invoices=c.invoices||[];c.leaves=c.leaves||[];c.focusNow=c.focusNow||[];c.guides=c.guides||[];c.meetings=c.meetings||[];c.expenses=c.expenses||[];c.myPush=c.myPush||[];c.myCal=c.myCal||'';c.myFocus=c.myFocus||[];c.myStuck=c.myStuck||[];c.stuckSignals=c.stuckSignals||[];c.myPatterns=c.myPatterns||{hours:[],stuck:{},focus:{}};c.time=c.time||[];c.sheets=c.sheets||[];c.timeTotals=c.timeTotals||[];c.budgets=c.budgets||[];c.trash=c.trash||[];c.settings=c.settings||{};c.settings.workSites=c.settings.workSites||[];c.tasks.forEach(function(t){t.files=t.files||[];t.time=t.time||[];t.updates=t.updates||[];t.checklist=t.checklist||[];});return c;}
 function cached(){if(!uidNow()||!wsId)return null;try{var c=JSON.parse(store.get(stKey())||'null');return c&&c.tasks?norm(c):null;}catch(e){return null;}}
 var COLORS=['#5A6FD1','#FF7059','#C93A6B','#8B6CC9','#2E9E7A','#6B4FA0','#E07AB0','#B98A2E'];
 var STAT=[['new','New'],['in_progress','In progress'],['waiting','Waiting'],['done','Done']];
@@ -135,7 +135,7 @@ function mutate(action,p){var now=p._at||Date.now(),T=function(id){return S.task
   else if(action==='timerStop'){t=T(p.id);if(t)t.time.forEach(function(e){if(e.by===p.by&&!e.end)e.end=now;});S.time.forEach(function(e){if(e.personId===p.by&&!e.end&&e.taskId===p.id){e.end=now;e.minutes=Math.round((now-e.start)/6e4);}});}
   else if(action==='addTime'){t=T(p.id);if(t){t.time=t.time.concat([{by:p.by,start:now-p.minutes*6e4,end:now,manual:true,source:'manual'}]);S.time.push({id:'o'+p._op,personId:p.by,subjectId:t.subjectId,taskId:t.id,start:now-p.minutes*6e4,end:now,minutes:p.minutes,source:'manual',billable:billDefOf(subj(t.subjectId)),status:'draft',invoiceId:'',note:''});}}
   else if(action==='saveTime'){var en=p.entry,ex2=S.time.find(function(x){return x.id===en.id;});var base2={minutes:Math.round((en.end-en.start)/6e4)};
-    if(ex2)Object.assign(ex2,en,base2,{status:S.owner?ex2.status:'draft',editedBy:p.by,editedAt:now});else S.time.push(Object.assign({personId:p.by,source:'manual',status:'draft',invoiceId:'',billable:billDefOf(subj(en.subjectId)),createdAt:now},en,base2));}
+    if(ex2)Object.assign(ex2,en,base2,{status:S.owner||(mgrOf(ex2.personId)&&ex2.personId!==me)?ex2.status:'draft',editedBy:p.by,editedAt:now});else S.time.push(Object.assign({personId:p.by,source:'manual',status:'draft',invoiceId:'',billable:billDefOf(subj(en.subjectId)),createdAt:now},en,base2));}
   else if(action==='deleteTime'){S.time=S.time.filter(function(x){return x.id!==p.id;});}
   else if(action==='submitWeek'){var sw0=S.time.filter(function(e){return e.personId===p.by&&weekStart(dayOf(e.start))===p.week&&!e.invoiceId&&(e.status==='draft'||e.status==='rejected');});sw0.forEach(function(e){e.status='submitted';});
     var sh0=sheetOf(p.by,p.week);if(!sh0){sh0={id:p.by+'_'+p.week,personId:p.by,week:p.week};S.sheets.push(sh0);}Object.assign(sh0,{status:'submitted',submittedAt:now,minutes:sw0.reduce(function(a,e){return a+(e.minutes||0);},0)});}
@@ -162,7 +162,7 @@ function mutate(action,p){var now=p._at||Date.now(),T=function(id){return S.task
   else if(action==='clockOut'){var a3=myShift();if(a3){a3.breaks.forEach(function(b){if(!b.end)b.end=now;});a3.out=now;S.time.forEach(function(e){if(e.shiftId===a3.id&&!e.end){e.end=now;e.minutes=Math.round((now-e.start)/6e4);}});}S.presence=S.presence.filter(function(x){return x.personId!==p.by;});}
   else if(action==='editShift'){var a4=S.shifts.find(function(x){return x.id===p.id;});if(a4){a4.in=p.in;a4.out=p.out||0;a4.edited={by:p.by,at:now};a4.autoClosed=false;}}
   else if(action==='deleteShift'){S.shifts=S.shifts.filter(function(x){return x.id!==p.id;});}
-  else if(action==='requestLeave'){var lv=p.leave;if(!S.leaves.some(function(x){return x.id===lv.id;}))S.leaves.push(Object.assign({personId:S.owner&&lv.personId?lv.personId:p.by,status:S.owner?'approved':'pending',type:'annual'},lv));}
+  else if(action==='requestLeave'){var lv=p.leave;if(!S.leaves.some(function(x){return x.id===lv.id;}))S.leaves.push(Object.assign({personId:lv.personId&&mayDecide(lv.personId)?lv.personId:p.by,status:S.owner||(lv.personId&&mayDecide(lv.personId))?'approved':'pending',type:'annual'},lv));}
   else if(action==='decideLeave'){S.leaves.forEach(function(x){if(x.id===p.id)x.status=p.status;});}
   else if(action==='cancelLeave'){S.leaves=S.leaves.filter(function(x){return x.id!==p.id;});}
   else if(action==='invoiceStatus'){S.invoices.forEach(function(x){if(x.id===p.id)x.status=p.status;});if(p.status==='void')S.time.forEach(function(e){if(e.invoiceId===p.id)e.invoiceId='';});}
@@ -179,7 +179,7 @@ function mutate(action,p){var now=p._at||Date.now(),T=function(id){return S.task
   else if(action==='askQuestion'){t=T(p.id);if(t){var qto=t.createdBy&&t.createdBy!==p.by?t.createdBy:'';t.updates=t.updates.concat([{at:now,by:p.by,text:p.text,mentions:qto?[qto]:[],question:true,kind:p.kind||'question',to:qto,answeredAt:0}]);t.updatedAt=now;}}
   else if(action==='saveGuide'){var gd=p.guide,gx=S.guides.find(function(x){return x.id===gd.id;});if(gx)Object.assign(gx,gd,{updatedAt:now,updatedBy:p.by});else S.guides.push(Object.assign({createdBy:p.by,createdAt:now,updatedAt:now,updatedBy:p.by},gd));}
   else if(action==='deleteGuide'){S.guides=S.guides.filter(function(x){return x.id!==p.id;});S.tasks.forEach(function(x){if(x.guideId===p.id)x.guideId='';});}
-  else if(action==='saveExpense'){var ed=p.expense,ex=S.expenses.find(function(x){return x.id===ed.id;});if(ex)Object.assign(ex,ed,{status:S.owner?ex.status:'pending'});else S.expenses.push(Object.assign({createdAt:now,status:S.owner?'approved':'pending',personId:p.by},ed));}
+  else if(action==='saveExpense'){var ed=p.expense,ex=S.expenses.find(function(x){return x.id===ed.id;});if(ex)Object.assign(ex,ed,{status:S.owner||(mgrOf(ex.personId)&&ex.personId!==me)?ex.status:'pending'});else S.expenses.push(Object.assign({createdAt:now,status:S.owner||(ed.personId&&ed.personId!==me&&mgrOf(ed.personId))?'approved':'pending',personId:p.by},ed));}
   else if(action==='decideExpense'){S.expenses.forEach(function(x){if(x.id===p.id){x.status=p.status;x.reason=p.reason||'';}});}
   else if(action==='deleteExpense'){S.expenses=S.expenses.filter(function(x){return x.id!==p.id;});}
   else if(action==='acceptRequest'){t=T(p.id);if(t&&t.request){t.request.state='accepted';if(p.assignee)t.assignee=p.assignee;}}
@@ -275,6 +275,7 @@ function wipeDevice(dropTrust){var u=uidNow(),keep={'hv-ref':1,'hv-keys-v2':1,'h
   try{sessionStorage.clear();}catch(e){}
   try{if(window.caches)caches.keys().then(function(l){l.forEach(function(k){caches.delete(k);});}).catch(function(){});}catch(e){}
   try{if(window.indexedDB&&indexedDB.databases)indexedDB.databases().then(function(l){(l||[]).forEach(function(d){if(d&&d.name)indexedDB.deleteDatabase(d.name);});}).catch(function(){});}catch(e){}
+  try{if(PF.stream)pfStop('');}catch(e){}   // a screen being shared stops with the session
   Q=[];qOwner='';sess=null;wsId='';wsList=[];me='';S=null;pushEp=null;A0.invite='';A0.inv=null;clearTimeout(pumpT);pumpT=null;}
 function server(action,p){return call('api',{workspace:wsId,action:action,payload:Object.assign({_app:appUrl()},p)});}
 /* sign in again, or pick another workspace, when the server says this device has lost access */
@@ -287,7 +288,7 @@ function accept(res){if(!sess||!res||!res.tasks)return false;   // a late reply 
   saveState(res);setTimeout(checkAlerts,0);return true;}
 /* Every change is shown at once, kept in a queue on this device, and sent to the server in order.
    If the connection drops the queue simply waits, so nothing typed offline is lost. */
-function send(action,p,quiet){p=p||{};if(action==='saveSettings'&&p.settings&&p.settings.paystackKey){p.settings=Object.assign({},p.settings);delete p.settings.paystackKey;if(!Object.keys(p.settings).length)return;}   // a secret key is never kept in the offline queue
+function send(action,p,quiet,proofOk){p=p||{};if(!proofOk&&proofGuard(action,p,quiet))return;   // Proof mode: consent first, then the screenif(action==='saveSettings'&&p.settings&&p.settings.paystackKey){p.settings=Object.assign({},p.settings);delete p.settings.paystackKey;if(!Object.keys(p.settings).length)return;}   // a secret key is never kept in the offline queue
   p.by=me;p._op=uid();p._at=Date.now();if(STILL_A[action])LACT=p._at;
   try{mutate(action,p);}catch(e){}
   if(qOwner!==uidNow())loadQ();if(!qOwner)return;   // nobody signed in: nothing is queued
@@ -325,11 +326,20 @@ function seenM(){try{return JSON.parse(store.get('hv-seen-m')||'{}')||{};}catch(
 function newMentions(t){var s=seenM()[t.id]||0;return (t.updates||[]).filter(function(u){return u.by!==me&&u.at>s&&(u.mentions||[]).indexOf(me)>=0;}).length;}
 function markMentions(t){var s=seenM();s[t.id]=Date.now();store.set('hv-seen-m',JSON.stringify(s));}
 var toSign=function(t){return t.status==='review'&&t.createdBy===me;};
+/* roles (version 1.11.0): the server sends the role, what this person may do and whom they look after; it checks every action again */
+var ROLE=function(){return (S&&S.role)||(S&&S.owner?'owner':'member');};
+var CAN=function(k){return !!S.owner||!!(S.can&&S.can[k]);};
+var MGR=function(){return !!S.owner||ROLE()==='manager';};
+var LEADS=function(){return ROLE()!=='member';};
+var looksAfter=function(pid){return !!S.owner||(S.scope||[]).indexOf(pid)>=0;};
+var mgrOf=function(pid){return !!S.owner||(ROLE()==='manager'&&looksAfter(pid));};
+var mayDecide=function(pid){return !!S.owner||(pid!==me&&looksAfter(pid));};
+var ROLEW={owner:'Owner',manager:'Manager',lead:'Team lead',member:'Member'};
 var canPriv=function(){var p=person(me);return !!(S.owner||(p&&p.canPrivate));};
 /* who may add a shared client (type Client or Internal): the owner, or members when the owner allows it ("Members can add clients").
    A private list is not a client: it is a person's own list that only they see, never billed, with no client features.
    Who may keep private lists is set per person by the owner under People ("Can keep private lists") */
-var canAddClients=function(){return !!(S.owner||(S.settings&&S.settings.membersAddClients));};
+var canAddClients=function(){return !!(MGR()||(S.settings&&S.settings.membersAddClients));};
 var newClientLabel=function(){return canAddClients()?'New client':'';};
 var newListLabel=function(){return !S.owner&&canPriv()?'New private list':'';};   /* members only: the owner keeps private tasks */
 var isList=function(s){return !!(s&&s.privateTo);};
@@ -353,6 +363,7 @@ function tick(){var now=Date.now();
   [].forEach.call(document.querySelectorAll('[data-clk]'),function(el){try{var o=tzParts(el.getAttribute('data-clk'),now);
     el.querySelector('.hm').textContent=o.hour+':'+o.minute;el.querySelector('.ss').textContent=o.second;el.querySelector('.dt').textContent=o.weekday+' '+(+o.day)+' '+MON[o.month-1];}catch(e){}});
   [].forEach.call(document.querySelectorAll('[data-run]'),function(el){var x=span((now-(+el.getAttribute('data-run')))*(+el.getAttribute('data-mult')||1)+(+el.getAttribute('data-base')||0));el.textContent=pad(x.d*24+x.h)+':'+pad(x.m)+':'+pad(x.s);});
+  [].forEach.call(document.querySelectorAll('[data-rel]'),function(el){var left=+el.getAttribute('data-rel')-now,sec=Math.max(0,Math.ceil(left/1000));el.textContent=left>0?'Released in '+Math.floor(sec/60)+':'+pad(sec%60):'Released';});
   [].forEach.call(document.querySelectorAll('[data-rec]'),function(el){var sec=Math.max(0,Math.floor((now-(+el.getAttribute('data-rec')))/1000));el.textContent=Math.floor(sec/60)+':'+pad(sec%60);});
   [].forEach.call(document.querySelectorAll('[data-cd]'),function(el){var left=+el.getAttribute('data-cd')-now,sec=Math.max(0,Math.ceil(left/1000));el.textContent=pad(Math.floor(sec/60))+':'+pad(sec%60);
     if(left<=0&&S){var f=myFocusNow();if(f&&f.id===el.getAttribute('data-fid'))focusUp(f);}});
@@ -528,8 +539,8 @@ function topbar(title,sub,big){var n=S.tasks.filter(function(t){return forMe(t)|
     h('div',{class:'tools'},h('span',{class:'logo',html:LOGO,'aria-hidden':'true'}),
       h('div',{class:'appid'},h('b',{text:BRAND}),(S.workspace&&S.workspace.name)?h('small',{text:S.workspace.name}):null),
       h('div',{class:'tl a'},h('button',{class:'ic',type:'button','aria-label':n+' things need you',html:I.bell,onclick:function(){V.tab='tasks';V.status='needme';V.subject='all';V.q='';render();}},n?h('span',{class:'badge',text:n}):null),h('small',null,'Alerts')),
-      h('div',{class:'tl z'},S.owner?h('button',{class:'av',type:'button','aria-label':'Settings',html:I.cog,onclick:function(){V.tab='more';render();window.scrollTo(0,0);}})
-        :h('button',{class:'av',type:'button','aria-label':'Your account',text:p?initials(p.name):'?',onclick:function(){openMe();}}),h('small',{text:S.owner?'Settings':'Account'}))));}
+      h('div',{class:'tl z'},MGR()?h('button',{class:'av',type:'button','aria-label':'Settings',html:I.cog,onclick:function(){V.tab='more';render();window.scrollTo(0,0);}})
+        :h('button',{class:'av',type:'button','aria-label':'Your account',text:p?initials(p.name):'?',onclick:function(){openMe();}}),h('small',{text:MGR()?'Settings':'Account'}))));}
 function toggleDone(t){if(t.status==='review'&&!toSign(t)){toast('This is waiting for sign off from '+pName(t.createdBy)+'.');return;}
   if(open(t)&&needProof(t)){openProof(t.id);return;}
   send('saveTask',{task:{id:t.id,status:open(t)?'done':'in_progress'}},true);
@@ -589,7 +600,7 @@ function viewHome(){var td=today(),p=person(me);
   /* phones: the day at a glance first, then what needs an answer, then the rest */
   var ph=PHONE();
   var top=topbar('','',true),held=ROT.item&&ROT.item.id==='meeting'?ROT.item.ref:'',nm=nextMeeting();
-  return [top,nm&&nm.id===held?null:meetBanner(),ph?summary:null,setupCard(),ph?null:clockCard(),ph?null:timeCard(),ph?requestsBlock():null,ph?questionsBlock():null,ph?clockCard():null,ph?timeCard():null,startCard(),S.owner?focusStrip():null,ph?null:requestsBlock(),ph?null:questionsBlock(),quietBlock(),!fNow&&rn?h('div',{class:'runbar'},h('div',null,h('small',null,'Timer running'),h('strong',{text:rn.t.title})),h('b',{'data-run':String(rn.e.start)},''),
+  return [top,nm&&nm.id===held?null:meetBanner(),ph?summary:null,attCard(),setupCard(),ph?null:clockCard(),ph?null:timeCard(),ph?requestsBlock():null,ph?questionsBlock():null,ph?clockCard():null,ph?timeCard():null,startCard(),S.owner?focusStrip():null,ph?null:requestsBlock(),ph?null:questionsBlock(),quietBlock(),!fNow&&rn?h('div',{class:'runbar'},h('div',null,h('small',null,'Timer running'),h('strong',{text:rn.t.title})),h('b',{'data-run':String(rn.e.start)},''),
       h('button',{class:'btn sm',type:'button',onclick:function(){stopTimer(rn.t);}},'Stop')):null,ph?budgetCard():null,h('div',{class:'page'},
     ph?null:summary,ph?null:budgetCard(),
     h('div',{class:'hgrid b'},
@@ -597,7 +608,7 @@ function viewHome(){var td=today(),p=person(me);
       h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Coming up'),h('button',{type:'button',onclick:function(){V.tab='cal';render();}},'Calendar')),
         next.length?h('div',{class:'rows'},next.map(function(t){return row(t,true);})):h('div',{class:'empty'},h('b',null,'Nothing coming up'),'Tasks with a later due date show here.'),
         undated?h('button',{class:'btn ghost sm',style:'margin-top:12px',type:'button',onclick:function(){goTasks('open');},text:undated+(undated===1?' open task has':' open tasks have')+' no due date'}):null)),
-    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Clients'),S.owner?h('button',{type:'button',onclick:function(){V.tab='more';render();}},'Manage'):null),h('div',{class:'subs'},subs)))];}
+    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',null,'Clients'),MGR()?h('button',{type:'button',onclick:function(){V.tab='more';render();}},'Manage'):null),h('div',{class:'subs'},subs)))];}
 
 /* ---------- beating procrastination ----------
    Putting things off is mostly about feelings, not laziness: a task feels unclear, too big, dull or risky,
@@ -815,7 +826,7 @@ function setupCard(){if(!S.owner||S.settings.setupHidden)return null;var steps=s
       x.done?null:h('button',{class:'btn sm'+(x===next?'':' ghost'),type:'button',onclick:x.go},x.btn));})));}
 
 /* ---------- client requests (owner) ---------- */
-function requestsBlock(){if(!S.owner)return null;var list=S.tasks.filter(function(t){return t.request&&t.request.state==='new';});if(!list.length)return null;V.rq=V.rq||{};
+function requestsBlock(){if(!MGR())return null;var list=S.tasks.filter(function(t){return t.request&&t.request.state==='new';});if(!list.length)return null;V.rq=V.rq||{};
   return h('div',{class:'blk','data-blk':'requests',style:'margin-bottom:22px'},h('div',{class:'sec'},h('h3',null,'Client requests'),h('span',{text:list.length+' waiting for you'})),
     h('div',{class:'qlist'},list.map(function(t){var k=V.rq[t.id]=V.rq[t.id]||{who:'',note:'',dec:false};
       return h('div',{class:'qcard',style:'border-left-color:var(--coral)'},h('button',{class:'lk',type:'button',onclick:function(){openTask(t.id);},text:t.title}),
@@ -850,9 +861,9 @@ function renderGuide(){var d=M.d,g=M.id?(S.guides||[]).find(function(x){return x
   if(!M.edit&&g){var linked=S.tasks.filter(function(t){return t.guideId===g.id&&open(t);});
     return [head(g.title),h('small',{class:'note',text:sName(g.subjectId)+' · updated by '+pName(g.updatedBy)+' on '+stamp(g.updatedAt)}),h('div',{class:'panel'},guideHtml(g.body)),
       linked.length?h('div',{class:'panel'},h('strong',null,'Open tasks that use this guide'),linked.map(function(t){return h('div',{class:'cl'},h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;text-align:left;color:var(--plum-ink);font-weight:600',onclick:function(){openTask(t.id);},text:t.title}));})):null,
-      h('div',{class:'acts'},S.owner||g.createdBy===me?h('button',{class:'btn sm',type:'button',onclick:function(){M.edit=true;renderSheet();}},'Edit'):h('small',{class:'note'},'Only '+pName(g.createdBy)+' or the owner can edit this guide.'),
+      h('div',{class:'acts'},MGR()||g.createdBy===me?h('button',{class:'btn sm',type:'button',onclick:function(){M.edit=true;renderSheet();}},'Edit'):h('small',{class:'note'},'Only '+pName(g.createdBy)+' or the owner can edit this guide.'),
         M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var x=g.id;closeSheet();send('deleteGuide',{id:x});}},'Confirm delete'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
-          :(S.owner||g.createdBy===me?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Delete'):null))];}
+          :(MGR()||g.createdBy===me?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Delete'):null))];}
   return [head(M.id?'Edit guide':'New guide'),
     h('input',{class:'title-in',id:'g-title',maxlength:120,placeholder:'For example: Month end for Brooks Dental','aria-label':'Guide title',value:d.title,oninput:bind(d,'title')}),
     fld('Client',h('select',{class:'in',id:'g-sub',value:d.subjectId,onchange:bind(d,'subjectId')},h('option',{value:'',text:'Every client'}),liveSubjects().map(subOpt))),
@@ -891,7 +902,7 @@ function meetCardRow(m){var live=mLive(m),past=mEnd(m)<Date.now(),cx=m.status===
       avatars(m.attendees,m)),
     !past&&!cx&&m.joinUrl?h('button',{class:'btn sm'+(live?'':' ghost'),type:'button',onclick:function(){joinM(m);}},live?'Join now':'Join'):null);}
 function viewMeet(){var n=Date.now(),list=meetSorted(),show=V.mp?list.filter(function(m){return mEnd(m)<n||m.status==='cancelled';}).reverse():list.filter(function(m){return mEnd(m)>=n&&m.status!=='cancelled';});
-  var reqs=S.owner?(S.meetings||[]).filter(function(m){return m.status==='requested';}):[],groups={},order=[];
+  var reqs=MGR()?(S.meetings||[]).filter(function(m){return m.status==='requested';}):[],groups={},order=[];
   show.forEach(function(m){var d=mDay(m.startAt);if(!groups[d]){groups[d]=[];order.push(d);}groups[d].push(m);});
   return [topbar('Meetings','Plan them, hold them, and turn what was said into tasks'),
     h('div',{class:'seg s2',style:'margin:-4px 0 14px;max-width:360px'},h('button',{type:'button','aria-pressed':'false',onclick:function(){V.tab='cal';render();}},'Calendar'),h('button',{type:'button','aria-pressed':'true'},'Meetings')),
@@ -1096,17 +1107,17 @@ function expenseSection(){var f=V.ef||'all',list=(S.expenses||[]).filter(functio
   var month=today().slice(0,7),sums={},wait={};(S.expenses||[]).forEach(function(e){if(e.date.slice(0,7)===month&&e.status!=='rejected')sums[e.currency]=(sums[e.currency]||0)+e.amount;if(e.status==='pending')wait[e.currency]=(wait[e.currency]||0)+e.amount;});
   var fmt=function(o){return Object.keys(o).map(function(c){return fmtMoney(o[c],c);}).join(' and ')||'Nothing';};
   return [h('div',{class:'sec'},h('h3',null,'Expenses'),h('button',{type:'button',onclick:function(){openExpense();}},'Add expense')),
-    h('div',{class:'tiles',style:'grid-template-columns:repeat(2,1fr)'},h('div',{class:'tile'},h('b',{style:'font-size:19px',text:fmt(sums)}),h('span',null,'Spent this month')),h('div',{class:'tile'},h('b',{style:'font-size:19px',text:fmt(wait)}),h('span',null,S.owner?'Waiting for your approval':'Waiting for approval'))),
+    h('div',{class:'tiles',style:'grid-template-columns:repeat(2,1fr)'},h('div',{class:'tile'},h('b',{style:'font-size:19px',text:fmt(sums)}),h('span',null,'Spent this month')),h('div',{class:'tile'},h('b',{style:'font-size:19px',text:fmt(wait)}),h('span',null,LEADS()?'Waiting for your approval':'Waiting for approval'))),
     h('div',{class:'chips',style:'margin:14px 0 6px'},[['all','All'],['pending','Waiting'],['approved','Approved'],['invoiced','On an invoice'],['rejected','Declined']].map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(f===x[0]),onclick:function(){V.ef=x[0];render();}},x[1]);})),
     list.length?h('div',{class:'panel list'},list.map(function(e){var st=EXS[e.status]||EXS.pending;return h('button',{class:'li',type:'button',onclick:function(){openExpense(e.id);}},
-      h('div',null,h('strong',{text:fmtMoney(e.amount,e.currency)+' · '+(e.note||(EXT.find(function(x){return x[0]===e.category;})||['','Other'])[1])}),h('small',{text:[short(e.date),S.owner?pName(e.personId):'',e.subjectId?sName(e.subjectId)+(e.billable?', billable':''):'',e.receipt?'Receipt':''].filter(Boolean).join(' · ')})),h('span',null,h('b',{class:st[1]},st[0])));}))
+      h('div',null,h('strong',{text:fmtMoney(e.amount,e.currency)+' · '+(e.note||(EXT.find(function(x){return x[0]===e.category;})||['','Other'])[1])}),h('small',{text:[short(e.date),LEADS()&&e.personId!==me?pName(e.personId):'',e.subjectId?sName(e.subjectId)+(e.billable?', billable':''):'',e.receipt?'Receipt':''].filter(Boolean).join(' · ')})),h('span',null,h('b',{class:st[1]},st[0])));}))
       :h('div',{class:'empty'},h('b',null,'No expenses here'),'Add receipts for travel, data, software and other costs. '+(S.owner?'Billable ones can go straight onto a client invoice.':'Your manager approves them.')),
     (S.expenses||[]).length?h('button',{class:'btn ghost sm',type:'button',style:'margin-top:12px',onclick:function(){downloadCsv([['Date','Person','Amount','Currency','Category','Client','Billable','Status','Note']].concat((S.expenses||[]).map(function(e){return [e.date,pName(e.personId),e.amount,e.currency,e.category,e.subjectId?sName(e.subjectId):'',e.billable?'Yes':'',(EXS[e.status]||[''])[0],e.note];})),BRAND+' expenses '+today().replace(/-/g,'')+'.csv');}},'Export expenses'):null];}
 function openExpense(id){var e=id?(S.expenses||[]).find(function(x){return x.id===id;}):null;
   M={kind:'expense',id:id||null,del:false,reason:'',d:e?JSON.parse(JSON.stringify(e)):{id:uid(),date:today(),amount:'',currency:S.settings.currency||'USD',category:'other',note:'',subjectId:'',billable:false,personId:me}};$('#ov').hidden=false;renderSheet();}
-function renderExpense(){var d=M.d,e=M.id?(S.expenses||[]).find(function(x){return x.id===M.id;}):null,locked=e&&!S.owner&&(e.status==='approved'||e.status==='invoiced'),st=e?EXS[e.status]||EXS.pending:null;
+function renderExpense(){var d=M.d,e=M.id?(S.expenses||[]).find(function(x){return x.id===M.id;}):null,locked=e&&!(S.owner||(mgrOf(e.personId)&&e.personId!==me))&&(e.status==='approved'||e.status==='invoiced'),st=e?EXS[e.status]||EXS.pending:null;
   var save=function(){var v=Object.assign({},d,{amount:Number(d.amount)||0});if(!(v.amount>0)){toast('Add the amount.');return null;}delete v.receipt;send('saveExpense',{expense:v},true);M.id=v.id;return v;};
-  return [head(M.id?'Expense':'New expense'),e?h('div',{class:'acts',style:'margin:0'},h('b',{class:st[1]},st[0]),S.owner&&e.personId!==me?h('small',{class:'note',text:'From '+pName(e.personId)}):null,e.reason?h('small',{class:'note',text:'Reason: '+e.reason}):null):null,
+  return [head(M.id?'Expense':'New expense'),e?h('div',{class:'acts',style:'margin:0'},h('b',{class:st[1]},st[0]),LEADS()&&e.personId!==me?h('small',{class:'note',text:'From '+pName(e.personId)}):null,e.reason?h('small',{class:'note',text:'Reason: '+e.reason}):null):null,
     h('div',{class:'frow'},fld('Amount',h('input',{class:'in',id:'e-amt',type:'number',min:'0',step:'0.01',disabled:locked,value:String(d.amount),oninput:function(ev){d.amount=ev.target.value;}})),
       fld('Currency',h('select',{class:'in',id:'e-cur',disabled:locked,value:d.currency,onchange:bind(d,'currency')},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});}))),
       fld('Date',h('input',{class:'in',id:'e-date',type:'date',disabled:locked,value:d.date,onchange:bind(d,'date')})),
@@ -1117,12 +1128,12 @@ function renderExpense(){var d=M.d,e=M.id?(S.expenses||[]).find(function(x){retu
     S.owner&&!M.id?fld('Whose expense',h('select',{class:'in',id:'e-who',value:d.personId,onchange:bind(d,'personId')},S.people.map(function(p){return h('option',{value:p.id,text:p.name+(p.id===me?' (me)':'')});}))):null,
     h('div',{class:'panel'},h('strong',null,'Receipt'),e&&e.receipt?h('div',{class:'cl'},e.receipt.url?h('a',{href:e.receipt.url,target:'_blank',rel:'noopener noreferrer',class:'fl',text:e.receipt.name}):h('span',{text:e.receipt.name+' (uploading)'})):h('p',{class:'note',style:'margin:4px 0 0'},'A photo or PDF of the receipt, up to 10 MB.'),
       locked?null:h('label',{class:'btn ghost sm filebtn',style:'margin-top:8px'},e&&e.receipt?'Replace receipt':'Add receipt',h('input',{type:'file',id:'e-file',accept:'image/*,application/pdf',hidden:true,onchange:function(ev){var f=ev.target.files[0];ev.target.value='';if(!f)return;var v=e?null:save();if(!e&&!v)return;attachReceiptFile(M.id,f);}}))),
-    locked?null:h('button',{class:'btn wide',type:'button',onclick:function(){if(save()){closeSheet();toast(S.owner?'Expense saved':'Expense sent for approval');}}},M.id?'Save expense':S.owner?'Add expense':'Send for approval'),
-    S.owner&&e&&e.status!=='invoiced'?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Approval'),
+    locked?null:h('button',{class:'btn wide',type:'button',onclick:function(){if(save()){closeSheet();toast(S.owner||(d.personId&&d.personId!==me)?'Expense saved':'Expense sent for approval');}}},M.id?'Save expense':S.owner||(d.personId&&d.personId!==me)?'Add expense':'Send for approval'),
+    e&&mayDecide(e.personId)&&e.status!=='invoiced'?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Approval'),
       h('input',{class:'in',id:'e-why',maxlength:200,placeholder:'Reason, if declining','aria-label':'Reason',value:M.reason,oninput:bind(M,'reason')}),
       h('div',{class:'acts',style:'margin:0'},e.status!=='approved'?h('button',{class:'btn sm',type:'button',onclick:function(){send('decideExpense',{id:e.id,status:'approved'});closeSheet();}},'Approve'):null,
         e.status!=='rejected'?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideExpense',{id:e.id,status:'rejected',reason:M.reason.trim()});closeSheet();}},'Decline'):null)):null,
-    e&&(S.owner||e.status==='pending'||e.status==='rejected')&&e.status!=='invoiced'?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){closeSheet();send('deleteExpense',{id:e.id});}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
+    e&&(mgrOf(e.personId)||e.status==='pending'||e.status==='rejected')&&e.status!=='invoiced'?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){closeSheet();send('deleteExpense',{id:e.id});}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
       :h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Remove expense')):null];}
 function attachReceiptFile(id,f){if(f.size>10*1048576){toast('Files can be up to 10 MB.');return;}if(navigator.onLine===false){toast('You are offline. Receipts can only be added while online.');return;}
   uploads++;toast('Uploading '+f.name);var mime=f.type||'application/octet-stream';
@@ -1161,7 +1172,7 @@ function renderHistory(){var refilter=function(){if(!M||M.kind!=='history')retur
 /* ---------- the bin: deleted tasks, restorable for 30 days ---------- */
 function openBin(){M={kind:'bin'};$('#ov').hidden=false;renderSheet();}
 function renderBin(){var list=(S.trash||[]).slice().sort(function(a,b){return b.deletedAt-a.deletedAt;});
-  return [head('Bin'),h('p',{class:'note',style:'margin:0'},'Deleted tasks wait here for 30 days, with their files. '+(S.owner?'You can restore any of them.':'You can restore the ones you created.')),
+  return [head('Bin'),h('p',{class:'note',style:'margin:0'},'Deleted tasks wait here for 30 days, with their files. '+(MGR()?'You can restore any of them.':'You can restore the ones you created.')),
     list.length?h('div',{class:'panel list'},list.map(function(x){var left=Math.max(0,Math.ceil((x.deletedAt+30*864e5-Date.now())/864e5));
       return h('div',{class:'li rs'},h('i',{class:'dot',style:'background:'+sColor(x.subjectId)+';width:12px;height:12px'}),
         h('div',null,h('strong',{text:x.title||'Private task'}),h('small',{text:[sName(x.subjectId),'deleted '+stamp(x.deletedAt)+(x.deletedBy&&x.deletedBy!==me?' by '+pName(x.deletedBy):''),x.files?x.files+(x.files===1?' file':' files'):'',left+(left===1?' day':' days')+' left'].filter(Boolean).join(' · ')})),
@@ -1416,7 +1427,7 @@ function hm(ms){var m=Math.round(ms/6e4);return Math.floor(m/60)+'h '+pad(m%60)+
 function tIn(ms,tz){try{return new Intl.DateTimeFormat('en-GB',{timeZone:tz||undefined,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(ms));}catch(e){var d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());}}
 function dIn(ms,tz){try{var o=tzParts(tz||myTz,ms);return o.weekday+' '+(+o.day)+' '+MON[o.month-1];}catch(e){return short(ymd(new Date(ms)));}}
 function dayKey(ms,tz){try{var o=tzParts(tz||myTz,ms);return o.year+'-'+o.month+'-'+o.day;}catch(e){return ymd(new Date(ms));}}
-function isLate(sh){var p=person(sh.personId);if(!p||!p.workStart)return false;var t=tIn(sh.in,sh.tz||p.tz),w=p.workStart.split(':'),x=t.split(':');return (+x[0])*60+(+x[1])>(+w[0])*60+(+w[1])+10;}
+function isLate(sh){var o=(S.schedule||[]).find(function(x){return x.personId===sh.personId&&x.inAt===sh.in;});if(o)return o.status==='late'||o.status==='lateEarly';var p=person(sh.personId);if(!p||!p.workStart)return false;var t=tIn(sh.in,sh.tz||p.tz),w=p.workStart.split(':'),x=t.split(':');return (+x[0])*60+(+x[1])>(+w[0])*60+(+w[1])+10;}
 /* "their time now", with a hint when it is outside their working hours */
 function theirTime(p){var s=statusOf(p);if(!s||s.state==='unknown')return '';return s.local+' their time, '+(s.state==='working'?'working hours':offWord(s));}
 function presenceOf(pid){return (S.presence||[]).find(function(x){return x.personId===pid;})||null;}
@@ -1434,11 +1445,11 @@ function punch(action,note,extra){if(clocking)return;if(action==='clockOut'&&not
 function clockCard(){var sh=myShift(),br=sh&&sh.breaks.find(function(b){return !b.end;}),td=today();
   var tot=(S.shifts||[]).filter(function(x){return x.personId===me&&dayKey(x.in)===dayKey(Date.now());}).reduce(function(a,x){return a+workedMs(x);},0);
   var cls=!sh?'off':br?'brk':'on',run=!sh?0:br?br.start:sh.in+brkMs(sh,Date.now());
-  var p=person(me),lateB=sh&&isLate(sh);
+  var p=person(me),lateB=sh&&isLate(sh),nx=myNext();
   return h('section',{class:'clock '+cls,'aria-label':'Time clock'},
     h('div',{class:'tm','data-run':sh?String(run):null,'data-base':'0'},sh?'00:00:00':'--:--:--'),
     h('div',{class:'st'},h('small',null,'Time clock'),h('strong',{text:!sh?'You are off the clock':br?'On a break':'Clocked in'}),
-      h('span',{text:sh?(sh.subjectId?'For '+sName(sh.subjectId)+(sh.taskId&&S.tasks.find(function(x){return x.id===sh.taskId;})?', '+S.tasks.find(function(x){return x.id===sh.taskId;}).title:'')+' · ':'')+(br?'Break started at '+tIn(br.start):'Since '+tIn(sh.in)+(sh.inLoc?' · location shared':''))+' · today '+hm(tot):(tot?'Today so far: '+hm(tot):(p&&p.workStart?'Your hours start at '+p.workStart:'Tap clock in when you start work'))}),
+      h('span',{text:sh?(sh.subjectId?'For '+sName(sh.subjectId)+(sh.taskId&&S.tasks.find(function(x){return x.id===sh.taskId;})?', '+S.tasks.find(function(x){return x.id===sh.taskId;}).title:'')+' · ':'')+(br?'Break started at '+tIn(br.start):'Since '+tIn(sh.in)+(sh.inLoc?' · location shared':''))+' · today '+hm(tot):(tot?'Today so far: '+hm(tot):nx&&nx.start-Date.now()<18*36e5?'Your shift: '+occWhen(nx,myTz)+(nx.subjectId?' for '+sName(nx.subjectId):''):(p&&p.workStart?'Your hours start at '+p.workStart:'Tap clock in when you start work'))}),
       sh?h('span',null,h('button',{class:'linkb',type:'button',onclick:function(){openClockFor('switch');}},sh.subjectId?'Switch client':'Count this for a client')):null,
       lateB?h('span',null,h('b',{class:'badge-s o'},'Later than '+p.workStart)):null),
     h('div',{class:'bt'},!sh?[h('button',{class:'btn sm',type:'button',disabled:clocking,onclick:function(){punch('clockIn');}},clocking?'Clocking in':'Clock in'),
@@ -1456,33 +1467,33 @@ function teamNow(){var list=S.people.filter(function(p){return S.owner||!p.hidde
 function far(m){return m>=1000?(m/1000).toFixed(m>=10000?0:1)+' km':Math.round(m)+' m';}
 function awayOf(x){return [x.inSite,x.outSite].filter(function(c){return c&&c.away;});}
 function weekSheet(){var days=[];for(var i=6;i>=0;i--)days.push(addDays(today(),-i));
-  var ppl=S.people.filter(function(p){return S.owner?(S.shifts.some(function(x){return x.personId===p.id;})||!p.hidden):p.id===me;});
+  var ppl=S.people.filter(function(p){return S.owner?(S.shifts.some(function(x){return x.personId===p.id;})||!p.hidden):p.id===me||(LEADS()&&looksAfter(p.id));});
   var cell=function(p,day){return (S.shifts||[]).filter(function(x){return x.personId===p.id&&dayKey(x.in,x.tz||p.tz)===day;}).reduce(function(a,x){return a+workedMs(x);},0);};
   return h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,h('th',{scope:'col'},'Person'),days.map(function(d){var x=parse(d);return h('th',{scope:'col',text:DAY[x.getDay()]+' '+x.getDate()});}),h('th',{scope:'col'},'Week'))),
     h('tbody',null,ppl.map(function(p){var sum=0;return h('tr',null,h('td',{text:p.name}),days.map(function(d){var v=cell(p,d);sum+=v;
-      var aw=S.owner?(S.shifts||[]).filter(function(x){return x.personId===p.id&&dayKey(x.in,x.tz||p.tz)===d;}).reduce(function(a,x){return a.concat(awayOf(x));},[]):[];
+      var aw=LEADS()?(S.shifts||[]).filter(function(x){return x.personId===p.id&&dayKey(x.in,x.tz||p.tz)===d;}).reduce(function(a,x){return a.concat(awayOf(x));},[]):[];
       return h('td',{class:(v?'':'z')+(aw.length?' aw':''),title:aw.length?aw.map(function(c){return 'Away from site, '+far(c.m)+' from '+c.site;}).join('; '):null},v?hm(v):'0h',aw.length?h('i',{class:'awd','aria-label':'Away from site'}):null);}),h('td',{class:'tot',text:hm(sum)}));}))),
-    S.owner&&(S.settings.workSites||[]).length?h('p',{class:'note',style:'margin:6px 0 0'},h('i',{class:'awd'}),' Clocked in or out away from a work site. Tap the shift below for the distance.'):null);}
+    LEADS()&&(S.settings.workSites||[]).length?h('p',{class:'note',style:'margin:6px 0 0'},h('i',{class:'awd'}),' Clocked in or out away from a work site. Tap the shift below for the distance.'):null);}
 function shiftRow(x){var p=person(x.personId)||{name:'Someone'},z=x.tz||p.tz,fl=[];
   if(!x.out)fl.push(h('b',{class:'badge-s g'},'Clocked in now'));if(isLate(x))fl.push(h('b',{class:'badge-s o'},'Late start'));
   if(x.autoClosed)fl.push(h('b',{class:'badge-s r'},'Not clocked out, check the times'));if(x.edited)fl.push(h('b',{class:'badge-s'},'Edited'));
-  if(S.owner&&(x.lateIn||x.lateOut))fl.push(h('b',{class:'badge-s o',title:'The device sent this time later than it happened, for example after being offline'},'Sent late'));
-  if(S.owner)[['inSite','Clocked in'],['outSite','Clocked out']].forEach(function(k){var c=x[k[0]];if(c&&c.away)fl.push(h('b',{class:'badge-s r'},k[1]+' away from site, '+far(c.m)+' from '+c.site));});
+  if(LEADS()&&(x.lateIn||x.lateOut))fl.push(h('b',{class:'badge-s o',title:'The device sent this time later than it happened, for example after being offline'},'Sent late'));
+  if(LEADS())[['inSite','Clocked in'],['outSite','Clocked out']].forEach(function(k){var c=x[k[0]];if(c&&c.away)fl.push(h('b',{class:'badge-s r'},k[1]+' away from site, '+far(c.m)+' from '+c.site));});
   if(x.breaks&&x.breaks.length)fl.push(h('b',{class:'badge-s'},'Breaks '+hm(brkMs(x,x.out||Date.now()))));
   var map=function(l,label){return h('a',{href:'https://www.openstreetmap.org/?mlat='+l.lat+'&mlon='+l.lng+'#map=17/'+l.lat+'/'+l.lng,target:'_blank',rel:'noopener noreferrer',onclick:function(e){e.stopPropagation();}},label+' location');};
   if(x.inLoc)fl.push(map(x.inLoc,'In'));if(x.outLoc)fl.push(map(x.outLoc,'Out'));if(x.note)fl.push(h('small',{style:'flex-basis:100%',text:'Handoff: '+x.note}));
-  var inner=[h('div',null,h('strong',{text:(S.owner?p.name+' · ':'')+dIn(x.in,z)+(x.subjectId?' · '+sName(x.subjectId):'')}),h('br'),h('small',{text:tIn(x.in,z)+' to '+(x.out?tIn(x.out,z):'now')+' '+tzCity(z)+' time'+(z&&z!==myTz?' ('+tIn(x.in)+' to '+(x.out?tIn(x.out):'now')+' yours)':'')})),
+  var inner=[h('div',null,h('strong',{text:(LEADS()?p.name+' · ':'')+dIn(x.in,z)+(x.subjectId?' · '+sName(x.subjectId):'')}),h('br'),h('small',{text:tIn(x.in,z)+' to '+(x.out?tIn(x.out,z):'now')+' '+tzCity(z)+' time'+(z&&z!==myTz?' ('+tIn(x.in)+' to '+(x.out?tIn(x.out):'now')+' yours)':'')})),
     h('span',{class:'hrs',text:hm(workedMs(x))}),fl.length?h('div',{class:'fl'},fl):null];
-  return S.owner?h('button',{class:'shift',type:'button',onclick:function(){openShift(x.id);}},inner):h('div',{class:'shift'},inner);}
+  return mgrOf(x.personId)?h('button',{class:'shift',type:'button',onclick:function(){openShift(x.id);}},inner):h('div',{class:'shift'},inner);}
 function exportTimes(){var rows=[['Person','Date','Clock in','Clock out','Time zone','Breaks (minutes)','Worked (hours)','Late','In location','Out location','Notes']];
   (S.shifts||[]).slice().sort(function(a,b){return a.in-b.in;}).forEach(function(x){var p=person(x.personId)||{name:''},z=x.tz||p.tz;
     rows.push([p.name,dayKey(x.in,z),tIn(x.in,z),x.out?tIn(x.out,z):'',z||'',Math.round(brkMs(x,x.out||Date.now())/6e4),(workedMs(x)/36e5).toFixed(2),isLate(x)?'Yes':'',x.inLoc?x.inLoc.lat+' '+x.inLoc.lng:'',x.outLoc?x.outLoc.lat+' '+x.outLoc.lng:'',(x.autoClosed?'Closed automatically ':'')+(x.note||'')]);});
   downloadCsv(rows,BRAND+' timesheet '+today().replace(/-/g,'')+'.csv');}
-function clockSection(){var recent=(S.shifts||[]).slice().sort(function(a,b){return b.in-a.in;}).slice(0,S.owner?20:10);
+function clockSection(){var recent=(S.shifts||[]).slice().sort(function(a,b){return b.in-a.in;}).slice(0,LEADS()?20:10);
   return [h('div',{class:'sec'},h('h3',null,'Time clock'),h('button',{type:'button',onclick:exportTimes},'Export timesheet')),h('div',{style:'display:grid;gap:22px'},
     h('div',{class:'blk'},h('div',{class:'sec',style:'margin-top:0'},h('h3',{style:'font-size:15px'},'Right now'),h('span',{text:(S.presence||[]).length+' clocked in'})),teamNow()),
     h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'This week'),h('span',null,'Hours worked, breaks taken out')),weekSheet()),
-    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'Recent shifts'),S.owner?h('span',null,'Tap a shift to correct it'):null),
+    h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'Recent shifts'),MGR()?h('span',null,'Tap a shift to correct it'):null),
       recent.length?h('div',{class:'shifts'},recent.map(shiftRow)):h('div',{class:'empty'},h('b',null,'No shifts yet'),'Clock in from the home screen when work starts.')))];}
 function toLocalInput(ms){if(!ms)return '';var d=new Date(ms);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());}
 function openShift(id){var x=S.shifts.find(function(v){return v.id===id;});if(!x)return;M={kind:'shift',id:id,del:false,d:{in:toLocalInput(x.in),out:toLocalInput(x.out)}};$('#ov').hidden=false;renderSheet();}
@@ -1501,47 +1512,175 @@ function renderShift(){var x=S.shifts.find(function(v){return v.id===M.id;}),d=M
 /* ---------- Public holidays for any year: fixed dates, Easter based dates and, for Nigeria, the Islamic (Umm al Qura) calendar.
    The same rules as publicHolidays in the server's core.js; test/billing.test.js checks both give the same days. ---------- */
 /* HOLIDAYS START */
-function publicHolidays(region,year){
-  var y=Number(year),out=[];if(!(y>1900&&y<2200))return out;
-  var two=function(n){return (n<10?'0':'')+n;};
-  var ymdU=function(yy,m,d){return new Date(Date.UTC(yy,m,d)).toISOString().slice(0,10);};
-  var wdOf=function(s){return new Date(Date.parse(s+'T12:00:00Z')).getUTCDay();};
-  var plus=function(s,n){return new Date(Date.parse(s+'T12:00:00Z')+n*864e5).toISOString().slice(0,10);};
-  var nth=function(m,wd,n){if(n>0){var f=new Date(Date.UTC(y,m,1)).getUTCDay();return ymdU(y,m,1+((wd-f+7)%7)+(n-1)*7);}
-    var lastD=new Date(Date.UTC(y,m+1,0)).getUTCDate(),last=new Date(Date.UTC(y,m,lastD)).getUTCDay();return ymdU(y,m,lastD-((last-wd+7)%7));};
-  var easter=function(){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),hh=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-hh-k)%7,m=Math.floor((a+11*hh+22*l)/451);
-    return ymdU(y,Math.floor((hh+l-7*m+114)/31)-1,((hh+l-7*m+114)%31)+1);};
-  var islamic=function(wanted){var f=null,cals=['islamic-umalqura','islamic-civil','islamic'],res=[];
-    for(var c=0;c<cals.length&&!f;c++){try{var x=new Intl.DateTimeFormat('en-u-ca-'+cals[c],{timeZone:'UTC',day:'numeric',month:'numeric',year:'numeric'});if(x.resolvedOptions().calendar.indexOf('islamic')===0)f=x;}catch(e){}}
-    if(!f)return res;
-    for(var t=Date.UTC(y,0,1);t<Date.UTC(y+1,0,1);t+=864e5){var p={};f.formatToParts(new Date(t)).forEach(function(q){p[q.type]=q.value;});
-      wanted.forEach(function(w){if(+p.month===w[0]&&+p.day===w[1])res.push([new Date(t).toISOString().slice(0,10),w[2]]);});}
-    return res;};
-  if(region==='US'){
-    var obs=function(s,name){var w=wdOf(s);if(w===6)out.push([plus(s,-1),name+' (observed)']);else if(w===0)out.push([plus(s,1),name+' (observed)']);else out.push([s,name]);};
-    var ny=ymdU(y,0,1);if(wdOf(ny)!==6)obs(ny,"New Year's Day");
-    out.push([nth(0,1,3),'Martin Luther King Jr. Day'],[nth(1,1,3),"Washington's Birthday"],[nth(4,1,-1),'Memorial Day']);
-    obs(ymdU(y,5,19),'Juneteenth');obs(ymdU(y,6,4),'Independence Day');
-    out.push([nth(8,1,1),'Labor Day'],[nth(9,1,2),'Columbus Day']);
-    obs(ymdU(y,10,11),'Veterans Day');out.push([nth(10,4,4),'Thanksgiving Day']);obs(ymdU(y,11,25),'Christmas Day');
-    if(wdOf(ymdU(y+1,0,1))===6)out.push([ymdU(y,11,31),"New Year's Day (observed)"]);
-  }else if(region==='NG'){
-    var e0=easter(),fixed=[[ymdU(y,0,1),"New Year's Day"],[ymdU(y,4,1),"Workers' Day"],[ymdU(y,5,12),'Democracy Day'],[ymdU(y,9,1),'Independence Day'],[ymdU(y,11,25),'Christmas Day'],[ymdU(y,11,26),'Boxing Day']];
-    var isl=islamic([[10,1,'Eid al Fitr, may move'],[10,2,'Eid al Fitr holiday, may move'],[12,10,'Eid al Adha, may move'],[12,11,'Eid al Adha holiday, may move'],[3,12,'Eid el Maulud, may move']]);
-    var base=fixed.concat(isl,[[plus(e0,-2),'Good Friday'],[plus(e0,1),'Easter Monday']]),taken={};base.forEach(function(x){taken[x[0]]=1;});
-    base.sort(function(a,b){return a[0].localeCompare(b[0]);}).forEach(function(x){out.push(x);var w=wdOf(x[0]);if(w!==0&&w!==6)return;
-      var d=plus(x[0],1);while(wdOf(d)===0||wdOf(d)===6||taken[d])d=plus(d,1);taken[d]=1;
-      if(d.slice(0,4)===String(y))out.push([d,x[1].replace(/ holiday(, may move)?$/,'$1').replace(/(, may move)?$/,' holiday$1')]);});
+/* Public holidays for twelve countries and any year, worked out from rules: fixed dates, Easter (Western and Orthodox) and
+   the Islamic (Umm al Qura) calendar, with each country's rule for a holiday on a weekend. Islamic dates may move by a day
+   when the moon is sighted, and some governments move a holiday by decree, so each workspace can add its own days too.
+   Plain ES5 on purpose: site/app/app.js carries an exact copy of this block (tools/sync_shared.mjs), so the app and the
+   server always agree. */
+var HOLIDAY_COUNTRIES = { NG: 'Nigeria', GH: 'Ghana', KE: 'Kenya', ZA: 'South Africa', EG: 'Egypt', GB: 'United Kingdom', US: 'United States', CA: 'Canada',
+  PH: 'Philippines', IN: 'India', PK: 'Pakistan', BD: 'Bangladesh' };
+var TZ_COUNTRY = { 'Africa/Lagos': 'NG', 'Africa/Accra': 'GH', 'Africa/Nairobi': 'KE', 'Africa/Johannesburg': 'ZA', 'Africa/Cairo': 'EG', 'Europe/London': 'GB', 'Europe/Belfast': 'GB',
+  'Asia/Manila': 'PH', 'Asia/Kolkata': 'IN', 'Asia/Calcutta': 'IN', 'Asia/Karachi': 'PK', 'Asia/Dhaka': 'BD', 'Asia/Dacca': 'BD', 'Pacific/Honolulu': 'US' };
+var CA_ZONES = 'Toronto Vancouver Edmonton Winnipeg Halifax St_Johns Regina Montreal Moncton Whitehorse Yellowknife Iqaluit Glace_Bay Goose_Bay Swift_Current Dawson_Creek Fort_Nelson Creston Cambridge_Bay Rankin_Inlet Resolute Inuvik Dawson Atikokan Nipigon Thunder_Bay Rainy_River Pangnirtung';
+var US_ZONES = 'New_York Chicago Denver Los_Angeles Phoenix Anchorage Juneau Boise Detroit Adak Nome Sitka Yakutat Metlakatla Menominee Indianapolis Louisville';
+/** The country a time zone is in, for the holiday calendar, or '' when it is not one of the twelve. */
+function countryOfTz(tz) {
+  var z = String(tz || '');
+  if (TZ_COUNTRY[z]) return TZ_COUNTRY[z];
+  var m = z.match(/^America\/(.+)$/);
+  if (!m) return '';
+  if ((' ' + CA_ZONES + ' ').indexOf(' ' + m[1] + ' ') >= 0) return 'CA';
+  if ((' ' + US_ZONES + ' ').indexOf(' ' + m[1] + ' ') >= 0 || /^(Indiana|Kentucky|North_Dakota)\//.test(m[1])) return 'US';
+  return '';
+}
+var ISLAMIC_DAYS = {};
+/** Every day of a Gregorian year as [ymd, Islamic month, Islamic day], from the runtime's Islamic calendar; empty when it has none. */
+function islamicYear(y) {
+  if (ISLAMIC_DAYS[y]) return ISLAMIC_DAYS[y];
+  var f = null, cals = ['islamic-umalqura', 'islamic-civil', 'islamic'], res = [];
+  for (var c = 0; c < cals.length && !f; c++) {
+    try { var x = new Intl.DateTimeFormat('en-u-ca-' + cals[c], { timeZone: 'UTC', day: 'numeric', month: 'numeric', year: 'numeric' }); if (x.resolvedOptions().calendar.indexOf('islamic') === 0) f = x; } catch (e) { /* try the next calendar */ }
   }
-  void two;
-  return out.filter(function(x){return x[0].slice(0,4)===String(y);}).sort(function(a,b){return a[0].localeCompare(b[0]);});}
+  if (f) for (var t = Date.UTC(y, 0, 1); t < Date.UTC(y + 1, 0, 1); t += 864e5) {
+    var p = {}; f.formatToParts(new Date(t)).forEach(function (q) { p[q.type] = q.value; });
+    res.push([new Date(t).toISOString().slice(0, 10), +p.month, +p.day]);
+  }
+  ISLAMIC_DAYS[y] = res;
+  return res;
+}
+/** Public holidays for a country code (see HOLIDAY_COUNTRIES) and year, as [ymd, name] sorted by date. Names that end in "may move" follow the moon or a yearly decree. */
+function publicHolidays(region, year) {
+  var y = Number(year), out = [];
+  if (!(y > 1900 && y < 2200)) return out;
+  var ymdU = function (yy, m, d) { return new Date(Date.UTC(yy, m, d)).toISOString().slice(0, 10); };
+  var fx = function (m, d) { return ymdU(y, m - 1, d); };
+  var wdOf = function (s) { return new Date(Date.parse(s + 'T12:00:00Z')).getUTCDay(); };
+  var plus = function (s, n) { return new Date(Date.parse(s + 'T12:00:00Z') + n * 864e5).toISOString().slice(0, 10); };
+  var nth = function (m, wd, n) {
+    if (n > 0) { var f0 = new Date(Date.UTC(y, m, 1)).getUTCDay(); return ymdU(y, m, 1 + ((wd - f0 + 7) % 7) + (n - 1) * 7); }
+    var lastD = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(), last = new Date(Date.UTC(y, m, lastD)).getUTCDay(); return ymdU(y, m, lastD - ((last - wd + 7) % 7));
+  };
+  var easter = function () {
+    var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), hh = (19 * a + b - d - g + 15) % 30,
+      i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - hh - k) % 7, m = Math.floor((a + 11 * hh + 22 * l) / 451);
+    return ymdU(y, Math.floor((hh + l - 7 * m + 114) / 31) - 1, ((hh + l - 7 * m + 114) % 31) + 1);
+  };
+  /* Orthodox (Julian) Easter, moved onto the Gregorian calendar: 13 days until 2099, 14 after */
+  var orthodoxEaster = function () {
+    var a = y % 4, b = y % 7, c = y % 19, d = (19 * c + 15) % 30, e = (2 * a + 4 * b - d + 34) % 7, month = Math.floor((d + e + 114) / 31), day = ((d + e + 114) % 31) + 1;
+    return plus(ymdU(y, month - 1, day), y < 2100 ? 13 : 14);
+  };
+  var islamic = function (wanted) {
+    var res = [];
+    islamicYear(y).forEach(function (q) { wanted.forEach(function (w) { if (q[1] === w[0] && q[2] === w[1]) res.push([q[0], w[2]]); }); });
+    return res;
+  };
+  /* a holiday on a weekend (rule 'weekend') or on a Sunday (rule 'sunday') is also kept on the next free working day */
+  var moved = function (base, rule) {
+    var taken = {};
+    base.forEach(function (x) { taken[x[0]] = 1; });
+    base.sort(function (a, b) { return a[0].localeCompare(b[0]); }).forEach(function (x) {
+      out.push(x);
+      var w = wdOf(x[0]);
+      if (x[2] === 'stay' || !(w === 0 || (w === 6 && rule === 'weekend'))) return;
+      var d = plus(x[0], 1);
+      while (wdOf(d) === 0 || wdOf(d) === 6 || taken[d]) d = plus(d, 1);
+      taken[d] = 1;
+      if (d.slice(0, 4) === String(y)) out.push([d, x[1].replace(/ holiday(, may move)?$/, '$1').replace(/(, may move)?$/, ' holiday$1')]);
+    });
+  };
+  var e0, base;
+  if (region === 'US') {
+    var obs = function (s, name) { var w = wdOf(s); if (w === 6) out.push([plus(s, -1), name + ' (observed)']); else if (w === 0) out.push([plus(s, 1), name + ' (observed)']); else out.push([s, name]); };
+    var ny = ymdU(y, 0, 1); if (wdOf(ny) !== 6) obs(ny, "New Year's Day");   // on a Saturday it is observed on 31 December of the year before
+    out.push([nth(0, 1, 3), 'Martin Luther King Jr. Day'], [nth(1, 1, 3), "Washington's Birthday"], [nth(4, 1, -1), 'Memorial Day']);
+    obs(ymdU(y, 5, 19), 'Juneteenth'); obs(ymdU(y, 6, 4), 'Independence Day');
+    out.push([nth(8, 1, 1), 'Labor Day'], [nth(9, 1, 2), 'Columbus Day']);
+    obs(ymdU(y, 10, 11), 'Veterans Day'); out.push([nth(10, 4, 4), 'Thanksgiving Day']); obs(ymdU(y, 11, 25), 'Christmas Day');
+    if (wdOf(ymdU(y + 1, 0, 1)) === 6) out.push([ymdU(y, 11, 31), "New Year's Day (observed)"]);
+  } else if (region === 'NG') {
+    e0 = easter();
+    base = [[fx(1, 1), "New Year's Day"], [fx(5, 1), "Workers' Day"], [fx(6, 12), 'Democracy Day'], [fx(10, 1), 'Independence Day'], [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Boxing Day']]
+      .concat(islamic([[10, 1, 'Eid al Fitr, may move'], [10, 2, 'Eid al Fitr holiday, may move'], [12, 10, 'Eid al Adha, may move'], [12, 11, 'Eid al Adha holiday, may move'], [3, 12, 'Eid el Maulud, may move']]),
+        [[plus(e0, -2), 'Good Friday'], [plus(e0, 1), 'Easter Monday']]);
+    moved(base, 'weekend');
+  } else if (region === 'GH') {
+    e0 = easter();
+    base = [[fx(1, 1), "New Year's Day"], [fx(1, 7), 'Constitution Day'], [fx(3, 6), 'Independence Day'], [fx(5, 1), 'May Day'], [fx(7, 1), 'Republic Day'], [fx(9, 21), "Founders' Day"],
+      [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Boxing Day'], [nth(11, 5, 1), "Farmers' Day", 'stay'], [plus(e0, -2), 'Good Friday', 'stay'], [plus(e0, 1), 'Easter Monday', 'stay']]
+      .concat(islamic([[10, 1, 'Eid al Fitr, may move'], [10, 2, 'Shaqq Day, may move'], [12, 10, 'Eid al Adha, may move']]));
+    moved(base, 'weekend');
+  } else if (region === 'KE') {
+    e0 = easter();
+    base = [[fx(1, 1), "New Year's Day"], [fx(5, 1), 'Labour Day'], [fx(6, 1), 'Madaraka Day'], [fx(10, 10), 'Mazingira Day'], [fx(10, 20), 'Mashujaa Day'], [fx(12, 12), 'Jamhuri Day'],
+      [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Boxing Day'], [plus(e0, -2), 'Good Friday', 'stay'], [plus(e0, 1), 'Easter Monday', 'stay']].concat(islamic([[10, 1, 'Eid al Fitr, may move']]));
+    moved(base, 'sunday');
+  } else if (region === 'ZA') {
+    e0 = easter();
+    base = [[fx(1, 1), "New Year's Day"], [fx(3, 21), 'Human Rights Day'], [fx(4, 27), 'Freedom Day'], [fx(5, 1), "Workers' Day"], [fx(6, 16), 'Youth Day'], [fx(8, 9), "National Women's Day"],
+      [fx(9, 24), 'Heritage Day'], [fx(12, 16), 'Day of Reconciliation'], [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Day of Goodwill'], [plus(e0, -2), 'Good Friday', 'stay'], [plus(e0, 1), 'Family Day', 'stay']];
+    moved(base, 'sunday');
+  } else if (region === 'EG') {
+    out.push([fx(1, 7), 'Coptic Christmas'], [fx(1, 25), 'Revolution Day and Police Day'], [fx(4, 25), 'Sinai Liberation Day'], [fx(5, 1), 'Labour Day'], [fx(6, 30), 'June 30 Revolution Day'],
+      [fx(7, 23), 'Revolution Day'], [fx(10, 6), 'Armed Forces Day'], [plus(orthodoxEaster(), 1), 'Sham el Nessim']);
+    out = out.concat(islamic([[1, 1, 'Islamic New Year, may move'], [3, 12, "Prophet's Birthday, may move"], [10, 1, 'Eid al Fitr, may move'], [10, 2, 'Eid al Fitr holiday, may move'], [10, 3, 'Eid al Fitr holiday, may move'],
+      [12, 9, 'Arafat Day, may move'], [12, 10, 'Eid al Adha, may move'], [12, 11, 'Eid al Adha holiday, may move'], [12, 12, 'Eid al Adha holiday, may move']]));
+  } else if (region === 'GB') {   // England and Wales; Scotland and Northern Ireland add their own days
+    e0 = easter();
+    base = [[fx(1, 1), "New Year's Day"], [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Boxing Day'], [plus(e0, -2), 'Good Friday', 'stay'], [plus(e0, 1), 'Easter Monday', 'stay'],
+      [nth(4, 1, 1), 'Early May bank holiday', 'stay'], [nth(4, 1, -1), 'Spring bank holiday', 'stay'], [nth(7, 1, -1), 'Summer bank holiday', 'stay']];
+    moved(base, 'weekend');
+  } else if (region === 'CA') {   // federal statutory holidays; provinces add their own
+    var may24 = fx(5, 24);
+    base = [[fx(1, 1), "New Year's Day"], [fx(7, 1), 'Canada Day'], [fx(9, 30), 'National Day for Truth and Reconciliation'], [fx(11, 11), 'Remembrance Day'], [fx(12, 25), 'Christmas Day'], [fx(12, 26), 'Boxing Day'],
+      [plus(easter(), -2), 'Good Friday', 'stay'], [plus(may24, -((wdOf(may24) + 6) % 7)), 'Victoria Day', 'stay'], [nth(8, 1, 1), 'Labour Day', 'stay'], [nth(9, 1, 2), 'Thanksgiving', 'stay']];
+    moved(base, 'weekend');
+  } else if (region === 'PH') {
+    e0 = easter();
+    out.push([fx(1, 1), "New Year's Day"], [plus(e0, -3), 'Maundy Thursday'], [plus(e0, -2), 'Good Friday'], [plus(e0, -1), 'Black Saturday'], [fx(4, 9), 'Araw ng Kagitingan'], [fx(5, 1), 'Labor Day'],
+      [fx(6, 12), 'Independence Day'], [fx(8, 21), 'Ninoy Aquino Day'], [nth(7, 1, -1), 'National Heroes Day'], [fx(11, 1), "All Saints' Day"], [fx(11, 30), 'Bonifacio Day'], [fx(12, 8), 'Feast of the Immaculate Conception'],
+      [fx(12, 24), 'Christmas Eve'], [fx(12, 25), 'Christmas Day'], [fx(12, 30), 'Rizal Day'], [fx(12, 31), 'Last day of the year']);
+    out = out.concat(islamic([[10, 1, 'Eid al Fitr, may move'], [12, 10, 'Eid al Adha, may move']]));
+  } else if (region === 'IN') {   // the national holidays; each state adds its own festival days
+    out.push([fx(1, 26), 'Republic Day'], [fx(8, 15), 'Independence Day'], [fx(10, 2), 'Gandhi Jayanti'], [fx(12, 25), 'Christmas Day']);
+  } else if (region === 'PK') {
+    out.push([fx(2, 5), 'Kashmir Solidarity Day'], [fx(3, 23), 'Pakistan Day'], [fx(5, 1), 'Labour Day'], [fx(5, 28), 'Youm e Takbeer'], [fx(8, 14), 'Independence Day'], [fx(11, 9), 'Iqbal Day'],
+      [fx(12, 25), 'Quaid e Azam Day and Christmas']);
+    out = out.concat(islamic([[10, 1, 'Eid al Fitr, may move'], [10, 2, 'Eid al Fitr holiday, may move'], [10, 3, 'Eid al Fitr holiday, may move'], [12, 10, 'Eid al Adha, may move'],
+      [12, 11, 'Eid al Adha holiday, may move'], [12, 12, 'Eid al Adha holiday, may move'], [1, 9, 'Ashura, may move'], [1, 10, 'Ashura holiday, may move'], [3, 12, 'Eid Milad un Nabi, may move']]));
+  } else if (region === 'BD') {
+    out.push([fx(2, 21), 'Shaheed Day'], [fx(3, 26), 'Independence Day'], [fx(4, 14), 'Bengali New Year'], [fx(5, 1), 'May Day'], [fx(12, 16), 'Victory Day'], [fx(12, 25), 'Christmas Day']);
+    if (y >= 2025) out.push([fx(8, 5), 'July Mass Uprising Day']);
+    out = out.concat(islamic([[8, 15, 'Shab e Barat, may move'], [10, 1, 'Eid al Fitr, may move'], [10, 2, 'Eid al Fitr holiday, may move'], [10, 3, 'Eid al Fitr holiday, may move'], [12, 10, 'Eid al Adha, may move'],
+      [12, 11, 'Eid al Adha holiday, may move'], [12, 12, 'Eid al Adha holiday, may move'], [1, 10, 'Ashura, may move'], [3, 12, 'Eid e Miladunnabi, may move']]));
+  }
+  return out.map(function (x) { return [x[0], x[1]]; }).filter(function (x) { return x[0].slice(0, 4) === String(y); }).sort(function (a, b) { return a[0].localeCompare(b[0]); });
+}
 /* HOLIDAYS END */
+/* OVERTIME START */
+/**
+ * Overtime from worked days. days: [{ day, week, ms }] (week is the Monday the day belongs to); rule: { daily, weekly } in hours, 0 for off.
+ * Hours past the daily limit are overtime first; the rest of the week counts toward the weekly limit, so no hour is counted twice.
+ * Returns milliseconds: { total, daily, weekly, ot, reg }.
+ */
+function overtimeSplit(days, rule) {
+  var dN = (Number(rule && rule.daily) || 0) * 36e5, wN = (Number(rule && rule.weekly) || 0) * 36e5, byDay = {}, weeks = {}, total = 0, dOt = 0, wOt = 0;
+  (days || []).forEach(function (x) { if (!x || !(x.ms > 0)) return; if (!byDay[x.day]) byDay[x.day] = { week: x.week, ms: 0 }; byDay[x.day].ms += x.ms; total += x.ms; });
+  Object.keys(byDay).forEach(function (k) { var d = byDay[k], over = dN > 0 ? Math.max(0, d.ms - dN) : 0; dOt += over; weeks[d.week] = (weeks[d.week] || 0) + d.ms - over; });
+  Object.keys(weeks).forEach(function (w) { if (wN > 0) wOt += Math.max(0, weeks[w] - wN); });
+  return { total: total, daily: dOt, weekly: wOt, ot: dOt + wOt, reg: total - dOt - wOt };
+}
+/* OVERTIME END */
 var HOLY={};function holidaysYear(r,y){var k=r+y;if(!HOLY[k])HOLY[k]=publicHolidays(r,y);return HOLY[k];}
-var REGION={NG:'Nigeria',US:'United States'};
-function holidaysOn(day){var out=[],regs=String((S.settings.holidayRegions===undefined?'NG,US':S.settings.holidayRegions)||'').split(',').filter(Boolean);
+var REGION=HOLIDAY_COUNTRIES;
+function customOn(day){var out=[];String(S.settings.customHolidays||'').split(',').forEach(function(c){var a=c.split('|');if(a[0]&&a[0].trim()===day)out.push({name:(a[1]||'Holiday').trim(),region:'Workspace'});});return out;}
+/* each person's holidays follow their own country: the one chosen for them, else the one their time zone is in */
+function countryOfP(p){return (p&&(p.country||p.countryAuto||countryOfTz(p.tz)))||countryOfTz(S.settings.deadlineTz)||'NG';}
+function holidaysFor(pid,day){var c=countryOfP(person(pid)),out=[];holidaysYear(c,+String(day).slice(0,4)).forEach(function(x){if(x[0]===day)out.push({name:x[1],region:REGION[c]||c});});return out.concat(customOn(day));}
+/* the holiday list shows the countries of the team, plus any the owner added */
+function holidaysOn(day){var out=[],regs=(S.holidayCountries&&S.holidayCountries.length?S.holidayCountries:String((S.settings.holidayRegions===undefined?'NG,US':S.settings.holidayRegions)||'').split(',')).filter(Boolean);
   regs.forEach(function(r){holidaysYear(r,+String(day).slice(0,4)).forEach(function(x){if(x[0]===day)out.push({name:x[1],region:REGION[r]||r});});});
-  String(S.settings.customHolidays||'').split(',').forEach(function(c){var a=c.split('|');if(a[0]&&a[0].trim()===day)out.push({name:(a[1]||'Holiday').trim(),region:'Workspace'});});
-  return out;}
+  return out.concat(customOn(day));}
 function onLeave(day){return (S.leaves||[]).filter(function(l){return l.status==='approved'&&l.from<=day&&l.to>=day;});}
 function weekdaysBetween(a,b){var n=0,d=a;while(d<=b){var w=parse(d).getDay();if(w&&w<6)n++;d=addDays(d,1);}return n;}
 
@@ -1554,36 +1693,71 @@ function csvCell(v){var x=v==null?'':String(v);if(typeof v==='string'&&/^[=+\-@\
 function csvText(rows){return '﻿'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');}
 function downloadCsv(rows,name){downloadBlob(new Blob([csvText(rows)],{type:'text/csv'}),name);}
 
-/* ---------- Leave ---------- */
-var LTYPE={annual:'Annual leave',sick:'Sick leave',unpaid:'Unpaid leave',other:'Other leave'};
-function openLeave(){M={kind:'leave',d:{id:uid(),personId:me,from:today(),to:today(),type:'annual',note:''}};$('#ov').hidden=false;renderSheet();}
-function renderLeave(){var d=M.d,days=d.from&&d.to&&d.to>=d.from?weekdaysBetween(d.from,d.to):0;
-  return [head(S.owner?'Add leave':'Ask for leave'),
-    S.owner?fld('Person',h('select',{class:'in',id:'lv-who',value:d.personId,onchange:bind(d,'personId')},S.people.map(function(p){return h('option',{value:p.id,text:p.name+(p.id===me?' (me)':'')});}))):null,
+/* ---------- Leave (version 1.11.0: leave types, balances, half days; team leads and managers approve for their people) ---------- */
+var LT0=[{key:'annual',name:'Annual leave',accrual:'monthly'},{key:'sick',name:'Sick leave',accrual:'yearly'},{key:'unpaid',name:'Unpaid leave',accrual:'none',paid:false},{key:'other',name:'Other leave',accrual:'none'}];
+function leaveTypes(){return S.settings.leaveTypes&&S.settings.leaveTypes.length?S.settings.leaveTypes:LT0;}
+function ltName(k){var t=leaveTypes().find(function(x){return x.key===k;});return t?t.name:'Leave';}
+function balOf(pid,k){return ((S.balances||{})[pid]||{})[k]||null;}
+function dayCount(n){return n+(n===1?' day':' days');}
+function leaveDaysFor(pid,from,to,half){var n=0,d=from;while(d<=to){var w=parse(d).getDay();if(w&&w<6&&!holidaysFor(pid,d).length)n++;d=addDays(d,1);}return half&&from===to?n/2:n;}
+function openLeave(pid){M={kind:'leave',d:{id:uid(),personId:pid||me,from:today(),to:today(),type:'annual',note:'',half:false}};$('#ov').hidden=false;renderSheet();}
+function renderLeave(){var d=M.d,other=d.personId!==me,auto=S.owner||other,ok=d.from&&d.to&&d.to>=d.from,days=ok?leaveDaysFor(d.personId,d.from,d.to,d.half):0,b=balOf(d.personId,d.type);
+  var who=LEADS()?S.people.filter(function(p){return p.id===me||mayDecide(p.id);}):[];
+  if(d.from!==d.to)d.half=false;
+  return [head(auto?'Add leave':'Ask for leave'),
+    who.length>1?fld('Person',h('select',{class:'in',id:'lv-who',value:d.personId,onchange:function(e){d.personId=e.target.value;renderSheet();}},who.map(function(p){return h('option',{value:p.id,text:p.name+(p.id===me?' (me)':'')});}))):null,
     h('div',{class:'frow'},fld('First day',h('input',{class:'in',id:'lv-from',type:'date',value:d.from,onchange:function(e){d.from=e.target.value;if(d.to<d.from)d.to=d.from;renderSheet();}})),
       fld('Last day',h('input',{class:'in',id:'lv-to',type:'date',value:d.to,onchange:function(e){d.to=e.target.value;renderSheet();}}))),
-    fld('Type',h('select',{class:'in',id:'lv-type',value:d.type,onchange:bind(d,'type')},Object.keys(LTYPE).map(function(k){return h('option',{value:k,text:LTYPE[k]});}))),
+    d.from===d.to?h('label',{class:'switch'},h('input',{type:'checkbox',id:'lv-half',checked:!!d.half,onchange:function(e){d.half=e.target.checked;renderSheet();}}),'Half day'):null,
+    fld('Type',h('select',{class:'in',id:'lv-type',value:d.type,onchange:function(e){d.type=e.target.value;renderSheet();}},leaveTypes().map(function(t){return h('option',{value:t.key,text:t.name});}))),
     fld('Note, optional',h('input',{class:'in',id:'lv-note',maxlength:300,value:d.note,oninput:bind(d,'note')})),
-    h('p',{class:'note',style:'margin:0',text:days?days+(days===1?' working day':' working days')+'. '+(S.owner?'It is approved straight away.':'The owner is told and approves it.'):'Choose the dates.'}),
-    h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.from||d.to<d.from){toast('Check the dates.');return;}var l=Object.assign({},d);closeSheet();send('requestLeave',{leave:l});}},S.owner?'Add leave':'Send request')];}
-function leaveRow(l){var p=person(l.personId)||{name:'Someone'},mine=l.personId===me,days=weekdaysBetween(l.from,l.to);
+    b?h('p',{class:'lvbal',id:'lv-bal'},h('b',{text:dayCount(b.balance)}),' of '+ltName(d.type).toLowerCase()+' left for '+(other?first(pName(d.personId)):'you')+(b.pending?', '+dayCount(b.pending)+' waiting for approval':'')+(days?'. This takes '+dayCount(days)+', leaving '+dayCount(Math.round((b.balance-days)*100)/100)+'.':'.')):null,
+    h('p',{class:'note',style:'margin:0',text:!ok?'Choose the dates.':!days?'Those days are weekends or public holidays, so no leave is needed.':dayCount(days).replace('day','working day')+'. '+(auto?'It is approved straight away.':'Your team lead or the owner is told and approves it.')}),
+    h('button',{class:'btn wide',type:'button',onclick:function(){if(!ok){toast('Check the dates.');return;}var l=Object.assign({},d);if(l.personId===me)delete l.personId;closeSheet();send('requestLeave',{leave:l});}},auto?'Add leave':'Send request')];}
+function leaveRow(l){var p=person(l.personId)||{name:'Someone'},mine=l.personId===me,days=leaveDaysFor(l.personId,l.from,l.to,l.half),dec=mayDecide(l.personId);
   var chip=l.status==='approved'?h('b',{class:'badge-s g'},'Approved'):l.status==='declined'?h('b',{class:'badge-s r'},'Declined'):h('b',{class:'badge-s o'},'Waiting for approval');
-  return h('div',{class:'lv'},h('div',null,h('strong',{text:p.name+' · '+(LTYPE[l.type]||'Leave')}),h('br'),h('small',{text:short(l.from)+(l.to!==l.from?' to '+short(l.to):'')+' · '+days+(days===1?' working day':' working days')+(l.note?' · '+l.note:'')})),chip,
-    (S.owner&&l.status==='pending')||(mine&&l.status==='pending')||S.owner?h('div',{class:'acts'},
-      S.owner&&l.status==='pending'?[h('button',{class:'btn sm',type:'button',onclick:function(){send('decideLeave',{id:l.id,status:'approved'});}},'Approve'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideLeave',{id:l.id,status:'declined'});}},'Decline')]:null,
-      (mine&&l.status==='pending')||S.owner?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('cancelLeave',{id:l.id});}},S.owner?'Remove':'Withdraw'):null):null);}
+  var bal=l.status==='pending'&&dec?balOf(l.personId,l.type):null;
+  return h('div',{class:'lv'},h('div',null,h('strong',{text:p.name+' · '+ltName(l.type)}),h('br'),h('small',{text:short(l.from)+(l.to!==l.from?' to '+short(l.to):'')+' · '+dayCount(days).replace('day','working day')+(l.half?', half day':'')+(l.note?' · '+l.note:'')+(bal?' · '+dayCount(bal.balance)+' left before this':'')})),chip,
+    (dec&&l.status==='pending')||(mine&&l.status==='pending')||looksAfter(l.personId)?h('div',{class:'acts'},
+      dec&&l.status==='pending'?[h('button',{class:'btn sm',type:'button',onclick:function(){send('decideLeave',{id:l.id,status:'approved'});}},'Approve'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideLeave',{id:l.id,status:'declined'});}},'Decline')]:null,
+      (mine&&l.status==='pending')||looksAfter(l.personId)?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('cancelLeave',{id:l.id});}},looksAfter(l.personId)&&!(mine&&l.status==='pending')?'Remove':'Withdraw'):null):null);}
+/* balances: the person's own, and the people they look after; each opens its history (and, for a manager, a change by hand) */
+function balTiles(pid){var b=(S.balances||{})[pid]||{},keys=Object.keys(b);if(!keys.length)return null;
+  return h('div',{class:'tiles baltiles'},keys.map(function(k){var x=b[k];return h('button',{class:'tile',type:'button',onclick:function(){openBalance(pid,k);}},h('b',{style:'font-size:19px',text:String(x.balance)}),
+    h('span',{text:ltName(k)+' left'+(x.pending?', '+x.pending+' waiting':'')}));}));}
+function teamBalances(){var ids=Object.keys(S.balances||{}).filter(function(id){return id!==me&&person(id);}),types=leaveTypes().filter(function(t){return t.accrual!=='none';});if(!ids.length||!types.length)return null;
+  return h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,h('th',{scope:'col'},'Person'),types.map(function(t){return h('th',{scope:'col',text:t.name});}))),
+    h('tbody',null,ids.map(function(id){return h('tr',null,h('td',null,h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;color:var(--plum-ink);font-weight:600;cursor:pointer',onclick:function(){openBalance(id,types[0].key);}},pName(id))),
+      types.map(function(t){var x=balOf(id,t.key);return h('td',{class:x&&x.balance<0?'neg':'',text:x?String(x.balance):''});}));}))));}
+function openBalance(pid,k){M={kind:'bal',pid:pid,type:k,lines:null,adj:{days:'',note:''}};$('#ov').hidden=false;renderSheet();loadBalance();}
+function loadBalance(){var m=M;server('leaveHistory',{personId:m.pid,type:m.type}).then(function(res){if(M!==m)return;accept(res);m.lines=(res.leaveLines||{}).lines||[];renderSheet();}).catch(function(e){if(M===m){m.lines=[];m.err=e.message;renderSheet();}});}
+function renderBalance(){var b=balOf(M.pid,M.type),types=leaveTypes().filter(function(t){return t.accrual!=='none';}),a=M.adj;
+  return [head(ltName(M.type)+(M.pid===me?'':', '+pName(M.pid))),
+    types.length>1?h('div',{class:'itabs',style:'margin:0'},types.map(function(t){return h('button',{type:'button','aria-pressed':String(t.key===M.type),onclick:function(){M.type=t.key;M.lines=null;renderSheet();loadBalance();}},t.name);})):null,
+    b?h('div',{class:'tiles'},h('div',{class:'tile dark'},h('b',{text:String(b.balance)}),h('span',null,'Left this year')),h('div',{class:'tile'},h('b',{text:String(b.used)}),h('span',null,'Taken')),
+      h('div',{class:'tile'},h('b',{text:String(b.pending)}),h('span',null,'Waiting'))):null,
+    b?h('p',{class:'note',style:'margin:0',text:b.allowance+' days a year'+(b.accrual==='monthly'?', earned each month':'')+'. '+(b.carry?b.carry+' carried over from last year. ':'')+'Public holidays and weekends never count.'}):null,
+    M.lines===null?h('p',{class:'note',style:'margin:0'},'Loading the history…'):h('div',{class:'shifts'},M.lines.length?M.lines.map(function(l){return h('div',{class:'lv'},h('div',null,h('strong',{text:l.text}),h('br'),h('small',{text:short(l.day)})),h('b',{class:'badge-s'+(l.days<0?' o':' g'),text:(l.days>0?'+':'')+l.days}));}):h('p',{class:'note',style:'margin:0'},'Nothing yet this year.')),
+    mgrOf(M.pid)&&M.pid!==me?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:8px'},h('strong',null,'Change the balance'),
+      h('div',{class:'frow'},fld('Days, a minus number takes days away',h('input',{class:'in',id:'bal-days',type:'number',step:'0.5',value:a.days,oninput:bind(a,'days')})),fld('Why, for the history',h('input',{class:'in',id:'bal-note',maxlength:200,value:a.note,oninput:bind(a,'note')}))),
+      h('button',{class:'btn sm',style:'align-self:flex-start',type:'button',onclick:function(){var dd=Number(a.days);if(!dd){toast('Type the days to add or take away.');return;}if(!a.note.trim()){toast('Say why, for the history.');return;}
+        var m=M;server('adjustLeave',{personId:m.pid,type:m.type,days:dd,note:a.note.trim()}).then(function(res){accept(res);toast(res.msg||'Saved');m.adj={days:'',note:''};render();if(M===m){m.lines=null;renderSheet();loadBalance();}}).catch(function(e){if(!lost(e))toast(e.message+'.');});}},'Save change')):null];}
 function leaveSection(){var td=today(),list=(S.leaves||[]).slice().sort(function(a,b){return (a.status==='pending'?0:1)-(b.status==='pending'?0:1)||a.from.localeCompare(b.from);});
   var upcoming=list.filter(function(l){return l.to>=td;}),past=list.filter(function(l){return l.to<td;}).reverse().slice(0,8);
-  var hols=[];for(var i=0;i<90;i++){var day=addDays(td,i);holidaysOn(day).forEach(function(x){hols.push({day:day,name:x.name,region:x.region});});}
-  return [h('div',{class:'sec'},h('h3',null,'Leave'),h('button',{type:'button',onclick:openLeave},S.owner?'Add leave':'Ask for leave')),
+  var hols=[],hk={};for(var i=0;i<90;i++){var day=addDays(td,i);holidaysOn(day).forEach(function(x){var k=day+'|'+x.name;if(hk[k]){if(hk[k].regions.indexOf(x.region)<0)hk[k].regions.push(x.region);return;}hk[k]={day:day,name:x.name,regions:[x.region]};hols.push(hk[k]);});}
+  var holAll=V.holAll,holShow=holAll?hols:hols.slice(0,10),mine=balTiles(me),team=LEADS()?teamBalances():null;
+  return [h('div',{class:'sec'},h('h3',null,'Leave'),h('button',{type:'button',onclick:function(){openLeave();}},LEADS()?'Add leave':'Ask for leave')),
     h('div',{style:'display:grid;gap:22px'},
+      mine?h('div',{class:'blk'},h('div',{class:'sec',style:'margin-top:0'},h('h3',{style:'font-size:15px'},'Your balances'),h('span',null,'Tap one for its history')),mine):null,
+      team?h('div',{class:'blk'},h('div',{class:'sec',style:'margin-top:0'},h('h3',{style:'font-size:15px'},'Team balances'),h('span',null,'Days left this year')),team):null,
       h('div',{class:'blk'},h('div',{class:'sec',style:'margin-top:0'},h('h3',{style:'font-size:15px'},'Coming up and waiting'),h('span',{text:upcoming.filter(function(l){return l.status==='pending';}).length+' waiting'})),
-        upcoming.length?h('div',{class:'shifts'},upcoming.map(leaveRow)):h('div',{class:'empty'},h('b',null,'No leave booked'),S.owner?'Add leave for anyone, or approve requests here.':'Ask for leave and the owner gets a message.')),
-      h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'Public holidays, next 90 days'),S.owner?h('button',{type:'button',onclick:function(){V.tab='more';render();setTimeout(function(){var b=$('#hol-set');if(b)b.scrollIntoView({behavior:'smooth'});},60);}},'Choose countries'):null),
-        hols.length?h('div',null,hols.map(function(x){return h('div',{class:'hol'},h('b',{text:DAY[parse(x.day).getDay()]+' '+short(x.day)}),h('span',{text:x.name+' · '+x.region}));})):h('p',{class:'note'},'No public holidays in the next 90 days.')),
+        upcoming.length?h('div',{class:'shifts'},upcoming.map(leaveRow)):h('div',{class:'empty'},h('b',null,'No leave booked'),LEADS()?'Add leave for your people, or approve requests here.':'Ask for leave and your team lead or the owner gets a message.')),
+      h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'Public holidays, next 90 days'),CAN('settings')?h('button',{type:'button',onclick:function(){V.tab='more';render();setTimeout(function(){var b=$('#hol-set');if(b)b.scrollIntoView({behavior:'smooth'});},60);}},'Countries and own days'):null),
+        hols.length?h('div',null,holShow.map(function(x){return h('div',{class:'hol'},h('b',{text:DAY[parse(x.day).getDay()]+' '+short(x.day)}),h('span',{text:x.name+' · '+x.regions.join(', ')}));}),
+          hols.length>holShow.length?h('button',{class:'btn ghost sm',type:'button',style:'margin-top:8px',onclick:function(){V.holAll=true;render();}},'Show all '+hols.length):null):h('p',{class:'note'},'No public holidays in the next 90 days.')),
       past.length?h('div',{class:'blk'},h('div',{class:'sec'},h('h3',{style:'font-size:15px'},'Earlier')),h('div',{class:'shifts'},past.map(leaveRow))):null)];}
 
-/* ---------- Payroll (owner) ---------- */
+/* ---------- Payroll (owner, or a manager granted rates and pay) ---------- */
 function monthRange(off){var t=parse(today()),d=new Date(t.getFullYear(),t.getMonth()+off,1),e=new Date(d.getFullYear(),d.getMonth()+1,0);return {from:ymd(d),to:ymd(e),label:MONL[d.getMonth()]+' '+d.getFullYear()};}
 function monthOf(m){var q=String(m).split('-').map(Number),d=new Date(q[0],q[1]-1,1),e=new Date(q[0],q[1],0);return {from:ymd(d),to:ymd(e),label:MONL[d.getMonth()]+' '+d.getFullYear()};}
 /* shifts for a payroll month: recent ones are on this device; older and archived ones come from the server */
@@ -1591,33 +1765,215 @@ function payShifts(r){var m=r.from.slice(0,7),P=V.payData=V.payData||{},L=V.payL
   if(!P[m]&&!L[m]){L[m]=1;server('payrollData',{month:m}).then(function(res){P[m]=(res.pay&&res.pay.shifts)||[];L[m]=0;if(V.tab==='stats'&&V.ins==='pay')render();})
     .catch(function(e){L[m]=0;P[m]=[];if(!lost(e))toast('Could not load older shifts: '+e.message+'.');});}
   return live.concat((P[m]||[]).filter(function(x){return (x.archived||x.in<cut)&&!live.some(function(y){return y.id===x.id;});}));}
-function payRows(r,shifts){return S.people.map(function(p){var z=p.tz||myTz,sh=(shifts||S.shifts||[]).filter(function(x){var k=dayKey(x.in,x.tz||z);return x.personId===p.id&&k>=r.from&&k<=r.to&&x.out;});
-    var total=sh.reduce(function(a,x){return a+workedMs(x);},0),weeks={},days={};
-    sh.forEach(function(x){var k=dayKey(x.in,x.tz||z),d=parse(k),wk=addDays(k,-((d.getDay()+6)%7));weeks[wk]=(weeks[wk]||0)+workedMs(x);days[k]=1;});
-    var otAfter=(p.otAfter||40)*36e5,ot=Object.keys(weeks).reduce(function(a,w){return a+Math.max(0,weeks[w]-otAfter);},0),reg=total-ot;
+var HRS0={weekLimit:0,dailyOt:0,weeklyOt:40,otRate:1.5};
+function hoursRules(){return Object.assign({},HRS0,S.settings.hours||{});}
+/* overtime rules for one person: their own, else the workspace's (Settings, Attendance and hours) */
+function otRule(p){var w=hoursRules();return {daily:p.otDaily!=null?p.otDaily:w.dailyOt,weekly:p.otAfter!=null?p.otAfter:w.weeklyOt,rate:p.otRate!=null?p.otRate:w.otRate};}
+function payRows(r,shifts){var unpaid={};leaveTypes().forEach(function(t){if(t.paid===false)unpaid[t.key]=1;});
+  return S.people.map(function(p){var z=p.tz||myTz,sh=(shifts||S.shifts||[]).filter(function(x){var k=dayKey(x.in,x.tz||z);return x.personId===p.id&&k>=r.from&&k<=r.to&&x.out;});
+    var days=sh.map(function(x){var k=dayKey(x.in,x.tz||z);return {day:k,week:weekStart(k),ms:workedMs(x)};}),rule=otRule(p),sp=overtimeSplit(days,rule),dset={};days.forEach(function(x){dset[x.day]=1;});
     var lv=(S.leaves||[]).filter(function(l){return l.personId===p.id&&l.status==='approved'&&l.to>=r.from&&l.from<=r.to;});
-    var leaveDays=lv.reduce(function(a,l){return a+weekdaysBetween(l.from<r.from?r.from:l.from,l.to>r.to?r.to:l.to);},0);
-    var unpaid=lv.filter(function(l){return l.type==='unpaid';}).reduce(function(a,l){return a+weekdaysBetween(l.from<r.from?r.from:l.from,l.to>r.to?r.to:l.to);},0);
-    var hol=0,d0=r.from;while(d0<=r.to){var w0=parse(d0).getDay();if(w0&&w0<6&&holidaysOn(d0).length)hol++;d0=addDays(d0,1);}
-    var late=sh.filter(isLate).length,rate=p.payRate||0,gross=0,wd=weekdaysBetween(r.from,r.to);
-    if(p.payType==='hourly')gross=reg/36e5*rate+ot/36e5*rate*(p.otRate||1.5);
-    else if(p.payType==='monthly')gross=rate*Math.max(0,(wd-unpaid))/Math.max(1,wd);
+    var part=function(l){return leaveDaysFor(p.id,l.from<r.from?r.from:l.from,l.to>r.to?r.to:l.to,l.half);};
+    var leaveDays=lv.reduce(function(a,l){return a+part(l);},0),unp=lv.filter(function(l){return unpaid[l.type];}).reduce(function(a,l){return a+part(l);},0);
+    var hol=0,d0=r.from;while(d0<=r.to){var w0=parse(d0).getDay();if(w0&&w0<6&&holidaysFor(p.id,d0).length)hol++;d0=addDays(d0,1);}
+    var late=sh.filter(isLate).length,rate=p.payRate||0,gross=0,otPay=0,wd=weekdaysBetween(r.from,r.to);
+    if(p.payType==='hourly'){otPay=sp.ot/36e5*rate*rule.rate;gross=sp.reg/36e5*rate+otPay;}
+    else if(p.payType==='monthly')gross=rate*Math.max(0,(wd-unp))/Math.max(1,wd);
     var exp={};(S.expenses||[]).forEach(function(e){if(e.personId===p.id&&(e.status==='approved'||e.status==='invoiced')&&e.date>=r.from&&e.date<=r.to)exp[e.currency]=(exp[e.currency]||0)+e.amount;});
     var expText=Object.keys(exp).map(function(c){return fmtMoney(exp[c],c);}).join(', ');
-    return {p:p,days:Object.keys(days).length,total:total,reg:reg,ot:ot,late:late,leave:leaveDays,unpaid:unpaid,hol:hol,gross:gross,exp:expText,cur:p.payCurrency||S.settings.currency||'USD'};});}
-function paySection(){var cur0=today().slice(0,7);if(!V.payMonth)V.payMonth=cur0;var r=monthOf(V.payMonth),rows=payRows(r,payShifts(r)),loading=!!(V.payLoad||{})[V.payMonth];
+    return {p:p,days:Object.keys(dset).length,total:sp.total,reg:sp.reg,ot:sp.ot,otDay:sp.daily,otWeek:sp.weekly,rule:rule,late:late,leave:leaveDays,unpaid:unp,hol:hol,gross:gross,otPay:otPay,exp:expText,cur:p.payCurrency||S.settings.currency||'USD'};});}
+function ruleText(x){return [x.daily?'past '+x.daily+'h a day':'',x.weekly?'past '+x.weekly+'h a week':''].filter(Boolean).join(' and ')||'no overtime rule';}
+function paySection(){var cur0=today().slice(0,7);if(!V.payMonth)V.payMonth=cur0;var r=monthOf(V.payMonth),rows=payRows(r,payShifts(r)),loading=!!(V.payLoad||{})[V.payMonth],w=hoursRules();
   var sums={};rows.forEach(function(x){if(x.gross)sums[x.cur]=(sums[x.cur]||0)+x.gross;});
-  return [h('div',{class:'sec'},h('h3',null,'Payroll'),h('button',{type:'button',onclick:function(){downloadCsv([['Person','Month','Days worked','Hours','Regular hours','Overtime hours','Late starts','Leave days','Unpaid leave days','Public holidays','Expenses to repay','Pay type','Rate','Currency','Gross pay']].concat(rows.map(function(x){
-      return [x.p.name,r.label,x.days,(x.total/36e5).toFixed(2),(x.reg/36e5).toFixed(2),(x.ot/36e5).toFixed(2),x.late,x.leave,x.unpaid,x.hol,x.exp||'',x.p.payType||'',x.p.payRate||'',x.cur,x.gross.toFixed(2)];})),BRAND+' payroll '+r.from.slice(0,7).replace('-','')+'.csv');}},'Export payroll')),
+  return [h('div',{class:'sec'},h('h3',null,'Payroll'),h('button',{type:'button',onclick:function(){downloadCsv([['Person','Month','Days worked','Hours','Regular hours','Daily overtime hours','Weekly overtime hours','Overtime hours','Overtime rule','Overtime rate','Late starts','Leave days','Unpaid leave days','Public holidays','Expenses to repay','Pay type','Rate','Currency','Overtime pay','Gross pay']].concat(rows.map(function(x){
+      return [x.p.name,r.label,x.days,(x.total/36e5).toFixed(2),(x.reg/36e5).toFixed(2),(x.otDay/36e5).toFixed(2),(x.otWeek/36e5).toFixed(2),(x.ot/36e5).toFixed(2),ruleText(x.rule),x.rule.rate,x.late,x.leave,x.unpaid,x.hol,x.exp||'',x.p.payType||'',x.p.payRate||'',x.cur,x.otPay.toFixed(2),x.gross.toFixed(2)];})),BRAND+' payroll '+r.from.slice(0,7).replace('-','')+'.csv');}},'Export payroll')),
     h('div',{class:'itabs',style:'margin-top:0'},[0,-1,-2].map(function(o){var m=monthRange(o),k=m.from.slice(0,7);return h('button',{type:'button','aria-pressed':String(V.payMonth===k),onclick:function(){V.payMonth=k;render();}},m.label);}),
       h('input',{class:'in',type:'month',id:'pay-m','aria-label':'Another month',max:cur0,value:V.payMonth,style:'width:auto;flex:none;padding:7px 10px;border-radius:999px',onchange:function(e){if(/^\d{4}-\d{2}$/.test(e.target.value)){V.payMonth=e.target.value;render();}}})),
     loading?h('p',{class:'note',style:'margin:-6px 0 10px'},'Loading older shifts from the archive…'):null,
     h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,['Person','Days','Hours','Overtime','Late','Leave','Holidays','Expenses to repay','Gross pay'].map(function(c){return h('th',{scope:'col',text:c});}))),
       h('tbody',null,rows.map(function(x){return h('tr',null,h('td',null,h('button',{class:'linkb',type:'button',style:'background:none;border:0;padding:0;color:var(--plum-ink);font-weight:600;cursor:pointer',onclick:function(){openPerson(x.p.id);}},x.p.name)),
-        h('td',{text:x.days}),h('td',{text:hm(x.total)}),h('td',{class:x.ot?'':'z',text:x.ot?hm(x.ot):'0h'}),h('td',{class:x.late?'':'z',text:x.late}),h('td',{class:x.leave?'':'z',text:x.leave}),h('td',{class:x.hol?'':'z',text:x.hol}),h('td',{class:x.exp?'':'z',text:x.exp||'None'}),
+        h('td',{text:x.days}),h('td',{text:hm(x.total)}),h('td',{class:x.ot?'otc':'z',title:x.ot?'Daily '+hm(x.otDay)+', weekly '+hm(x.otWeek)+', at '+x.rule.rate+' times the rate':null,text:x.ot?hm(x.ot):'0h'}),h('td',{class:x.late?'':'z',text:x.late}),h('td',{class:x.leave?'':'z',text:x.leave}),h('td',{class:x.hol?'':'z',text:x.hol}),h('td',{class:x.exp?'':'z',text:x.exp||'None'}),
         h('td',{class:'tot',text:x.p.payType?fmtMoney(x.gross,x.cur):'Set pay'}));})))),
-    h('p',{class:'note',text:'Gross pay before tax, pension and other deductions. '+(Object.keys(sums).length?'Total: '+Object.keys(sums).map(function(c){return fmtMoney(sums[c],c);}).join(' and ')+'. ':'')+'Set each person\'s pay and overtime under Settings, People. Hourly pay uses clocked hours; overtime counts hours past the weekly limit.'})];}
+    h('p',{class:'note',text:'Gross pay before tax, pension and other deductions. '+(Object.keys(sums).length?'Total: '+Object.keys(sums).map(function(c){return fmtMoney(sums[c],c);}).join(' and ')+'. ':'')+'Overtime counts hours '+ruleText({daily:w.dailyOt,weekly:w.weeklyOt})+', paid at '+w.otRate+' times the hourly rate, unless a person has their own rule. Change it under Settings, Attendance and hours, or on each person. Hourly pay uses clocked hours; unpaid leave lowers a monthly salary.'})];}
 
+/* ---------- Planned shifts (version 1.11.0) ---------- */
+var ATTW={upcoming:['Coming up','badge-s'],notIn:['Not in yet','badge-s r'],missed:['Missed','badge-s r'],late:['Late','badge-s o'],early:['Left early','badge-s o'],lateEarly:['Late, left early','badge-s o'],onTime:['On time','badge-s g'],working:['Working','badge-s g'],leave:['On leave','badge-s'],holiday:['Public holiday','badge-s']};
+function attChip(o){var w=ATTW[o.status]||ATTW.upcoming;return h('b',{class:w[1],text:w[0]+(o.lateMin&&(o.status==='late'||o.status==='lateEarly')?' '+o.lateMin+' min':'')+(o.status==='early'&&o.earlyMin?' '+o.earlyMin+' min':'')});}
+function occWhen(o,tz){return dIn(o.start,tz||o.tz)+', '+tIn(o.start,tz||o.tz)+' to '+tIn(o.end,tz||o.tz);}
+function occText(o){var theirs=o.tz&&o.tz!==myTz;return occWhen(o)+' '+tzCity(o.tz)+' time'+(theirs?' ('+tIn(o.start)+' to '+tIn(o.end)+' yours)':'');}
+function myNext(){var n=Date.now();return (S.schedule||[]).filter(function(o){return o.personId===me&&o.end>n;}).sort(function(a,b){return a.start-b.start;})[0]||null;}
+function swapOf(key){return (S.swaps||[]).find(function(w){return w.key===key&&w.state==='pending';})||null;}
+function occRow(o,who){var p=person(o.personId)||{name:'Someone'},sw=swapOf(o.key),n=Date.now(),pl=(S.scheds||[]).find(function(x){return x.id===o.schedId;});
+  var bits=[o.subjectId?sName(o.subjectId):'',o.siteId?siteName(o.siteId):'',o.covering?'Covering for '+first(pName(o.planFor)):'',o.reason?'Reason: '+o.reason:'',sw?(sw.toId?'Swap to '+first(pName(sw.toId))+' waiting for approval':'Drop waiting for approval'):''].filter(Boolean);
+  return h('div',{class:'lv occ'},h('div',null,h('strong',{text:(who?p.name+' · ':'')+occWhen(o)}),h('br'),h('small',{text:tzCity(o.tz)+' time'+(o.tz!==myTz?', '+tIn(o.start)+' to '+tIn(o.end)+' yours':'')+(bits.length?' · '+bits.join(' · '):'')})),attChip(o),
+    h('div',{class:'acts'},o.personId===me&&o.start>n&&!sw?h('button',{class:'btn ghost sm',type:'button',onclick:function(){openSwap(o.key);}},'Swap or drop'):null,
+      o.personId===me&&!o.reason&&['notIn','missed','late','early','lateEarly'].indexOf(o.status)>=0?h('button',{class:'btn sm',type:'button',onclick:function(){openReason(o.key);}},'Add reason'):null,
+      pl&&pl.canEdit?h('button',{class:'btn ghost sm',type:'button',onclick:function(){openOcc(o.key);}},'Change'):null));}
+function siteName(id){var w=(S.settings.workSites||[]).find(function(x){return x.id===id;});return w?w.name:'';}
+function schedSection(){var SV=V.sv=V.sv||{wk:weekStart(today())},n=Date.now(),mine=(S.schedule||[]).filter(function(o){return o.personId===me&&o.end>n-12*36e5;}).slice(0,14);
+  var dec=(S.swaps||[]).filter(function(w){return w.canDecide;}),myReq=(S.swaps||[]).filter(function(w){return w.personId===me&&w.state==='pending';}),lead=LEADS();
+  var out=[h('div',{class:'sec'},h('h3',null,'My shifts'),h('span',null,'Times in each shift\'s own time zone')),
+    mine.length?h('div',{class:'shifts'},mine.map(function(o){return occRow(o,false);})):h('div',{class:'empty'},ill('empty_calendar'),h('b',null,'No planned shifts'),lead?'Plan shifts for your people below. Each person sees theirs here.':'When your team lead plans your shifts, they show here.'),
+    myReq.length?h('div',{class:'shifts',style:'margin-top:10px'},myReq.map(function(w){return h('div',{class:'lv'},h('div',null,h('strong',{text:(w.toId?'Swap to '+pName(w.toId):'Drop')+' · '+short(w.day)}),h('br'),h('small',{text:w.reason})),h('b',{class:'badge-s o'},'Waiting for approval'),
+      h('div',{class:'acts'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('cancelSwap',{id:w.id});}},'Withdraw')));})):null];
+  if(!lead)return out;
+  if(dec.length)out.push(h('div',{class:'sec'},h('h3',null,'Swaps to approve'),h('span',{text:dec.length+' waiting'})),h('div',{class:'shifts'},dec.map(function(w){return h('div',{class:'lv'},
+    h('div',null,h('strong',{text:pName(w.personId)+(w.toId?' to '+pName(w.toId):', drop')+' · '+short(w.day)}),h('br'),h('small',{text:w.reason})),h('b',{class:'badge-s o'},'Waiting'),
+    h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('decideSwap',{id:w.id,ok:true});}},'Approve'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideSwap',{id:w.id,ok:false});}},'Decline')));})));
+  var days=[];for(var i=0;i<7;i++)days.push(addDays(SV.wk,i));
+  var ppl0=S.people.filter(function(p){return mayDecide(p.id)||(S.schedule||[]).some(function(o){return o.personId===p.id;});});
+  var ppl=ppl0.filter(function(p){return (S.schedule||[]).some(function(o){return o.personId===p.id&&days.indexOf(o.day)>=0;});}),idle=ppl0.filter(function(p){return ppl.indexOf(p)<0;});
+  out.push(h('div',{class:'sec'},h('h3',null,'Team schedule'),h('button',{type:'button',onclick:function(){openSched();}},'Plan shifts')),
+    h('div',{class:'wkn',style:'margin-bottom:8px'},h('button',{class:'x',type:'button','aria-label':'Previous week',html:I.l,onclick:function(){SV.wk=addDays(SV.wk,-7);render();}}),
+      h('div',null,h('strong',{text:'Week of '+short(SV.wk)}),h('small',null,'Planned shifts, with how each went')),h('button',{class:'x',type:'button','aria-label':'Next week',html:I.r,onclick:function(){SV.wk=addDays(SV.wk,7);render();}})),
+    ppl.length?h('div',{class:'tsheet sgrid'},h('table',null,h('thead',null,h('tr',null,h('th',{scope:'col'},'Person'),days.map(function(d){var x=parse(d);return h('th',{scope:'col',text:DAY[x.getDay()]+' '+x.getDate()});}))),
+      h('tbody',null,ppl.map(function(p){return h('tr',null,h('td',{text:p.name}),days.map(function(d){var os=(S.schedule||[]).filter(function(o){return o.personId===p.id&&o.day===d;});
+        return h('td',{class:os.length?'':'mu'},os.length?os.map(function(o){var w=ATTW[o.status]||ATTW.upcoming;return h('button',{class:'scell '+(o.status||''),type:'button',title:w[0]+(o.reason?': '+o.reason:''),onclick:function(){openOcc(o.key);}},o.startText+' to '+o.endText,h('i',{class:'st',text:w[0]}));}):'Off');}));})))):h('p',{class:'note'},ppl0.length?'Nothing planned this week.':'Nobody to plan for yet.'),
+    ppl.length&&idle.length?h('p',{class:'note',style:'margin:8px 0 0',text:'Nothing planned this week for '+idle.map(function(p){return p.name;}).join(', ')+'.'}):null);
+  var plans=(S.scheds||[]).filter(function(x){return x.canEdit&&(x.repeat==='once'?x.date>=addDays(today(),-7):!x.until||x.until>=today());});
+  if(plans.length)out.push(h('div',{class:'sec'},h('h3',null,'Plans'),h('span',null,'Tap one to change or end it')),h('div',{class:'shifts'},plans.map(function(x){return h('button',{class:'shift',type:'button',onclick:function(){openSched(x.id);}},
+    h('div',null,h('strong',{text:pName(x.personId)+' · '+x.start+' to '+x.end}),h('br'),h('small',{text:planText(x)+' · '+tzCity(x.tz)+' time'+(x.subjectId?' · '+sName(x.subjectId):'')})));})));
+  return out;}
+function planText(x){return x.repeat==='once'?'On '+short(x.date):(x.repeat==='fortnightly'?'Every other ':'Every ')+(x.days||[]).map(function(d){return DAY[d];}).join(', ')+', from '+short(x.from)+(x.until?' to '+short(x.until):'');}
+function openSched(id){var x=id?(S.scheds||[]).find(function(y){return y.id===id;}):null,cand=S.people.filter(function(p){return mayDecide(p.id);});
+  M={kind:'sched',id:id||null,del:false,d:x?JSON.parse(JSON.stringify(x)):{id:uid(),personId:(cand.find(function(p){return p.id!==me;})||cand[0]||{}).id||'',repeat:'weekly',days:[1,2,3,4,5],start:'09:00',end:'17:00',from:today(),until:'',date:today(),subjectId:'',siteId:'',note:''}};
+  $('#ov').hidden=false;renderSheet();}
+function renderSched(){var d=M.d,cand=S.people.filter(function(p){return mayDecide(p.id);}),p=person(d.personId),z=d.tz||(p&&p.tz)||myTz;
+  return [head(M.id?'Planned shifts':'Plan shifts'),
+    fld('Person',h('select',{class:'in',id:'sc-who',value:d.personId,disabled:!!M.id,onchange:function(e){d.personId=e.target.value;renderSheet();}},cand.map(function(x){return h('option',{value:x.id,text:x.name+(x.id===me?' (me)':'')});}))),
+    h('div',{class:'seg s3',role:'group','aria-label':'How often'},[['once','One day'],['weekly','Every week'],['fortnightly','Every other week']].map(function(o){return h('button',{type:'button','aria-pressed':String(d.repeat===o[0]),onclick:function(){d.repeat=o[0];renderSheet();}},o[1]);})),
+    d.repeat==='once'?fld('Day',h('input',{class:'in',id:'sc-date',type:'date',value:d.date||today(),onchange:bind(d,'date')}))
+      :[h('div',{class:'chips',role:'group','aria-label':'Days of the week'},[1,2,3,4,5,6,0].map(function(n){var on=(d.days||[]).indexOf(n)>=0;return h('button',{class:'chip',type:'button','aria-pressed':String(on),onclick:function(){d.days=on?d.days.filter(function(x){return x!==n;}):(d.days||[]).concat([n]);renderSheet();}},DAY[n]);})),
+        h('div',{class:'frow'},fld('From',h('input',{class:'in',id:'sc-from',type:'date',value:d.from||today(),onchange:bind(d,'from')})),fld('Until, optional',h('input',{class:'in',id:'sc-until',type:'date',value:d.until||'',onchange:bind(d,'until')})))],
+    h('div',{class:'frow'},fld('Starts',h('input',{class:'in',id:'sc-start',type:'time',value:d.start,oninput:bind(d,'start')})),fld('Ends',h('input',{class:'in',id:'sc-end',type:'time',value:d.end,oninput:bind(d,'end')}))),
+    h('p',{class:'note',style:'margin:0',text:'Times are '+(p?first(p.name)+'\'s':'their')+' own: '+tzCity(z)+' time'+(z!==myTz&&/^\d\d:\d\d$/.test(d.start||'')?'. That is '+theirToMine(d.start,z)+' to '+theirToMine(d.end,z)+' for you.':'.')+' A shift that ends before it starts runs overnight.'}),
+    h('div',{class:'frow'},fld('Client, optional',h('select',{class:'in',id:'sc-client',value:d.subjectId||'',onchange:bind(d,'subjectId')},[h('option',{value:'',text:'No client'})].concat(liveSubjects().filter(function(s){return !s.privateTo;}).map(function(s){return h('option',{value:s.id,text:s.name});})))),
+      (S.settings.workSites||[]).length?fld('Work site, optional',h('select',{class:'in',id:'sc-site',value:d.siteId||'',onchange:bind(d,'siteId')},[h('option',{value:'',text:'Anywhere'})].concat(S.settings.workSites.map(function(w){return h('option',{value:w.id,text:w.name});})))):null),
+    fld('Note, optional',h('input',{class:'in',id:'sc-note',maxlength:200,value:d.note||'',oninput:bind(d,'note')})),
+    h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.personId){toast('Choose a person.');return;}if(d.repeat!=='once'&&!(d.days||[]).length){toast('Choose the days of the week.');return;}if(!d.start||!d.end||d.start===d.end){toast('Check the start and end times.');return;}
+      var x=Object.assign({},d);delete x.canEdit;delete x.skip;delete x.cover;closeSheet();send('saveSched',{sched:x});}},M.id?'Save shifts':'Plan shifts'),
+    M.id?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=M.id;closeSheet();send('deleteSched',{id:id});}},d.repeat==='once'?'Confirm removal':'Yes, end it'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
+      :h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},d.repeat==='once'?'Remove shift':'End this plan')):null,
+    M.del&&d.repeat!=='once'?h('p',{class:'note',style:'margin:0'},'Shifts from today on are taken off. Earlier ones stay in the attendance report.'):null];}
+function theirToMine(hhmm,z){var t=hhmm.split(':'),base=Date.now(),o=tzParts(z,base),guess=Date.UTC(+o.year,o.month-1,+o.day,+t[0],+t[1]),off=0;try{var q=tzParts(z,guess);off=Date.UTC(+q.year,q.month-1,+q.day,+q.hour%24,+q.minute)-guess;}catch(e){}return tIn(guess-off);}
+function occOf(key){return (S.schedule||[]).find(function(o){return o.key===key;})||null;}
+function openOcc(key){var o=occOf(key);if(!o)return;M={kind:'occ',key:key};$('#ov').hidden=false;renderSheet();}
+function renderOcc(){var o=occOf(M.key);if(!o){closeSheet();return [];}var pl=(S.scheds||[]).find(function(x){return x.id===o.schedId;});
+  return [head(pName(o.personId)),h('p',{style:'margin:0',text:occText(o)}),h('div',{class:'acts',style:'margin:0'},attChip(o),o.covering?h('small',{class:'note',text:'Covering for '+pName(o.planFor)}):null),
+    o.workedMs?h('p',{class:'note',style:'margin:0',text:'Worked '+hm(o.workedMs)+(o.inAt?', clocked in '+tIn(o.inAt,o.tz):'')+(o.outAt?', out '+tIn(o.outAt,o.tz):'')+' '+tzCity(o.tz)+' time.'}):null,
+    o.reason?h('p',{class:'lvbal'},h('b',null,'Reason: '),o.reason):null,
+    pl&&pl.canEdit?h('div',{class:'acts'},o.start>Date.now()?h('button',{class:'btn ghost sm',type:'button',onclick:function(){closeSheet();send('deleteSched',{id:o.schedId,day:o.day});}},'Remove this day'):null,
+      h('button',{class:'btn ghost sm',type:'button',onclick:function(){openSched(o.schedId);}},'Change the plan')):null];}
+function openSwap(key){M={kind:'swap',key:key,d:{toId:'',reason:''}};$('#ov').hidden=false;renderSheet();}
+function renderSwap(){var o=occOf(M.key),d=M.d;if(!o){closeSheet();return [];}var mates=S.people.filter(function(p){return p.id!==me;});
+  return [head('Swap or drop a shift'),h('p',{style:'margin:0',text:occText(o)}),
+    fld('Give it to',h('select',{class:'in',id:'sw-to',value:d.toId,onchange:bind(d,'toId')},[h('option',{value:'',text:'Nobody, drop the shift'})].concat(mates.map(function(p){return h('option',{value:p.id,text:p.name});})))),
+    fld('Why, in a line',h('input',{class:'in',id:'sw-why',maxlength:200,value:d.reason,oninput:bind(d,'reason')})),
+    h('p',{class:'note',style:'margin:0'},'Your team lead or the owner approves it. Until then the shift stays yours.'),
+    h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.reason.trim()){toast('Say in a line why.');return;}var p={key:M.key,toId:d.toId,reason:d.reason.trim(),id:uid()};closeSheet();send('requestSwap',p);}},'Send for approval')];}
+function openReason(key){M={kind:'reason',key:key,d:{reason:''}};$('#ov').hidden=false;renderSheet();var f=$('#ar-why');if(f)f.focus();}
+function renderReason(){var o=occOf(M.key),d=M.d;if(!o){closeSheet();return [];}
+  return [head('Add a reason'),h('p',{style:'margin:0',text:occText(o)}),h('div',{class:'acts',style:'margin:0'},attChip(o)),
+    fld('What happened',h('input',{class:'in',id:'ar-why',maxlength:300,placeholder:'Power cut, the generator took a while',value:d.reason,oninput:bind(d,'reason')})),
+    h('p',{class:'note',style:'margin:0'},'Your team lead sees it with the shift. Giving a reason soon means they are not sent an alert.'),
+    h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.reason.trim()){toast('Write a short reason.');return;}var p={key:M.key,reason:d.reason.trim()};closeSheet();send('attendanceReason',p);}},'Save reason')];}
+/* Home: what needs a reason from me, most recent first. Kind by design: the person is asked first, and their lead hears only if nothing was said in time */
+function attCard(){var list=(S.myAtt||[]).map(occOf).filter(Boolean).sort(function(a,b){return b.start-a.start;}).slice(0,2);if(!list.length)return null;var n=Date.now();
+  return h('div',{class:'blk attn','data-blk':'attendance',style:'margin-bottom:22px'},h('div',{class:'sec'},h('h3',null,'Your shifts'),h('span',null,'Tell your team lead what happened')),
+    list.map(function(o){var txt=o.status==='notIn'?'Your shift started at '+o.startText+', '+Math.max(1,Math.round((n-o.start)/6e4))+' minutes ago.':o.status==='missed'?'Your shift on '+occWhen(o)+' has no clock in.'
+        :o.status==='late'||o.status==='lateEarly'?'You clocked in '+o.lateMin+' minutes after your '+o.startText+' shift started.':'You clocked out '+o.earlyMin+' minutes before your shift ended at '+o.endText+'.';
+      return h('div',{class:'qcard'},h('strong',{text:txt}),h('small',{text:occText(o)}),h('div',{class:'acts',style:'margin:0'},o.status==='notIn'&&!myShift()?h('button',{class:'btn sm',type:'button',onclick:function(){punch('clockIn');}},'Clock in'):null,
+        h('button',{class:o.status==='notIn'?'btn ghost sm':'btn sm',type:'button',onclick:function(){openReason(o.key);}},'Add reason')));}));}
+
+/* ---------- Attendance report: per person and per team, for any dates; members see their own ---------- */
+function attSection(){var AV=V.av=V.av||{k:'2w',from:'',to:'',team:'',data:null,key:'',busy:false},td=today();
+  var rng=AV.k==='wk'?{from:weekStart(td),to:td}:AV.k==='2w'?{from:addDays(td,-13),to:td}:AV.k==='m'?{from:td.slice(0,8)+'01',to:td}:AV.k==='lm'?monthRange(-1):{from:AV.from||addDays(td,-13),to:AV.to||td};
+  var key=rng.from+'|'+rng.to+'|'+AV.team;
+  if(AV.key!==key&&!AV.busy){AV.busy=true;AV.key=key;server('attendanceReport',{from:rng.from,to:rng.to,teamId:AV.team}).then(function(res){AV.busy=false;if(AV.key===key){AV.data=res.attendance||null;if(V.tab==='stats'&&V.ins==='att')render();}})
+    .catch(function(e){AV.busy=false;AV.data={rows:[],people:[],teams:[]};if(!lost(e))toast('Could not load attendance: '+e.message+'.');});}
+  var D=AV.data,ppl=(D&&D.people)||[],tot={scheduled:0,onTime:0,late:0,missed:0,early:0,off:0,schedMs:0,workedMs:0};ppl.forEach(function(x){Object.keys(tot).forEach(function(k){tot[k]+=x[k]||0;});});
+  var row=function(name,x){return h('tr',null,h('td',{text:name}),h('td',{text:x.scheduled}),h('td',{class:x.onTime?'':'z',text:x.onTime}),h('td',{class:x.late?'warn':'z',text:x.late}),h('td',{class:x.missed?'bad':'z',text:x.missed}),
+    h('td',{class:x.early?'warn':'z',text:x.early}),h('td',{class:x.off?'':'z',text:x.off}),h('td',{text:hm(x.schedMs)}),h('td',{class:'tot',text:hm(x.workedMs)}));};
+  var thead=h('thead',null,h('tr',null,['','Shifts','On time','Late','Missed','Left early','Leave or holiday','Scheduled','Worked'].map(function(c,i){return h('th',{scope:'col',text:i?c:'Person'});})));
+  return [h('div',{class:'sec'},h('h3',null,'Attendance'),h('button',{type:'button',onclick:function(){exportZip('exportAttendance','attendance',{from:rng.from,to:rng.to,teamId:AV.team});}},'Export attendance')),
+    h('div',{class:'itabs',style:'margin-top:0'},[['wk','This week'],['2w','Last 2 weeks'],['m','This month'],['lm','Last month'],['c','Dates']].map(function(o){return h('button',{type:'button','aria-pressed':String(AV.k===o[0]),onclick:function(){AV.k=o[0];render();}},o[1]);})),
+    AV.k==='c'?h('div',{class:'frow'},fld('From',h('input',{class:'in',id:'at-from',type:'date',value:rng.from,onchange:function(e){AV.from=e.target.value;render();}})),fld('To',h('input',{class:'in',id:'at-to',type:'date',value:rng.to,max:td,onchange:function(e){AV.to=e.target.value;render();}}))):null,
+    LEADS()&&(S.teams||[]).length?fld('Team',h('select',{class:'in',id:'at-team',value:AV.team,onchange:function(e){AV.team=e.target.value;render();}},[h('option',{value:'',text:'Everyone I look after'})].concat(S.teams.map(function(t){return h('option',{value:t.id,text:t.name});})))):null,
+    !D?h('p',{class:'note'},'Loading attendance…'):!D.rows.length?h('div',{class:'empty'},ill('empty_calendar'),h('b',null,'No planned shifts in these dates'),LEADS()?'Plan shifts under Schedule. Attendance compares them with clock ins and outs.':'When shifts are planned for you, how each went shows here.'):[
+      h('div',{class:'tiles t5'},h('div',{class:'tile dark'},h('b',{text:tot.scheduled?Math.round(tot.onTime/tot.scheduled*100)+'%':'0%'}),h('span',null,'On time')),h('div',{class:'tile'},h('b',{text:String(tot.late)}),h('span',null,'Late')),
+        h('div',{class:'tile'},h('b',{text:String(tot.missed)}),h('span',null,'Missed')),h('div',{class:'tile'},h('b',{text:String(tot.early)}),h('span',null,'Left early')),h('div',{class:'tile'},h('b',{text:hm(tot.workedMs)}),h('span',{text:'of '+hm(tot.schedMs)+' scheduled'}))),
+      h('div',{class:'sec'},h('h3',null,'By person')),h('div',{class:'tsheet'},h('table',null,thead,h('tbody',null,ppl.map(function(x){return row(pName(x.personId),x);})))),
+      LEADS()&&(D.teams||[]).length?[h('div',{class:'sec'},h('h3',null,'By team')),h('div',{class:'tsheet'},h('table',null,h('thead',null,h('tr',null,['Team','Shifts','On time','Late','Missed','Left early','Leave or holiday','Scheduled','Worked'].map(function(c){return h('th',{scope:'col',text:c});}))),h('tbody',null,D.teams.map(function(x){return row(x.name,x);}))))]:null,
+      h('div',{class:'sec'},h('h3',null,'Each shift'),h('span',null,'Newest first')),
+      h('div',{class:'shifts'},D.rows.slice().reverse().slice(0,AV.all?600:30).map(function(o){var x=occOf(o.key)||o;return occRow(Object.assign({},x,o),LEADS());})),
+      D.rows.length>30&&!AV.all?h('button',{class:'btn ghost sm',type:'button',style:'margin-top:10px',onclick:function(){AV.all=true;render();}},'Show all '+D.rows.length):null],
+    h('p',{class:'note',text:'Late and left early count after a grace of '+((S.settings.attendance||{}).grace||10)+' minutes. Leave and public holidays never count as missed. Each person is asked first; their team lead hears only if nothing is explained within '+((S.settings.attendance||{}).leadDelay||15)+' minutes.'})];}
+
+/* ---------- Teams, attendance and hours, leave types (version 1.11.0) ---------- */
+var GRANTW={rates:'Rates and pay: pay and bill rates, overtime pay, payroll',billing:'Invoices and client billing: bill hours, client pages and client emails',settings:'Workspace settings: work sites, holidays, leave types, attendance'};
+var ROLEHELP={'':'Their own work. They ask their team lead or you for approval.',lead:'Approves timesheets, leave and claims for the members of the teams they lead, plans their shifts and sees their time and attendance. No rates, pay or billing.',
+  manager:'Runs people, tasks, approvals, shifts and reports for the people they look after. Rates, billing and settings only if you allow them below. The plan stays yours.'};
+function teamsPanel(){var ts=S.teams||[],edit=CAN('teams');
+  return [h('div',{class:'sec'},h('h3',null,'Teams'),edit?h('button',{type:'button',onclick:function(){openTeam();}},'New team'):null),
+    ts.length?h('div',{class:'panel list'},ts.map(function(t){var inner=[h('span',{class:'who',text:initials(t.name)}),h('div',null,h('strong',{text:t.name}),
+        h('small',{text:(t.leads.length?'Led by '+t.leads.map(function(id){return first(pName(id));}).join(' and '):'No team lead yet')+' · '+t.members.length+(t.members.length===1?' member':' members')}))];
+      return edit?h('button',{class:'li',type:'button',onclick:function(){openTeam(t.id);}},inner):h('div',{class:'li'},inner);}))
+      :h('p',{class:'note',style:'margin:0'},'A team groups people under one or more team leads, who approve their timesheets, leave and claims, plan their shifts and see their attendance.')];}
+function openTeam(id){var t=id?(S.teams||[]).find(function(x){return x.id===id;}):null;M={kind:'teamed',id:id||null,del:false,d:t?JSON.parse(JSON.stringify(t)):{id:uid(),name:'',leads:[],members:[]}};$('#ov').hidden=false;renderSheet();var f=$('#tm-name');if(f&&!id)f.focus();}
+function renderTeamEd(){var d=M.d,canLead=function(p){return p.access==='lead'||p.access==='manager'||p.access==='owner';};
+  var chip=function(list,p){var on=list.indexOf(p.id)>=0;return h('button',{class:'chip',type:'button','aria-pressed':String(on),onclick:function(){var i=list.indexOf(p.id);if(i>=0)list.splice(i,1);else{list.push(p.id);if(list===d.leads){var j=d.members.indexOf(p.id);if(j>=0)d.members.splice(j,1);}}renderSheet();}},p.name);};
+  return [head(M.id?'Team':'New team'),
+    h('input',{class:'title-in',id:'tm-name',maxlength:60,placeholder:'Team name, such as Bookkeeping','aria-label':'Team name',value:d.name,oninput:bind(d,'name')}),
+    h('div',{class:'lbl'},'Team leads'),h('div',{class:'chips',id:'tm-leads'},S.people.filter(canLead).map(function(p){return chip(d.leads,p);})),
+    !S.people.some(function(p){return p.access==='lead'||p.access==='manager';})?h('p',{class:'note',style:'margin:0'},'Nobody has the Team lead role yet. The owner gives it under People.'):null,
+    h('div',{class:'lbl'},'Members'),h('div',{class:'chips',id:'tm-members'},S.people.filter(function(p){return d.leads.indexOf(p.id)<0;}).map(function(p){return chip(d.members,p);})),
+    h('p',{class:'note',style:'margin:0'},'Team leads approve timesheets, leave and claims for the members, plan their shifts and see their time and attendance. They never see rates, pay or billing.'),
+    h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.name.trim()){toast('Give the team a name.');return;}var t=Object.assign({},d,{name:d.name.trim()});closeSheet();send('saveTeam',{team:t});}},'Save team'),
+    M.id?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=M.id;closeSheet();send('deleteTeam',{id:id});}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
+      :h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Remove team')):null];}
+var OTR=[['1','Normal rate'],['1.25','1.25 times'],['1.5','Time and a half'],['1.75','1.75 times'],['2','Double time'],['2.5','2.5 times'],['3','Triple time']];
+function attendancePanel(){if(!CAN('settings'))return null;var a=Object.assign({on:true,grace:10,leadDelay:15},S.settings.attendance||{}),w=hoursRules(),rates=CAN('rates');
+  var num=function(id,v,max){return h('input',{class:'in',id:id,type:'number',min:'0',max:String(max),step:'0.5',value:v});};
+  return [h('div',{class:'sec',id:'att-set'},h('h3',null,'Attendance and hours')),h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
+    h('label',{class:'switch'},h('input',{id:'at-on',type:'checkbox',checked:a.on!==false}),'Tell people about late starts, missed shifts and early finishes'),
+    h('div',{class:'frow'},fld('Grace period, minutes',num('at-grace',a.grace,60)),fld('Tell their team lead after, minutes',num('at-delay',a.leadDelay,240))),
+    h('p',{class:'note',style:'margin:0'},'Each person is told first and can add a reason. Their team lead hears only if nothing is explained in time. Quiet hours and each person\'s own time zone are respected, and a day of leave or a public holiday never counts as missed.'),
+    fld('Weekly hour limit for everyone, 0 for none',num('hr-lim',w.weekLimit||0,168)),
+    h('p',{class:'note',style:'margin:0'},'At 90 percent the person gets a gentle note; past the limit their team lead hears too. A different limit can be set on each person.'),
+    rates?h('div',{class:'frow otrow'},fld('Overtime after hours a day, 0 for none',num('hr-day',w.dailyOt||0,24)),fld('Overtime after hours a week, 0 for none',num('hr-wk',w.weeklyOt||0,168)),
+      fld('Overtime pays',h('select',{class:'in',id:'hr-rate',value:String(w.otRate)},OTR.map(function(o){return h('option',{value:o[0],text:o[1]});})))):null,
+    rates?h('p',{class:'note',style:'margin:0'},'Hours past the daily limit count first, then the rest of the week past the weekly limit, so no hour counts twice. Payroll and its export use these rules unless a person has their own.'):null,
+    h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){var hrs={weekLimit:Number($('#hr-lim').value)||0};
+      if(rates){hrs.dailyOt=Number($('#hr-day').value)||0;hrs.weeklyOt=Number($('#hr-wk').value)||0;hrs.otRate=Number($('#hr-rate').value)||1.5;}
+      send('saveSettings',{settings:{attendance:{on:$('#at-on').checked,grace:Number($('#at-grace').value)||0,leadDelay:Number($('#at-delay').value)||0},hours:hrs}});}},'Save')))];}
+function leavePanel(){if(!CAN('settings'))return null;var L=V.lp||(V.lp=JSON.parse(JSON.stringify(leaveTypes())));
+  return [h('div',{class:'sec',id:'leave-set'},h('h3',null,'Leave types'),h('button',{type:'button',onclick:function(){L.push({key:'',name:'',days:5,accrual:'yearly',carry:0,paid:true,negative:true});render();}},'New type')),
+    h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},L.map(function(t,i){var none=t.accrual==='none',builtIn=/^(annual|sick|unpaid|other)$/.test(t.key);
+      return h('div',{class:'ltrow'},h('input',{class:'in',id:'lt-name-'+i,maxlength:40,'aria-label':'Name of the leave type',placeholder:'Name, such as Study leave',value:t.name,oninput:bind(t,'name')}),
+        h('select',{class:'in',id:'lt-acc-'+i,'aria-label':'How it builds up',value:t.accrual,onchange:function(e){t.accrual=e.target.value;if(t.accrual!=='none'&&!t.days)t.days=5;render();}},[['monthly','Earned each month'],['yearly','All at the start of the year'],['none','No balance']].map(function(o){return h('option',{value:o[0],text:o[1]});})),
+        none?null:fld('Days a year',h('input',{class:'in',id:'lt-days-'+i,type:'number',min:'0',max:'365',step:'0.5',value:t.days,oninput:function(e){t.days=Number(e.target.value)||0;}})),
+        none?null:fld('Carry over, up to',h('input',{class:'in',id:'lt-carry-'+i,type:'number',min:'0',max:'365',step:'0.5',value:t.carry,oninput:function(e){t.carry=Number(e.target.value)||0;}})),
+        h('div',{class:'ltsw'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'lt-paid-'+i,checked:t.paid!==false,onchange:function(e){t.paid=e.target.checked;}}),'Paid'),
+        none?null:h('label',{class:'switch'},h('input',{type:'checkbox',id:'lt-neg-'+i,checked:t.negative!==false,onchange:function(e){t.negative=e.target.checked;}}),'Can go below zero'),
+        builtIn?null:h('button',{class:'btn ghost sm',type:'button',onclick:function(){L.splice(i,1);render();}},'Remove')));}),
+      h('p',{class:'note',style:'margin:0'},'Balances count working days: weekends and each person\'s public holidays never count. Leave comes off the balance when it is approved, and every change is in the history. Unpaid types lower a monthly salary in payroll.'),
+      h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){if(L.some(function(t){return !String(t.name||'').trim();})){toast('Give each type of leave a name.');return;}var x=L.slice();V.lp=null;send('saveLeavePolicy',{types:x});}},'Save leave types'),
+        V.lp?h('button',{class:'btn ghost sm',type:'button',onclick:function(){V.lp=null;render();}},'Undo changes'):null))];}
+function personExtra(d){var hr=hoursRules(),lts=leaveTypes().filter(function(t){return t.accrual!=='none';}),tms=(S.teams||[]).filter(function(t){return t.leads.indexOf(d.id)>=0||t.members.indexOf(d.id)>=0;}),own=d.id===me&&!S.owner;
+  return [h('div',{class:'frow'},fld('Country for public holidays',h('select',{class:'in',id:'p-country',value:d.country||'',onchange:bind(d,'country')},[h('option',{value:'',text:'From their time zone'+(d.countryAuto&&HOLIDAY_COUNTRIES[d.countryAuto]?', '+HOLIDAY_COUNTRIES[d.countryAuto]:'')})].concat(Object.keys(HOLIDAY_COUNTRIES).map(function(c){return h('option',{value:c,text:HOLIDAY_COUNTRIES[c]});})))),
+      own?null:fld('Weekly hour limit',h('input',{class:'in',id:'p-lim',type:'number',min:'0',max:'168',placeholder:hr.weekLimit?'Workspace, '+hr.weekLimit+' hours':'No limit',value:d.weekLimit==null?'':d.weekLimit,oninput:function(e){d.weekLimit=e.target.value===''?'':Number(e.target.value);}}))),
+    M.id&&!own&&lts.length?h('div',{class:'frow'},lts.map(function(t){return fld(t.name+', days a year',h('input',{class:'in',id:'p-la-'+t.key,type:'number',min:'0',max:'365',step:'0.5',placeholder:'Workspace, '+t.days,value:(d.leaveAllow||{})[t.key]==null?'':d.leaveAllow[t.key],
+      oninput:function(e){d.leaveAllow=Object.assign({},d.leaveAllow);if(e.target.value==='')delete d.leaveAllow[t.key];else d.leaveAllow[t.key]=Number(e.target.value);}}));})):null,
+    M.id&&(S.balances||{})[d.id]&&lts.length?h('button',{class:'btn ghost sm',style:'align-self:flex-start',type:'button',onclick:function(){openBalance(d.id,lts[0].key);}},'Leave balances'):null,
+    tms.length?h('p',{class:'their',text:'Teams: '+tms.map(function(t){return t.name+(t.leads.indexOf(d.id)>=0?' (team lead)':'');}).join(', ')}):null,
+    !S.owner||d.id===me?h('p',{class:'their',text:'Role: '+(ROLEW[d.access]||'Member')}):null,
+    S.owner&&d.id!==me?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Role'),
+      h('div',{class:'seg s3',role:'group','aria-label':'Role'},[['','Member'],['lead','Team lead'],['manager','Manager']].map(function(o){return h('button',{type:'button','aria-pressed':String((d.level||'')===o[0]),onclick:function(){d.level=o[0];if(o[0]==='manager'&&d.manages==null)d.manages='all';renderSheet();}},o[1]);})),
+      h('p',{class:'note',style:'margin:0',text:ROLEHELP[d.level||'']}),
+      d.level==='manager'?[h('div',{class:'lbl'},'Looks after'),h('div',{class:'chips'},[h('button',{class:'chip',type:'button','aria-pressed':String(!Array.isArray(d.manages)),onclick:function(){d.manages='all';renderSheet();}},'Everyone')]
+          .concat((S.teams||[]).map(function(t){var on=Array.isArray(d.manages)&&d.manages.indexOf(t.id)>=0;return h('button',{class:'chip',type:'button','aria-pressed':String(on),onclick:function(){var m=Array.isArray(d.manages)?d.manages.slice():[],i=m.indexOf(t.id);if(i>=0)m.splice(i,1);else m.push(t.id);d.manages=m.length?m:'all';renderSheet();}},t.name);}))),
+        h('div',{class:'lbl'},'Also allow'),['rates','billing','settings'].map(function(k){var g=d.grants||{};return h('label',{class:'switch'},h('input',{type:'checkbox',id:'p-g-'+k,checked:!!g[k],onchange:function(e){d.grants=Object.assign({},d.grants);d.grants[k]=e.target.checked;}}),GRANTW[k]);}),
+        h('p',{class:'note',style:'margin:0'},'Proof mode screenshots, the history of changes, export everything and the plan always stay yours.')]:null):null];}
 /* ---------- Invoices (owner) ---------- */
 var IST={draft:['Draft','badge-s'],sent:['Sent','badge-s o'],paid:['Paid','badge-s g'],void:['Void','badge-s r']};
 function invTotals(v){var sub=0;(v.lines||[]).forEach(function(l){sub+=Math.round(Number(l.qty)*Number(l.rate)*100)/100;});sub=Math.round(sub*100)/100;var tax=Math.round(sub*(Number(v.taxPct)||0))/100;return {sub:sub,tax:tax,total:Math.round((sub+tax)*100)/100};}
@@ -1704,7 +2060,7 @@ function mins(m){return hm(m*6e4);}
 function sumUp(list){var now=Date.now(),o={min:0,bill:0,unbilled:0,amt:{},run:0};
   list.forEach(function(e){var sb=subj(e.subjectId),m=eMin(e,now),rm=roundMin(m,sb&&sb.rounding);o.min+=m;if(!e.end)o.run++;
     if(!e.billable||e.status==='rejected')return;var bm=e.invoiceId&&e.billedMinutes>=0?e.billedMinutes:rm;o.bill+=bm;if(!e.invoiceId)o.unbilled+=rm;
-    if(S.owner&&sb){var c=curOf(e.subjectId);o.amt[c]=(o.amt[c]||0)+bm/60*(e.invoiceId&&e.billedRate>=0?e.billedRate:rateOf(sb,e.personId));}});
+    if(CAN('rates')&&sb){var c=curOf(e.subjectId);o.amt[c]=(o.amt[c]||0)+bm/60*(e.invoiceId&&e.billedRate>=0?e.billedRate:rateOf(sb,e.personId));}});
   return o;}
 function amtText(map){var k=Object.keys(map).filter(function(c){return map[c]>=.005;});return k.length?k.map(function(c){return fmtMoney(map[c],c);}).join(' and '):fmtMoney(0,S.settings.currency||'USD');}
 function myWeekEntries(week){return (S.time||[]).filter(function(e){return e.personId===me&&weekStart(dayOf(e.start))===week;}).sort(function(a,b){return a.start-b.start;});}
@@ -1717,6 +2073,7 @@ function entryBadges(e){var b=[];if(!e.end)b.push(h('b',{class:'badge-s g'},e.so
   if(!e.billable)b.push(h('b',{class:'badge-s'},'Not billable'));if(e.flag==='auto')b.push(h('b',{class:'badge-s r'},'Stopped automatically, check it'));
   if(e.source==='clock'&&!(e.flags||[]).length)b.push(h('b',{class:'badge-s'},'Clock'));
   if(e.claim&&e.claim.state==='pending')b.push(h('b',{class:'badge-s o'},'Claim waiting'));
+  var phn=e.proof&&e.end?proofHint(e.proof):'';if(phn)b.push(h('b',{class:'badge-s'+(/No change/.test(phn)?' o':''),title:'From Proof mode: only whether the screen changed between screenshots'},phn));
   if(e.clientOk&&e.clientOk.state==='approved')b.push(h('b',{class:'badge-s g'},'Client approved'));else if(e.clientOk&&e.clientOk.state==='queried')b.push(h('b',{class:'badge-s r'},'Client queried'));
   return b.concat(flagChips(e,2));}
 function entryRow(e,showWho){var z=myTz;
@@ -1729,41 +2086,42 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
   var runMs=list.filter(function(e){return !e.end;}).reduce(function(a,e){return a+(now-e.start);},0),doneMs=list.filter(function(e){return e.end;}).reduce(function(a,e){return a+e.minutes*6e4;},0);
   var nFlag=(S.time||[]).filter(function(e){return inRange(e.start,r)&&(e.flags||[]).length;}).length;
   var out=[h('div',{class:'sec'},h('h3',null,'Time'),h('button',{type:'button',onclick:function(){openEntry(null,{subjectId:T.sid});}},'Add time')),
-    h('div',{class:'seg s3 tview',role:'tablist','aria-label':'Time views'},[['all','Overview'],['flags','Review flags'+(nFlag?' · '+nFlag:'')],['est','Budget vs actual']].map(function(o){return h('button',{type:'button',role:'tab','aria-selected':String((T.view||'all')===o[0]),'aria-pressed':String((T.view||'all')===o[0]),onclick:function(){if(o[0]==='est')V.rep={};T.view=o[0];T.fc='';T.all=false;render();}},o[1]);})),
-    h('div',{class:'chips',style:'padding-top:0'},RANGES.map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(T.k===x[0]),onclick:function(){T.k=x[0];render();}},x[1]);})),
-    T.k==='custom'?h('div',{class:'frow',style:'margin-top:8px'},fld('From',h('input',{class:'in',id:'tm-from',type:'date',value:r.from,onchange:function(e){T.from=e.target.value;render();}})),fld('To',h('input',{class:'in',id:'tm-to',type:'date',value:r.to,onchange:function(e){T.to=e.target.value;render();}}))):null,
+    h('div',{class:'seg tview '+(proofTabOn()?'s4':'s3'),role:'tablist','aria-label':'Time views'},[['all','Overview'],['flags','Review flags'+(nFlag?' · '+nFlag:'')],['est','Budget vs actual']].concat(proofTabOn()?[['proof','Proof']]:[]).map(function(o){return h('button',{type:'button',role:'tab','aria-selected':String((T.view||'all')===o[0]),'aria-pressed':String((T.view||'all')===o[0]),onclick:function(){if(o[0]==='est')V.rep={};if(o[0]==='proof')V.pd={};T.view=o[0];T.fc='';T.all=false;render();}},o[1]);})),
+    T.view==='proof'?null:h('div',{class:'chips',style:'padding-top:0'},RANGES.map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(T.k===x[0]),onclick:function(){T.k=x[0];render();}},x[1]);})),
+    T.view==='proof'?null:T.k==='custom'?h('div',{class:'frow',style:'margin-top:8px'},fld('From',h('input',{class:'in',id:'tm-from',type:'date',value:r.from,onchange:function(e){T.from=e.target.value;render();}})),fld('To',h('input',{class:'in',id:'tm-to',type:'date',value:r.to,onchange:function(e){T.to=e.target.value;render();}}))):null,
     tArch?h('div',{style:'margin-top:8px'},archNote(tArch)):null,
-    T.view==='est'?null:h('div',{class:'rngrow'},h('select',{class:'in',id:'tm-sub','aria-label':'Client',value:T.sid,onchange:function(e){T.sid=e.target.value;render();}},h('option',{value:'',text:'All clients'}),S.subjects.map(function(s){return h('option',{value:s.id,text:s.name+(s.archived?' (archived)':'')});})),
+    T.view==='est'||T.view==='proof'?null:h('div',{class:'rngrow'},h('select',{class:'in',id:'tm-sub','aria-label':'Client',value:T.sid,onchange:function(e){T.sid=e.target.value;render();}},h('option',{value:'',text:'All clients'}),S.subjects.map(function(s){return h('option',{value:s.id,text:s.name+(s.archived?' (archived)':'')});})),
       h('span',{class:'note',text:r.from?(r.from===r.to?short(r.from):short(r.from)+' to '+short(r.to)):'Since the start'})),
     T.view&&T.view!=='all'?null:h('div',{class:'tiles',style:'margin-top:12px'},
       h('div',{class:'tile dark'},h('b',{'data-run':sum.run?String(now):null,'data-base':sum.run?String(doneMs+runMs):null,'data-mult':sum.run>1?String(sum.run):null,text:mins(Math.round((doneMs+runMs)/6e4))}),h('span',{text:sum.run?'Total, '+sum.run+' running now':'Total time'})),
       h('div',{class:'tile'},h('b',{text:mins(sum.bill)}),h('span',null,'Billable, rounded')),
       h('div',{class:'tile'},h('b',{style:sum.unbilled?'color:var(--coral-ink)':'',text:mins(sum.unbilled)}),h('span',null,'Not billed yet')),
-      S.owner?h('div',{class:'tile'},h('b',{style:'font-size:19px',text:amtText(sum.amt)}),h('span',null,'Amount')):h('div',{class:'tile'},h('b',{text:String(list.length)}),h('span',null,'Entries')))];
+      CAN('rates')?h('div',{class:'tile'},h('b',{style:'font-size:19px',text:amtText(sum.amt)}),h('span',null,'Amount')):h('div',{class:'tile'},h('b',{text:String(list.length)}),h('span',null,'Entries')))];
   if(T.view==='flags')return out.concat(flagsView(T,r));
   if(T.view==='est')return out.concat(estView(T,r));
+  if(T.view==='proof')return out.concat(proofTab(T));
   out.push(queriesBlock());
-  if(S.owner&&(S.budgets||[]).length)out.push(h('div',{class:'sec'},h('h3',null,'Retainers this month')),h('div',{class:'panel'},S.budgets.map(budgetRow)));
+  if(CAN('billing')&&(S.budgets||[]).length)out.push(h('div',{class:'sec'},h('h3',null,'Retainers this month')),h('div',{class:'panel'},S.budgets.map(budgetRow)));
   var groups={},order=[];list.forEach(function(e){var k=e.subjectId||'';if(!groups[k]){groups[k]=[];order.push(k);}groups[k].push(e);});
   order.sort(function(a,b){return sumUp(groups[b]).min-sumUp(groups[a]).min;});
   out.push(h('div',{class:'sec'},h('h3',null,'By client'),h('span',{text:order.length?'Tap a client for people and tasks':''})),
     order.length?h('div',{class:'tgl'},order.map(function(k){var g=groups[k],s=sumUp(g),open=!!T.open[k]||order.length===1;
       var byP={},pOrd=[];g.forEach(function(e){if(!byP[e.personId]){byP[e.personId]=[];pOrd.push(e.personId);}byP[e.personId].push(e);});
       return h('div',{class:'tg'},h('button',{class:'tgh',type:'button','aria-expanded':String(open),onclick:function(){T.open[k]=!open;render();}},h('i',{class:'dot',style:'background:'+sColor(k)}),h('strong',{text:k?sName(k):'No client'}),h('b',{text:mins(s.min)}),
-          h('small',{text:mins(s.bill)+' billable'+(s.unbilled?' · '+mins(s.unbilled)+' not billed':'')+(S.owner&&Object.keys(s.amt).length?' · '+amtText(s.amt):'')+(s.run?' · running now':'')})),
+          h('small',{text:mins(s.bill)+' billable'+(s.unbilled?' · '+mins(s.unbilled)+' not billed':'')+(CAN('rates')&&Object.keys(s.amt).length?' · '+amtText(s.amt):'')+(s.run?' · running now':'')})),
         open?h('div',{class:'tgb'},pOrd.map(function(pid){var pl=byP[pid],ps=sumUp(pl),byT={},tOrd=[];pl.forEach(function(e){var tk=e.taskHidden?'#private':e.taskId||'';if(!byT[tk]){byT[tk]=0;tOrd.push(tk);}byT[tk]+=eMin(e,now);});
-            return [h('div',{class:'tp'},h('span',{text:pName(pid)}),h('span',{text:mins(ps.min)+(S.owner&&Object.keys(ps.amt).length?' · '+amtText(ps.amt):'')})),
+            return [h('div',{class:'tp'},h('span',{text:pName(pid)}),h('span',{text:mins(ps.min)+(CAN('rates')&&Object.keys(ps.amt).length?' · '+amtText(ps.amt):'')})),
               tOrd.map(function(tk){var t=tk&&tk!=='#private'&&S.tasks.find(function(x){return x.id===tk;});return h('div',{class:'tt2'},h('span',{text:tk==='#private'?'Private task':t?t.title:'General work'}),h('span',{text:mins(byT[tk])}));})];}),
-          S.owner&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill hours')):null):null);}))
+          CAN('billing')&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill hours')):null):null);}))
       :h('div',{class:'empty'},ill('empty_time'),h('b',null,'No time in this range'),'Start a timer on a task, clock in for a client, or add time by hand.'));
-  if(S.owner&&(S.timeTotals||[]).length){var tt=S.timeTotals.slice().filter(function(x){return x.minutes>0;}).sort(function(a,b){return b.minutes-a.minutes;});
+  if(CAN('billing')&&(S.timeTotals||[]).length){var tt=S.timeTotals.slice().filter(function(x){return x.minutes>0;}).sort(function(a,b){return b.minutes-a.minutes;});
     out.push(h('div',{class:'sec'},h('h3',null,'All time by client'),h('span',null,'Hours, billable, not billed, amount')),h('div',{class:'tsheet'},h('table',null,
       h('thead',null,h('tr',null,['Client','Hours','Billable','Not billed','Amount'].map(function(c){return h('th',{scope:'col',text:c});}))),
       h('tbody',null,tt.map(function(x){return h('tr',null,h('td',{text:x.subjectId?sName(x.subjectId):'No client'}),h('td',{text:mins(x.minutes)}),h('td',{text:mins(x.billable)}),h('td',{class:x.unbilled?'':'z',text:mins(x.unbilled)}),h('td',{class:'tot',text:fmtMoney(x.amount,x.currency)}));})))));}
   out.push(sheetsBlock(T));
   var shown=list.slice().sort(function(a,b){return b.start-a.start;}),cut=T.all?shown:shown.slice(0,20);
   out.push(h('div',{class:'sec'},h('h3',null,'Entries'),h('button',{type:'button',onclick:function(){exportTimeCsv(r,T.sid);}},'Export time')),
-    cut.length?h('div',{class:'shifts'},cut.map(function(e){return entryRow(e,S.owner);})):h('p',{class:'note',style:'margin:0'},'Nothing in this range yet.'),
+    cut.length?h('div',{class:'shifts'},cut.map(function(e){return entryRow(e,LEADS());})):h('p',{class:'note',style:'margin:0'},'Nothing in this range yet.'),
     shown.length>cut.length?h('button',{class:'btn ghost sm',type:'button',style:'margin-top:10px',onclick:function(){T.all=true;render();}},'Show all '+shown.length):null);
   return out;}
 function budgetRow(b){var pct=Math.min(100,b.pct),col=b.pct>=100?'var(--danger)':b.pct>=80?'var(--coral2)':'var(--ok)';
@@ -1773,8 +2131,8 @@ function budgetRow(b){var pct=Math.min(100,b.pct),col=b.pct>=100?'var(--danger)'
 /* weekly timesheets: everyone sends their week; the owner approves or sends it back */
 function sheetsBlock(T){var wk=T.wk,ents=myWeekEntries(wk),sh=sheetOf(me,wk),tot=ents.reduce(function(a,e){return a+eMin(e);},0),open=ents.filter(function(e){return !e.invoiceId&&(e.status==='draft'||e.status==='rejected');});
   var run=ents.some(function(e){return !e.end;}),td=today(),blk=blockingOf(ents,wk);
-  var wait=S.owner?(S.sheets||[]).filter(function(x){return x.status==='submitted';}).sort(function(a,b){return a.week.localeCompare(b.week);}):[];
-  return [S.owner?[h('div',{class:'sec'},h('h3',null,'Timesheets to approve'),h('span',{text:wait.length?wait.length+' waiting':'None waiting'})),
+  var wait=LEADS()?(S.sheets||[]).filter(function(x){return x.status==='submitted'&&mayDecide(x.personId);}).sort(function(a,b){return a.week.localeCompare(b.week);}):[];
+  return [LEADS()?[h('div',{class:'sec'},h('h3',null,'Timesheets to approve'),h('span',{text:wait.length?wait.length+' waiting':'None waiting'})),
       wait.length?h('div',{class:'shifts'},wait.map(function(x){var aw=(S.shifts||[]).filter(function(v){return v.personId===x.personId&&weekStart(dayOf(v.in))===x.week&&awayOf(v).length;}).length;
         return h('div',{class:'lv'},h('div',null,h('strong',{text:pName(x.personId)+' · week of '+short(x.week)}),h('br'),h('small',{text:mins(x.minutes||0)+' · sent '+stamp(x.submittedAt)})),h('b',{class:'badge-s o'},'Waiting'),
         aw?h('b',{class:'badge-s r',title:'Shifts that week clocked in or out away from a work site'},aw+(aw===1?' shift':' shifts')+' away from site'):null,
@@ -1801,8 +2159,8 @@ function openEntry(id,preset){var e=id?(S.time||[]).find(function(x){return x.id
   M={kind:'entry',id:id||null,d:d,del:false};$('#ov').hidden=false;renderSheet();}
 function renderEntry(){var d=M.d,e=M.id?(S.time||[]).find(function(x){return x.id===M.id;}):null;if(M.id&&!e){closeSheet();return [];}
   var capp=!!(e&&e.clientOk&&e.clientOk.state==='approved'),mine=!!e&&e.personId===me;
-  var locked=!!(e&&(e.invoiceId||!e.end||e.unconfirmed||(!S.owner&&(e.status==='approved'||e.personId!==me||capp))));
-  var why=!e?'':e.invoiceId?'This time is on an invoice, so it cannot change. Remove it from the invoice first.':!e.end?'This time is still running. Stop the timer or clock out first.':e.unconfirmed?'':!S.owner&&capp?'The client approved this time, so only the owner can change it.':!S.owner&&e.status==='approved'?'This week is approved, so only the owner can change it.':'';
+  var edOk=e&&(S.owner||(mgrOf(e.personId)&&e.personId!==me)),locked=!!(e&&(e.invoiceId||!e.end||e.unconfirmed||(!edOk&&(e.status==='approved'||e.personId!==me))||(capp&&!(S.owner||(edOk&&CAN('billing'))))));
+  var why=!e?'':e.invoiceId?'This time is on an invoice, so it cannot change. Remove it from the invoice first.':!e.end?'This time is still running. Stop the timer or clock out first.':e.unconfirmed?'':capp&&!(S.owner||(edOk&&CAN('billing')))?'The client approved this time, so only the owner can change it.':!edOk&&e.status==='approved'?'This week is approved, so only the owner can change it.':'';
   var tasks=S.tasks.filter(function(t){return t.subjectId===d.subjectId&&(open(t)||t.id===d.taskId);}).sort(sortT);
   var sb=subj(d.subjectId),bill=d.billable===null?billDefOf(sb):d.billable,tk=d.taskId&&S.tasks.find(function(t){return t.id===d.taskId;});
   var toMs=function(day,t){return new Date(day+'T'+(t||'00:00')).getTime();};
@@ -1810,23 +2168,25 @@ function renderEntry(){var d=M.d,e=M.id?(S.time||[]).find(function(x){return x.i
   var c=cfgA(),noteNeed=c.noteMin>0&&len>c.noteMin,overNeed=!!(e&&e.overBudget)||!!(tk&&tk.budgetMin>0&&usedOf(tk)+(e?0:len)>tk.budgetMin);
   var fl=e?(e.flags||[]):[],ok=e?(e.flagsOk||{}):{};
   return [head(e?'Time entry':'Add time'),
-    e?h('div',{class:'acts',style:'margin:0'},entryBadges(e).filter(function(x){return !/\bfg\b/.test(x.className);}),S.owner&&e.personId!==me?h('small',{class:'note',text:'By '+pName(e.personId)+(e.editedBy?', changed by '+pName(e.editedBy)+' on '+stamp(e.editedAt):'')}):null):null,
+    e?h('div',{class:'acts',style:'margin:0'},entryBadges(e).filter(function(x){return !/\bfg\b/.test(x.className);}),LEADS()&&e.personId!==me?h('small',{class:'note',text:'By '+pName(e.personId)+(e.editedBy?', changed by '+pName(e.editedBy)+' on '+stamp(e.editedAt):'')}):null):null,
     fl.length||Object.keys(ok).length?h('div',{class:'panel flp'},h('strong',null,fl.length?(mine?'What to check':'Review flags'):'Flags marked OK'),
       fl.map(function(code){return h('div',{class:'flr'},h('b',{class:'badge-s fg'+(FLAGSEV[code]?' '+FLAGSEV[code]:'')},FLAGT[code][0]),h('span',{text:FLAGT[code][1]}),
-        S.owner&&code!=='unconfirmed'?(M.okc===code?h('div',{class:'addrow',style:'margin:4px 0 0'},h('input',{class:'in',id:'fo-note',maxlength:200,placeholder:'Note, optional','aria-label':'Note for marking OK',value:M.okn||'',oninput:bind(M,'okn')}),
+        mayDecide(e.personId)&&code!=='unconfirmed'?(M.okc===code?h('div',{class:'addrow',style:'margin:4px 0 0'},h('input',{class:'in',id:'fo-note',maxlength:200,placeholder:'Note, optional','aria-label':'Note for marking OK',value:M.okn||'',oninput:bind(M,'okn')}),
           h('button',{class:'btn sm',type:'button',onclick:function(){send('flagOk',{id:e.id,code:code,note:(M.okn||'').trim()});M.okc='';M.okn='';}},'Mark OK'))
           :h('button',{class:'linkb',type:'button',onclick:function(){M.okc=code;M.okn='';renderSheet();var f=$('#fo-note');if(f)f.focus();}},'Mark OK')):null);}),
       Object.keys(ok).map(function(code){var o=ok[code];return h('div',{class:'flr ok'},h('b',{class:'badge-s g'},FLAGT[code]?FLAGT[code][0]:code),h('span',{text:'Marked OK by '+pName(o.by)+(o.note?': '+o.note:'')}));})):null,
+    e&&e.proof?h('div',{class:'panel flp'},h('strong',null,'Proof mode'),h('p',{class:'note',style:'margin:0',text:proofSummary(e.proof)}),
+      e.proof.device==='phone'?null:h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){openProofEntry(e.id);}},'See screenshots'))):null,
     e&&e.unconfirmed?h('div',{class:'panel flp'},h('strong',null,'Unconfirmed time'),
       h('p',{class:'note',style:'margin:0',text:'Nobody answered the still working check, so these '+mins(e.minutes)+' were set aside, not billed.'+(e.lateAnswer?' The answer "'+(e.lateAnswer.answer==='yes'?'Yes, keep going':e.lateAnswer.answer)+'" arrived at '+tIn(e.lateAnswer.at)+', after the time was paused.':'')+(e.offlineSeen?' There was activity from a device that was offline at '+tIn(e.offlineSeen)+'.':'')}),
       e.claim?h('p',{class:e.claim.state==='declined'?'note-warn':'ok-note',text:(e.claim.state==='pending'?'Claimed, waiting for the owner: ':e.claim.state==='approved'?'Claim approved: ':'Claim declined: ')+e.claim.note+(e.claim.reply?'. '+e.claim.reply:'')}):null,
       mine&&(!e.claim||e.claim.state==='pending')?h('div',{class:'addrow',style:'margin:0'},h('input',{class:'in',id:'cl-note',maxlength:300,placeholder:'What you were working on','aria-label':'What you were working on',value:M.cl||'',oninput:bind(M,'cl')}),
         h('button',{class:'btn sm',type:'button',onclick:function(){var v=(M.cl||'').trim();if(!v){toast('Say in a line what you were working on.');return;}closeSheet();send('claimTime',{id:e.id,note:v});}},e.claim?'Update claim':'Claim this time')):null,
-      S.owner&&e.claim&&e.claim.state==='pending'?h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){closeSheet();send('decideClaim',{id:e.id,ok:true});}},'Approve claim'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){closeSheet();send('decideClaim',{id:e.id,ok:false});}},'Decline')):null):null,
+      mayDecide(e.personId)&&e.claim&&e.claim.state==='pending'?h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){closeSheet();send('decideClaim',{id:e.id,ok:true});}},'Approve claim'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){closeSheet();send('decideClaim',{id:e.id,ok:false});}},'Decline')):null):null,
     e&&e.clientOk&&e.clientOk.state?h('div',{class:'panel flp'},h('strong',null,'Client approval'),
       h('p',{class:'note',style:'margin:0',text:e.clientOk.state==='approved'?'Approved by '+(e.clientOk.name||'the client')+' on '+stamp(e.clientOk.at)+'.':e.clientOk.state==='queried'?'Queried by '+(e.clientOk.name||'the client')+' on '+stamp(e.clientOk.at)+'.':e.clientOk.resetAt?'Changed after the client approved it ('+(e.clientOk.reason||'')+'). Waiting for the client again.':'Waiting for the client to approve.'}),
       (e.clientThread||[]).map(function(m){return h('div',{class:'up'+(m.from==='client'?' me':'')},h('p',{text:m.text}),h('small',{text:(m.from==='client'?(m.name||'Client')+' (client)':'You')+' · '+stamp(m.at)}));})):null,
-    S.owner&&!e?fld('Whose time',h('select',{class:'in',id:'en-who',value:d.personId,onchange:bind(d,'personId')},S.people.map(function(x){return h('option',{value:x.id,text:x.name+(x.id===me?' (me)':'')});}))):null,
+    MGR()&&!e?fld('Whose time',h('select',{class:'in',id:'en-who',value:d.personId,onchange:bind(d,'personId')},S.people.map(function(x){return h('option',{value:x.id,text:x.name+(x.id===me?' (me)':'')});}))):null,
     h('div',{class:'frow'},fld('Client',h('select',{class:'in',id:'en-sub',disabled:locked,value:d.subjectId,onchange:function(ev){d.subjectId=ev.target.value;d.taskId='';d.billable=null;renderSheet();}},h('option',{value:'',text:'No client'}),liveSubjects().concat(sb&&sb.archived?[sb]:[]).map(subOpt))),
       fld('Task, optional',h('select',{class:'in',id:'en-task',disabled:locked,value:d.taskId,onchange:function(ev){d.taskId=ev.target.value;renderSheet();}},h('option',{value:'',text:e&&e.taskHidden?'Private task':'No task'}),tasks.map(function(t){return h('option',{value:t.id,text:t.title});}))),
       fld('Date',h('input',{class:'in',id:'en-day',type:'date',disabled:locked,max:today(),value:d.day,onchange:function(ev){d.day=ev.target.value;renderSheet();}}),true),
@@ -1834,19 +2194,19 @@ function renderEntry(){var d=M.d,e=M.id?(S.time||[]).find(function(x){return x.i
         h('input',{class:'in',id:'en-end',type:'time',disabled:locked,value:d.end,onchange:function(ev){d.end=ev.target.value;renderSheet();},'aria-label':'To'})),true),
       fld(noteNeed?'Note, needed for time over '+c.noteMin+' minutes':'Note, optional',h('input',{class:'in',id:'en-note',maxlength:300,disabled:locked&&!(e&&!e.end),value:d.note,oninput:bind(d,'note'),placeholder:'What you did'}),true),
       overNeed?fld('Reason for going over the time budget',h('input',{class:'in',id:'en-why',maxlength:200,disabled:locked,value:d.overReason||'',oninput:bind(d,'overReason'),placeholder:'For example: the client added two more statements'}),true):null,
-      S.owner&&capp?fld('Reason for changing time the client approved',h('input',{class:'in',id:'en-reason',maxlength:200,value:d.reason||'',oninput:bind(d,'reason'),placeholder:'The client is asked to approve it again'}),true):null),
+      capp&&!locked?fld('Reason for changing time the client approved',h('input',{class:'in',id:'en-reason',maxlength:200,value:d.reason||'',oninput:bind(d,'reason'),placeholder:'The client is asked to approve it again'}),true):null),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-int',disabled:locked,checked:d.noteInternal,onchange:function(ev){d.noteInternal=ev.target.checked;}}),'Keep the note inside the team. The client never sees it.'),
-    S.owner&&!isList(sb)?h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-bill',disabled:locked,checked:bill,onchange:function(ev){d.billable=ev.target.checked;}}),'Billable to the client'):h('p',{class:'note',style:'margin:0',text:isList(sb)?'Time in a private list is never billed':bill?'Billable to the client':'Not billed to anyone'}),
+    CAN('billing')&&!isList(sb)?h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-bill',disabled:locked,checked:bill,onchange:function(ev){d.billable=ev.target.checked;}}),'Billable to the client'):h('p',{class:'note',style:'margin:0',text:isList(sb)?'Time in a private list is never billed':bill?'Billable to the client':'Not billed to anyone'}),
     why?h('p',{class:'note',style:'margin:0',text:why}):e&&e.unconfirmed?null:h('p',{class:'note',style:'margin:0',text:d.start&&d.end?'That is '+mins(len)+'.'+(b-a>12*36e5?' One entry can be at most 12 hours.':''):'Choose the times.'}),
     locked?null:h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.start||!d.end){toast('Choose the times.');return;}
       if(len>720){toast('One entry can be at most 12 hours. Split longer work into two.');return;}if(b>Date.now()+5*6e4){toast('Time cannot end in the future.');return;}
-      if(S.owner&&capp&&!(d.reason||'').trim()){toast('Give a reason to change time the client approved.');var f=$('#en-reason');if(f)f.focus();return;}
-      var en={id:d.id,subjectId:d.subjectId,taskId:d.taskId,start:a,end:b,note:d.note.trim(),noteInternal:d.noteInternal};if(overNeed)en.overReason=(d.overReason||'').trim();if(S.owner){en.billable=bill;if(!e)en.personId=d.personId;}
-      var pl={entry:en};if(S.owner&&capp)pl.reason=d.reason.trim();closeSheet();send('saveTime',pl);}},e?'Save time':'Add time'),
+      if(capp&&!(d.reason||'').trim()){toast('Give a reason to change time the client approved.');var f=$('#en-reason');if(f)f.focus();return;}
+      var en={id:d.id,subjectId:d.subjectId,taskId:d.taskId,start:a,end:b,note:d.note.trim(),noteInternal:d.noteInternal};if(overNeed)en.overReason=(d.overReason||'').trim();if(CAN('billing'))en.billable=bill;if(!e&&MGR())en.personId=d.personId;
+      var pl={entry:en};if(capp)pl.reason=d.reason.trim();closeSheet();send('saveTime',pl);}},e?'Save time':'Add time'),
     e&&!locked&&len>2?(M.split?h('div',{class:'addrow',style:'margin:0'},h('label',{class:'f',style:'flex:1'},'Split at',h('input',{class:'in',id:'en-split',type:'time',value:M.splitAt||'',oninput:bind(M,'splitAt')})),
-        h('button',{class:'btn sm',type:'button',style:'align-self:flex-end',onclick:function(){var at=toMs(d.day,M.splitAt);if(at<a)at+=864e5;if(!(at>a&&at<b)){toast('Choose a time between the start and the end.');return;}var pl={id:e.id,newId:uid(),at:at};if(S.owner&&capp)pl.reason=(d.reason||'').trim()||'Split in two';closeSheet();send('splitTime',pl);}},'Split'))
+        h('button',{class:'btn sm',type:'button',style:'align-self:flex-end',onclick:function(){var at=toMs(d.day,M.splitAt);if(at<a)at+=864e5;if(!(at>a&&at<b)){toast('Choose a time between the start and the end.');return;}var pl={id:e.id,newId:uid(),at:at};if(capp)pl.reason=(d.reason||'').trim()||'Split in two';closeSheet();send('splitTime',pl);}},'Split'))
       :null):null,
-    e&&!locked?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=M.id,pl={id:id};if(S.owner&&capp){if(!(d.reason||'').trim()){toast('Give a reason to remove time the client approved.');return;}pl.reason=d.reason.trim();}closeSheet();send('deleteTime',pl);}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
+    e&&!locked?h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=M.id,pl={id:id};if(capp){if(!(d.reason||'').trim()){toast('Give a reason to remove time the client approved.');return;}pl.reason=d.reason.trim();}closeSheet();send('deleteTime',pl);}},'Confirm removal'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]
       :[h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Remove this time'),len>2&&!M.split?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.split=true;M.splitAt=tIn(Math.round((a+b)/2/6e5)*6e5);renderSheet();}},'Split in two'):null]):null];}
 function openSendBack(id){M={kind:'sendback',id:id,note:''};$('#ov').hidden=false;renderSheet();var f=$('#sb-note');if(f)f.focus();}
 function renderSendBack(){var x=(S.sheets||[]).find(function(s){return s.id===M.id;});if(!x){closeSheet();return [];}
@@ -1871,22 +2231,24 @@ function renderBill(){var d=M.d,sb=subj(d.subjectId),list=billableEntries(d),s=s
     h('p',{class:'note',style:'margin:0'},'The time is locked to the draft so it is never billed twice. Delete or void the invoice to free it again.')];}
 /* clock in for a client, or move the running clock to another one */
 function openClockFor(mode){var sh=myShift();M={kind:'clockfor',mode:mode,d:{subjectId:mode==='switch'&&sh?sh.subjectId||'':((liveSubjects().find(function(s){return billDefOf(s);})||{}).id||''),taskId:''}};$('#ov').hidden=false;renderSheet();}
-function renderClockFor(){var d=M.d,sw=M.mode==='switch',sh=myShift(),tasks=S.tasks.filter(function(t){return d.subjectId&&t.subjectId===d.subjectId&&open(t)&&(t.assignee===me||!t.assignee||S.owner);}).sort(sortT);
+function renderClockFor(){var d=M.d,sw=M.mode==='switch',sh=myShift(),tasks=S.tasks.filter(function(t){return d.subjectId&&t.subjectId===d.subjectId&&open(t)&&(t.assignee===me||!t.assignee||MGR());}).sort(sortT);
   return [head(sw?'Switch client':'Clock in for a client'),
     h('p',{class:'note',style:'margin:0',text:sw?'The time so far stays with '+(sh&&sh.subjectId?sName(sh.subjectId):'your own hours')+'. From now it counts for the client you pick.':'Your hours count for this client until you switch or clock out. Breaks are never billed.'}),
     fld('Client',h('select',{class:'in',id:'cf-sub',value:d.subjectId,onchange:function(e){d.subjectId=e.target.value;d.taskId='';renderSheet();}},h('option',{value:'',text:'No client, just my hours'}),liveSubjects().map(subOpt))),
     d.subjectId?fld('Task, optional',h('select',{class:'in',id:'cf-task',value:d.taskId,onchange:bind(d,'taskId')},h('option',{value:'',text:'No particular task'}),tasks.map(function(t){return h('option',{value:t.id,text:t.title});}))):null,
-    h('button',{class:'btn wide',type:'button',onclick:function(){var p={subjectId:d.subjectId,taskId:d.taskId};closeSheet();if(sw)send('switchClient',p);else punch('clockIn',undefined,p);}},sw?'Switch':'Clock in')];}
+    proofOf(d.subjectId)?h('p',{class:'note',style:'margin:0',text:'Proof mode is on for '+sName(d.subjectId)+'. '+(!pfCan()?'Proof is collected only on a computer, so '+(proofOf(d.subjectId).phone?'nothing is captured here; the owner allows phone time for this client.':'time from this phone shows as no proof (phone).'):proofOf(d.subjectId).state==='agreed'?'You are asked to share your screen.':'You are asked to agree first.')}):null,
+    h('button',{class:'btn wide',type:'button',onclick:function(){var p={subjectId:d.subjectId,taskId:d.taskId},c=proofOf(d.subjectId);closeSheet();if(c&&c.state==='agreed'&&pfCan())pfShare();if(sw)send('switchClient',p);else punch('clockIn',undefined,p);}},sw?'Switch':'Clock in')];}
 /* a small card on Home: this week's time, and what is waiting to be billed or approved */
-function timeCard(){var wk=weekStart(today()),list=(S.time||[]).filter(function(e){return weekStart(dayOf(e.start))===wk&&(S.owner||e.personId===me);});
-  var unb=S.owner?(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0):0,wait=S.owner?(S.sheets||[]).filter(function(x){return x.status==='submitted';}).length:0,cq=S.owner?(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';}).length:0;
+function timeCard(){var wk=weekStart(today()),list=(S.time||[]).filter(function(e){return weekStart(dayOf(e.start))===wk&&(LEADS()||e.personId===me);});
+  var unb=CAN('billing')?(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0):0,wait=LEADS()?(S.sheets||[]).filter(function(x){return x.status==='submitted'&&mayDecide(x.personId);}).length:0,cq=CAN('billing')?(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';}).length:0;
   if(!list.length&&!unb&&!wait&&!cq)return null;var s=sumUp(list),run=list.some(function(e){return !e.end;});
   var mine=sheetOf(me,wk);
   return h('button',{class:'tw',type:'button',onclick:function(){V.tab='stats';V.ins='hours';V.tm=V.tm||null;render();window.scrollTo(0,0);}},
-    h('div',null,h('small',null,S.owner?'Team time this week':'Your time this week'),h('strong',{text:mins(s.min)+(run?', running now':'')})),
+    h('div',null,h('small',null,LEADS()?'Team time this week':'Your time this week'),h('strong',{text:mins(s.min)+(run?', running now':'')})),
     h('em',{text:cq?cq+(cq===1?' client question':' client questions'):wait?wait+(wait===1?' timesheet to approve':' timesheets to approve'):unb?mins(unb)+' not billed':mine&&TST[mine.status]?TST[mine.status][0]:'See time'}));}
 /* ---------- time assurance: budgets, proof of work, review flags, the still working check, client approval of hours ----------
-   Kind by design: nothing here takes screenshots, logs keys or uses a camera. Everyone sees the flags and checks about their own time. */
+   Kind by design: nothing here logs keys or uses a camera, and screenshots happen only in Proof mode, per client, with each person's
+   consent (below). Everyone sees the flags and checks about their own time. */
 var AD={noteMin:30,proofDone:true,longH:4,manualPct:30,roundDays:3,checkOn:true,checkMin:45,outlierX:1.5};
 function cfgA(){return Object.assign({},AD,(S&&S.settings&&S.settings.assure)||{});}
 var FLAGT={long:['Long entry','Longer than the workspace allows in one go without a check. Split it if it covers more than one piece of work.'],
@@ -1904,8 +2266,11 @@ var FLAGT={long:['Long entry','Longer than the workspace allows in one go withou
   late:['Started earlier','The timer or clock was started from a time more than 15 minutes before it reached us. It counts as time added by hand.'],
   edited:['Times changed','The start or end was changed by hand after it was timed. It counts as time added by hand.'],
   split:['Split','This is one part of an entry that was split in two or more.'],
-  noPrompt:['Unconfirmed, check not delivered','The still working check could not reach this person, so the time was not paused. Look it over.']};
-var FLAGSEV={noNote:'r',overNoReason:'r',unconfirmed:'r',overlap:'r',long:'o',overnight:'o',outside:'o',round:'o',noProof:'o',away:'o',manyManual:'o',manual:'',late:'o',edited:'',split:'',noPrompt:'o'};
+  noPrompt:['Unconfirmed, check not delivered','The still working check could not reach this person, so the time was not paused. Look it over.'],
+  noShots:['No proof','Part of this time has no proof screenshots: screen sharing was stopped, paused or never started. Add a note on what you did.'],
+  phoneTime:['No proof (phone)','This time was logged from a phone, where proof screenshots cannot be taken. Add a note on what you did.'],
+  manyRemoved:['Many shots removed','More proof screenshots were removed this week than usual. A short note helps the owner understand why.']};
+var FLAGSEV={noNote:'r',overNoReason:'r',unconfirmed:'r',overlap:'r',long:'o',overnight:'o',outside:'o',round:'o',noProof:'o',away:'o',manyManual:'o',manual:'',late:'o',edited:'',split:'',noPrompt:'o',noShots:'o',phoneTime:'o',manyRemoved:'o'};
 var BUDGETS=[[0,'No budget'],[15,'15 minutes'],[30,'30 minutes'],[45,'45 minutes'],[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours'],[180,'3 hours'],[240,'4 hours'],[360,'6 hours'],[480,'1 day'],[960,'2 days'],[1440,'3 days'],[2400,'1 week']];
 function budgetOpts(cur){var l=BUDGETS.slice();if(cur&&!l.some(function(b){return b[0]===+cur;}))l.push([+cur,dur(cur*6e4)]);return l.map(function(b){return h('option',{value:String(b[0]),text:b[1]});});}
 /* the same template line rules as the server: "Reconcile +2 [2h]" is due two days after the start, with a two hour budget */
@@ -1913,7 +2278,7 @@ function parseBudget(v){var s=String(v==null?'':v).trim().toLowerCase(),m=s.matc
   if(m)return Math.min(60000,Math.round(+m[1]*60+(+m[2]||0)));m=s.match(/^(\d+)\s*m(?:in(?:ute)?s?)?$/)||s.match(/^(\d+)$/);return m?Math.min(60000,+m[1]):0;}
 function tplLine(l){var s=String(l||'').trim(),b=s.match(/\s*\[([^\]]{1,12})\]\s*/),budget=0;if(b){budget=parseBudget(b[1]);s=(s.slice(0,b.index)+' '+s.slice(b.index+b[0].length)).trim();}
   var m=s.match(/^(.*?)(?:\s*\+\s*(\d+)\s*d?(?:ays?)?)?$/);return m&&m[1].trim()?{title:m[1].trim(),plus:+(m[2]||0),budgetMin:budget}:null;}
-function canBudget(t){return !t||!!S.owner||t.createdBy===me;}
+function canBudget(t){return !t||MGR()||t.createdBy===me;}
 function usedOf(t){return Math.round(spent(t)/6e4);}
 function budgetBar(t,small){var used=usedOf(t),b=t.budgetMin,pct=Math.round(used/b*100),cls=pct>=100?'r':pct>=80?'o':'g';
   return h('div',{class:'bbar '+cls+(small?' sm':'')},h('div',{class:'bh'},h('span',{text:mins(used)+' of '+mins(b)+' budget'}),h('b',{text:pct>=100?'Over budget':pct+'%'})),
@@ -1975,6 +2340,213 @@ setInterval(function(){try{if(!S||FULL||!me)return;if(!!stillDue()!==!!V.stillOn
 /* the demo's "Try the still working check": starts a timer on your first open task if nothing runs, then asks straight away */
 window.addEventListener('handlark:still',function(){if(!S||!me)return;if(!myRunning().length){var t=S.tasks.filter(function(x){return open(x)&&x.status!=='review'&&(x.assignee===me||(!x.assignee&&x.createdBy===me));}).sort(sortT)[0];
   if(!t){toast('Add a task first, then start its timer.');return;}send('timerStart',{id:t.id},true);}V.forceCheck=true;V.tab='home';render();window.scrollTo(0,0);});
+/* ---------- Proof mode: optional screenshots per client, with consent ----------
+   Off unless the owner turns it on for a client, and nothing is captured until the person agrees for themselves. Screenshots
+   are taken here, in this browser, only while the person shares their screen and time runs for that client: 1 to 3 at random
+   times in each 10 minutes, at most 1280 wide, JPEG at quality 0.6, blurred unless the owner chose sharp. Each one waits in the
+   person's Proof tray for 10 minutes, when they can delete it, before the owner can see it. Never keystrokes, never the names
+   of apps or websites: only a small score of how much the picture changed since the last one. Phones cannot share a screen. */
+var PHOLD=10*6e4,PBLOCK=10*6e4,PPAUSE=10*6e4,SURF={monitor:'entire screen',window:'window',browser:'tab'};
+var PF={stream:null,video:null,surface:'',status:'idle',entry:'',plan:{},busy:false,prev:null,asking:false,pausedUntil:0,gone:0};
+function proofOf(sid){return (S&&S.proofMe&&sid&&S.proofMe[sid])||null;}
+function proofNeeds(sid){var c=proofOf(sid);return !!c&&c.state!=='agreed';}
+function pfDemo(){return !!(window.HANDLARK_DEMO&&window.HANDLARK_DEMO.screen);}
+/* a computer browser that can share a screen; phones and tablets cannot */
+function pfCan(){var ua=navigator.userAgent||'',coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches&&PHONE();}catch(e){}
+  if(/Android|iPhone|iPad|iPod|Mobile/i.test(ua)||coarse)return false;
+  return pfDemo()||!!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia);}
+/* my time that Proof mode covers right now: a running timer or client clock with a proof record from the server */
+function pfEntry(){if(!S||!me)return null;var l=myRunning();for(var i=0;i<l.length;i++){var e=l[i];if(e.proof&&String(e.id).charAt(0)!=='o')return e;}return null;}
+function proofHint(pf){if(!pf||pf.device==='phone'||(pf.shots||0)<2)return '';return pf.stillMax>=30?'No change for '+mins(pf.stillMax):'Screen changed';}
+function proofSummary(pf){if(!pf)return '';
+  if(pf.device==='phone')return 'Logged from a phone or a browser that cannot share a screen, so no screenshots. '+(pf.phoneOk?'The owner allows phone time for this client.':'It shows as no proof (phone).');
+  return [pf.shots+(pf.shots===1?' screenshot':' screenshots')+(pf.surface?', sharing the '+pf.surface:''),pf.blur?'blurred':'sharp',pf.removed?pf.removed+' removed by the person':'',pf.noProofMin?mins(pf.noProofMin)+' with no proof':'all of it with proof',proofHint(pf)].filter(Boolean).join(' · ')+'.';}
+/* time for a client with Proof mode on: the person agrees first; then this computer is asked to share its screen */
+var PGATE={timerStart:1,focusStart:1,clockIn:1,switchClient:1,addTime:1,saveTime:1};
+function gateSid(action,p){var tk=function(id){return S.tasks.find(function(x){return x.id===id;});},t;
+  if(action==='timerStart'||action==='addTime'){t=tk(p.id);return t?t.subjectId:'';}
+  if(action==='focusStart'){t=p.taskId&&tk(p.taskId);return t?t.subjectId:'';}
+  if(action==='clockIn'||action==='switchClient'){t=p.taskId&&tk(p.taskId);return t?t.subjectId:(p.subjectId||'');}
+  if(action==='saveTime'){var en=p.entry||{},ex=(S.time||[]).find(function(x){return x.id===en.id;});if(en.personId&&en.personId!==me)return '';t=en.taskId&&tk(en.taskId);var sid=t?t.subjectId:en.subjectId||'';return ex&&ex.subjectId===sid?'':sid;}
+  return '';}
+function proofGuard(action,p,quiet){if(!PGATE[action]||!S)return false;var sid=gateSid(action,p),c=proofOf(sid);if(!c)return false;
+  if(c.state!=='agreed'){openConsent(sid,function(){send(action,p,quiet);});return true;}
+  if(action==='addTime'||action==='saveTime')return false;
+  if(pfCan()){p.noCapture=false;pfShare();}else{p.noCapture=true;if(!c.phone)toast('Proof for '+sName(sid)+' is collected only on a computer, so this time shows as no proof (phone).');}
+  return false;}
+/* ---------- screen sharing and the capture schedule ---------- */
+function pfShare(){if(PF.stream||PF.asking||!pfCan())return;PF.asking=true;var got;
+  try{got=pfDemo()?window.HANDLARK_DEMO.screen():navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'monitor',frameRate:{ideal:1,max:5}},audio:false,monitorTypeSurfaces:'include',selfBrowserSurface:'exclude',surfaceSwitching:'exclude'});}catch(e){got=Promise.reject(e);}
+  Promise.resolve(got).then(function(stream){PF.asking=false;var tr=stream&&stream.getVideoTracks()[0];if(!tr){PF.status='idle';render();return;}
+    var st={};try{st=tr.getSettings()||{};}catch(e){}
+    PF.stream=stream;PF.surface=SURF[st.displaySurface]?st.displaySurface:'';PF.status='sharing';PF.entry='';PF.plan={};PF.prev=null;
+    tr.addEventListener('ended',function(){if(PF.stream===stream)pfStop('stopped');});
+    var v=PF.video;if(!v){v=PF.video=document.createElement('video');v.muted=true;v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');v.className='pfv';document.body.appendChild(v);}
+    v.srcObject=stream;var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});pfTick();render();},
+  function(err){PF.asking=false;PF.status=err&&err.name==='NotAllowedError'?'refused':'idle';if(PF.status==='refused'){PF.entry='';pfTick();}render();});}
+/* why: stopped (the person stopped sharing; reported, the timer keeps running) or '' (time stopped, nothing to report) */
+function pfStop(why){var s=PF.stream;PF.stream=null;PF.plan={};PF.prev=null;if(s)s.getTracks().forEach(function(t){try{t.stop();}catch(e){}});
+  if(PF.video)PF.video.srcObject=null;PF.status=why||'idle';if(why)pfReport(why);if(S)render();}
+function pfReport(state){var e=pfEntry();if(!e)return;server('proofState',{entryId:e.id,state:state,surface:PF.surface}).then(function(res){if(!Q.length&&accept(res)){pickMe();render();if(M)renderSheet();}if(res&&res.msg&&state==='paused')toast(res.msg);}).catch(function(err){lost(err);});}
+function pfPause(){PF.pausedUntil=Date.now()+PPAUSE;pfReport('paused');render();}
+function pfResume(){PF.pausedUntil=0;var e=pfEntry();if(e&&e.proof)e.proof.pausedUntil=0;PF.plan={};pfReport('sharing');render();}
+function pfTick(){if(!S||!me||FULL)return;var e=pfEntry(),now=Date.now(),c=e&&proofOf(e.subjectId);
+  if(!e||e.proof.device==='phone'||!c||c.state!=='agreed'){   // no proof time running: sharing ends a little after the time stops
+    if(!PF.gone)PF.gone=now;if(PF.stream&&now-PF.gone>12000)pfStop('');if(!e)PF.entry='';return;}
+  PF.gone=0;
+  if(PF.entry!==e.id){PF.entry=e.id;PF.plan={};if(PF.stream&&PF.status==='sharing')pfReport('sharing');else if(PF.status==='refused'||PF.status==='stopped')pfReport(PF.status);}
+  if(!PF.stream||PF.status!=='sharing')return;
+  if(Math.max(PF.pausedUntil,e.proof.pausedUntil||0)>now)return;
+  var b=Math.floor((now-e.start)/PBLOCK);if(b<0)return;
+  if(!PF.plan[b]){var bs=e.start+b*PBLOCK,from=Math.max(now,bs),room=Math.max(0,bs+PBLOCK-from-8000),l=[];for(var i=0;i<(e.proof.rate||1);i++)l.push(from+Math.random()*room);PF.plan[b]=l.sort(function(x,y){return x-y;});}
+  if(PF.busy||!PF.plan[b].length||PF.plan[b][0]>now)return;
+  if(!PF.video||!PF.video.videoWidth){PF.plan[b][0]=now+2000;return;}
+  PF.plan[b].shift();pfCapture(e);}
+setInterval(function(){try{pfTick();if(M&&M.kind==='ptray')renderSheet();}catch(e){}},3000);
+/* one screenshot: drawn from the shared screen, at most 1280 wide, blurred when asked, then sent with the existing signed upload */
+function pfCapture(e){var v=PF.video,blur=!!e.proof.blur,at=Date.now(),sc=Math.min(1,1280/v.videoWidth),W=Math.max(1,Math.round(v.videoWidth*sc)),H0=Math.max(1,Math.round(v.videoHeight*sc));
+  var c=document.createElement('canvas');c.width=W;c.height=H0;var x=c.getContext('2d');x.drawImage(v,0,0,W,H0);
+  // the activity hint: a tiny grey copy, compared with the last one; only the score leaves this device
+  var t=document.createElement('canvas');t.width=32;t.height=18;var tx=t.getContext('2d');tx.drawImage(v,0,0,32,18);var px=tx.getImageData(0,0,32,18).data,g=new Uint8Array(576),change=null,i;
+  for(i=0;i<576;i++)g[i]=Math.round(px[i*4]*.3+px[i*4+1]*.59+px[i*4+2]*.11);
+  if(PF.prev){var sum=0;for(i=0;i<576;i++)sum+=Math.abs(g[i]-PF.prev[i]);change=Math.round(sum/576/255*1000)/10;}PF.prev=g;
+  if(blur){var sm=document.createElement('canvas');sm.width=Math.max(1,Math.round(W/18));sm.height=Math.max(1,Math.round(H0/18));var sx=sm.getContext('2d');sx.imageSmoothingEnabled=true;sx.drawImage(c,0,0,sm.width,sm.height);
+    x.imageSmoothingEnabled=true;try{x.imageSmoothingQuality='high';}catch(err){}x.drawImage(sm,0,0,W,H0);}
+  PF.busy=true;
+  c.toBlob(function(b){if(!b){PF.busy=false;return;}
+    server('proofUpload',{entryId:e.id,size:b.size,_at:at}).then(function(res){var u=res.upload;if(!u||!u.url)throw new Error('no upload link came back');
+      return fetch(u.url,{method:'PUT',headers:Object.assign({'Content-Type':'image/jpeg'},u.headers||{}),body:b}).then(function(r){if(!r.ok)throw new Error('the upload failed ('+r.status+')');
+        return server('proofShot',{entryId:e.id,path:u.path,blur:blur,surface:PF.surface,change:change,w:W,h:H0,_at:at});});})
+    .then(function(res){PF.busy=false;if(!Q.length&&accept(res)){pickMe();render();if(M&&(M.kind==='ptray'||M.kind==='me'))renderSheet();}})
+    .catch(function(err){PF.busy=false;if(lost(err))return;});   // a screenshot that could not be sent is skipped; that stretch shows as no proof
+  },'image/jpeg',0.6);}
+function pfRemove(x){server('proofRemove',{id:x.id}).then(function(res){if(accept(res)){pickMe();render();}if(M&&M.kind==='pshot'){M=M.back||null;if(!M)closeSheet();}if(M)renderSheet();if(res.msg)toast(res.msg);}).catch(function(e){if(!lost(e))toast(e.message+'.');});}
+/* the calm banner while proof time runs: what is happening, and the person's own controls */
+function proofBanner(){var e=pfEntry();if(!e)return null;var pf=e.proof,sb=subj(e.subjectId),name=sb?sb.name:'this client',now=Date.now(),c=proofOf(e.subjectId);if(!c)return null;
+  var wait=(S.myShots||[]).filter(function(x){return !x.removed&&x.releaseAt>now;}).length,what=e.source==='clock'?'client clock':'timer';
+  var tray=h('button',{class:'btn ghost sm',type:'button',onclick:openTray},'Proof tray'+(wait?' · '+wait:''));
+  var box=function(kind,title,text,btns){return h('section',{class:'pban '+kind,role:'status','aria-label':'Proof mode'},h('div',{class:'pbi'},h('small',null,'Proof mode · '+name),h('strong',{text:title}),h('span',{text:text})),h('div',{class:'pbb'},btns));};
+  if(pf.device==='phone')return box('ph','Proof is collected only on a computer','This device cannot share a screen, so nothing is captured here. '+(pf.phoneOk?'The owner allows phone time for this client.':'This time shows as no proof (phone).'),[tray]);
+  var paused=Math.max(PF.pausedUntil,pf.pausedUntil||0);
+  if(PF.stream&&PF.status==='sharing'){
+    if(paused>now)return box('pa','Proof paused until '+tIn(paused),'For a private moment. Nothing is captured, and this time shows as no proof.',[h('button',{class:'btn sm',type:'button',onclick:pfResume},'Resume now'),tray]);
+    return box('on','Proof is on'+(pfDemo()?', sharing the Demo screen':''),'Sharing your '+(SURF[PF.surface]||'screen')+'. '+pf.rate+(pf.rate===1?' screenshot':' screenshots')+' at random in each 10 minutes, '+(pf.blur?'blurred':'sharp')+'. You see each one first.',
+      [h('button',{class:'btn ghost sm',type:'button',onclick:pfPause},'Pause proof for 10 minutes'),tray,h('button',{class:'btn ghost sm',type:'button',onclick:function(){pfStop('stopped');}},'Stop sharing')]);}
+  return box('off',PF.status==='refused'?'Screen sharing was not allowed':'Proof is waiting for your screen','Your '+what+' keeps running. Until you share your screen in this browser, this time shows as no proof.',
+    [pfCan()?h('button',{class:'btn sm',type:'button',disabled:PF.asking,onclick:pfShare},PF.asking?'Choose what to share':'Share screen'):null,tray]);}
+/* ---------- consent: what is captured, how often, who sees it, how long it is kept, and the person's controls ---------- */
+function openConsent(sid,then){M={kind:'pconsent',sid:sid,then:then||null,ok:false,busy:false};$('#ov').hidden=false;renderSheet();}
+function renderPConsent(){var c=proofOf(M.sid),sb=subj(M.sid);if(!c||!sb){closeSheet();return [];}var ws=(S.workspace&&S.workspace.name)||'the workspace';
+  var items=[['What is captured','A picture of the screen, window or tab you choose to share, '+(c.blur?'blurred so text cannot be read':'sharp, so text can be read')+', at most 1280 pixels wide. Never your keystrokes, the names of apps or websites, your camera or your microphone. '+BRAND+' only notes whether the picture changed since the last one. A screenshot shows whatever is on the screen you share, such as messages or personal details: share one window, or pause first.'],
+    ['How often',c.rate+(c.rate===1?' screenshot':' screenshots')+' at random times in each 10 minutes, only while a timer or client clock runs for '+sb.name+' and you share your screen in this browser. Nothing is taken on a phone.'],
+    ['Who sees them','You first. Each one waits in your Proof tray for 10 minutes, then the owner of '+ws+' can see it. Never your teammates. Never '+sb.name+', unless the owner chooses to show one on a line of time the client approves.'],
+    ['How long they are kept',c.days+' days, then they are deleted for good. They are also deleted if you leave the workspace.'],
+    ['Your controls','Delete any screenshot within 10 minutes (the owner sees that one was removed, never what it showed). Pause proof for 10 minutes for a private moment. Stop sharing at any time: your timer keeps running and that time shows as no proof. Withdraw your consent at any time from your account.'],
+    ['If you withdraw','Nothing more is captured, and screenshots the owner has not seen are deleted. You cannot add time for '+sb.name+' until you agree again or the owner switches Proof mode off for you.']];
+  var agree=function(){if(!M.ok||M.busy)return;var sid=M.sid,then=M.then;M.busy=true;renderSheet();if(then&&pfCan())pfShare();
+    server('proofConsent',{subjectId:sid,agree:true,version:c.version}).then(function(res){if(accept(res)){pickMe();render();}closeSheet();toast(res.msg||'Thank you');if(then)then();})
+      .catch(function(e){if(lost(e))return;if(M&&M.kind==='pconsent'){M.busy=false;renderSheet();}if(!then&&PF.stream&&!pfEntry())pfStop('');toast(e.message+'.');});};
+  return [head('Proof mode for '+sb.name),
+    h('p',{class:'note',style:'margin:0',text:'The owner asks for proof screenshots while you work for this client. Nothing is captured unless you agree here. Read what it means first.'}),
+    c.note?h('div',{class:'pnote'},h('small',null,'Why, from the owner'),h('p',{text:c.note})):null,
+    c.state==='withdrawn'?h('p',{class:'note-warn',text:'You withdrew your consent. Agree again to add time for '+sb.name+'.'}):c.state==='changed'?h('p',{class:'note-warn',text:'The owner changed the settings since you agreed, so you are asked again.'}):null,
+    h('dl',{class:'pcon'},items.map(function(x){return h('div',null,h('dt',{text:x[0]}),h('dd',{text:x[1]}));})),
+    !pfCan()?h('p',{class:'note-warn',text:'This device cannot share a screen, so no screenshots are taken here: proof is collected only on a computer. '+(c.phone?'The owner allows time from a phone for this client.':'Time you add here for this client shows as no proof (phone).')}):null,
+    h('label',{class:'switch pagree'},h('input',{type:'checkbox',id:'pc-ok',checked:M.ok,onchange:function(e){M.ok=e.target.checked;renderSheet();}}),'I have read this and I agree to Proof mode for '+sb.name),
+    h('button',{class:'btn wide',type:'button',disabled:!M.ok||M.busy,onclick:agree},M.busy?'Saving…':M.then?'Agree and continue':'Agree'),
+    h('button',{class:'linkb',type:'button',style:'align-self:center',onclick:closeSheet},'Not now'),
+    h('p',{class:'note',style:'margin:0;text-align:center'},'Consent version '+c.version+'. ',h('a',{href:'../privacy.html#proof',target:'_blank',rel:'noopener noreferrer'},'How screenshots are handled'))];}
+/* ---------- the Proof tray: each screenshot is the person's for 10 minutes ---------- */
+function openTray(){M={kind:'ptray'};$('#ov').hidden=false;renderSheet();}
+function shotCard(x,o){var left=Math.max(0,x.releaseAt-Date.now()),o2=Object.assign({},o);
+  return h('figure',{class:'pshot'+(x.removed?' rm':'')},
+    x.removed?h('div',{class:'pimg rm'},h('span',{text:x.removedBy==='owner'?'Deleted by the owner':'Removed by '+(o.who||'you')})):
+      h('button',{class:'pimg',type:'button','aria-label':'Open the screenshot from '+tIn(x.at),onclick:function(){openShot(x,o2);}},x.url?h('img',{src:x.url,alt:'Screenshot from '+tIn(x.at)+(x.blur?', blurred':''),loading:'lazy',decoding:'async'}):h('span',null,'Picture not available')),
+    h('figcaption',null,h('b',{text:tIn(x.at)}),h('span',{text:x.removed?'Marker only':[o.mine?(x.blur?'Blurred':'Sharp'):'',x.shared?'Shown to the client':''].filter(Boolean).join(' · ')}),
+      o.mine&&!x.removed&&left>0?h('span',{class:'pleft','data-rel':String(x.releaseAt)},'Released in '+Math.ceil(left/6e4)+' min'):null,
+      o.mine&&!x.removed&&left>0?h('button',{class:'btn ghost sm',type:'button','aria-label':'Delete the screenshot from '+tIn(x.at),onclick:function(){pfRemove(x);}},'Delete'):null));}
+function renderPTray(){var list=S.myShots||[],now=Date.now(),wait=list.filter(function(x){return !x.removed&&x.releaseAt>now;}),rel=list.filter(function(x){return !x.removed&&x.releaseAt<=now;}),rem=list.filter(function(x){return x.removed;});
+  return [head('Proof tray'),h('p',{class:'note',style:'margin:0',text:'Your screenshots from the last day. Each one is yours alone for 10 minutes: delete any you do not want the owner to see. Then it is released to the owner.'}),
+    h('div',{class:'sec'},h('h3',null,'Only you can see these'),h('span',{text:wait.length?wait.length+' waiting':'None waiting'})),
+    wait.length?h('div',{class:'pgrid'},wait.map(function(x){return shotCard(x,{mine:true});})):h('p',{class:'note',style:'margin:0'},'New screenshots show here first.'),
+    rel.length?[h('div',{class:'sec'},h('h3',null,'Released to the owner'),h('span',{text:rel.length>8?'Latest 8 of '+rel.length:String(rel.length)})),h('div',{class:'pgrid'},rel.slice(0,8).map(function(x){return shotCard(x,{});}))]:null,
+    rem.length?h('p',{class:'note',style:'margin:12px 0 0',text:'You removed '+rem.length+(rem.length===1?' screenshot':' screenshots')+' in the last day. The owner sees a marker for each, never the picture.'}):null];}
+/* one screenshot, large; the owner can show it to the client on its line of time, or delete it */
+function openShot(x,o){var back=M&&M.kind!=='pshot'?M:null;M={kind:'pshot',x:x,o:o||{},back:back};$('#ov').hidden=false;renderSheet();}
+function renderPShot(){var x=M.x,o=M.o,sb=subj(x.subjectId),t=x.taskId&&S.tasks.find(function(y){return y.id===x.taskId;}),now=Date.now();
+  var owner=!!S.owner&&!o.mine&&x.personId!==me,act=function(a,p){server(a,p).then(function(res){if(accept(res)){pickMe();render();}if(res.msg)toast(res.msg);if(a==='proofShare'){x.shared=!p.off;V.pd={};}if(a==='proofRemove'){V.pd={};M=M.back||null;if(!M){closeSheet();return;}}renderSheet();}).catch(function(e){if(!lost(e))toast(e.message+'.');});};
+  return [head('Screenshot from '+tIn(x.at)),
+    M.back?h('button',{class:'linkb',type:'button',style:'align-self:flex-start',onclick:function(){M=M.back;renderSheet();}},'Back'):null,
+    x.url?h('img',{class:'pbig',src:x.url,alt:'Screenshot from '+tIn(x.at)+(x.blur?', blurred':'')}):null,
+    h('p',{class:'note',style:'margin:0',text:[(x.personId&&x.personId!==me?pName(x.personId)+' · ':'')+dIn(x.at)+', '+tIn(x.at),sb?sb.name+(t?', '+t.title:''):'',x.blur?'Blurred':'Sharp',x.surface?'Sharing the '+x.surface:'',x.change==null?'':x.change>=2?'The screen changed since the last one':'No change since the last one'].filter(Boolean).join(' · ')}),
+    o.mine&&x.releaseAt>now?h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn danger sm',type:'button',onclick:function(){pfRemove(x);}},'Delete'),h('small',{class:'note',text:'Released to the owner at '+tIn(x.releaseAt)})):null,
+    owner?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:8px'},h('strong',null,'Show to the client'),
+      h('p',{class:'note',style:'margin:0',text:sb&&sb.clientApproves?'Shows this one screenshot on its line of time on the client page, where the client approves hours. It is in the history.':'Turn on Client approves hours before billing for this client to show a screenshot on a line of time.'}),
+      sb&&sb.clientApproves?h('div',{class:'acts',style:'margin:0'},x.shared?h('button',{class:'btn ghost sm',type:'button',onclick:function(){act('proofShare',{id:x.id,off:true});}},'Stop showing to the client'):h('button',{class:'btn sm',type:'button',onclick:function(){act('proofShare',{id:x.id});}},'Show to the client')):null):null,
+    owner?h('button',{class:'linkb',type:'button',style:'align-self:center;color:var(--danger)',onclick:function(){act('proofRemove',{id:x.id});}},'Delete this screenshot'):null];}
+/* the owner's timeline: a person's day, or one entry: released screenshots, removed markers, no proof stretches and what was shared */
+function proofTimeline(D,owner){var byE={};(D.shots||[]).forEach(function(x){(byE[x.entryId]=byE[x.entryId]||[]).push(x);});
+  if(!D.entries.length)return h('div',{class:'empty'},ill('empty_time'),h('b',null,'No proof time on this day'),'Time for a client with Proof mode on shows here, with its screenshots.');
+  var who=first(pName(D.personId));
+  return h('div',{class:'ptl'},D.waiting?h('p',{class:'note',style:'margin:0',text:D.waiting+(D.waiting===1?' screenshot is':' screenshots are')+' still with '+who+' for their 10 minutes.'}):null,
+    D.entries.map(function(e){var pf=e.proof||{},shots=byE[e.id]||[],end=e.end||Date.now(),len=Math.max(1,end-e.start),pc=function(ms){return Math.max(0,Math.min(100,(ms-e.start)/len*100));},rm=shots.filter(function(x){return x.removed;}).length,hint=proofHint(pf);
+      return h('section',{class:'pent'},
+        h('div',{class:'peh'},h('div',null,h('strong',{text:entryLabel(e)}),h('small',{text:tIn(e.start)+' to '+(e.end?tIn(e.end):'now')+' · '+mins(eMin(e))})),
+          h('div',{class:'fl'},pf.device==='phone'?h('b',{class:'badge-s o'},pf.phoneOk?'Phone, allowed':'No proof (phone)'):[pf.surface?h('b',{class:'badge-s'},'Shared: '+pf.surface):null,h('b',{class:'badge-s'},pf.blur?'Blurred':'Sharp'),
+            rm?h('b',{class:'badge-s o'},rm+' removed by '+who):null,pf.noProofMin?h('b',{class:'badge-s r'},mins(pf.noProofMin)+' no proof'):h('b',{class:'badge-s g'},'Proof all through'),hint?h('b',{class:'badge-s'+(/No change/.test(hint)?' o':'')},hint):null])),
+        pf.device==='phone'?null:h('div',{class:'pbar',role:'img','aria-label':'Timeline from '+tIn(e.start)+' to '+(e.end?tIn(e.end):'now')+': '+shots.length+' screenshots, '+(pf.noProof||[]).length+' stretches with no proof'},
+          (pf.noProof||[]).map(function(g){return h('i',{class:'gap',style:'left:'+pc(g.from)+'%;width:'+Math.max(.8,pc(g.to)-pc(g.from))+'%'});}),
+          shots.map(function(x){return h('i',{class:'tk'+(x.removed?' rm':''),style:'left:'+pc(x.at)+'%'});}),
+          h('span',{class:'pt0',text:tIn(e.start)}),h('span',{class:'pt1',text:e.end?tIn(e.end):'now'})),
+        (pf.noProof||[]).length?h('ul',{class:'pgaps'},pf.noProof.map(function(g){return h('li',null,h('b',{text:tIn(g.from)+' to '+tIn(g.to)}),h('span',{text:g.text}));})):null,
+        shots.length?h('div',{class:'pgrid'},shots.map(function(x){return shotCard(x,{owner:owner,who:who});})):h('p',{class:'note',style:'margin:0'},pf.device==='phone'?'No screenshots are taken on a phone.':'No screenshots released yet.'));}));}
+function openProofEntry(id){M={kind:'pday',entryId:id,busy:true,data:null};$('#ov').hidden=false;renderSheet();
+  server('proofDay',{entryId:id}).then(function(res){if(M&&M.kind==='pday'&&M.entryId===id){M.busy=false;M.data=res.proofDay;renderSheet();}}).catch(function(e){if(lost(e))return;if(M&&M.kind==='pday'){M.busy=false;M.err=e.message;renderSheet();}});}
+function renderPDay(){return [head('Proof screenshots'),M.busy?h('p',{class:'note'},'Loading the screenshots…'):M.err?h('p',{class:'note-warn',text:'They could not load: '+M.err+'.'}):proofTimeline(M.data,!!S.owner)];}
+/* Insights, Time, Proof: one person and one day at a time */
+/* the people Proof mode applies to, those who agreed first, then by name */
+function proofPeople(){var ids={},agreed=function(p){return Object.keys(p.proofConsent||{}).some(function(k){return p.proofConsent[k].state==='agreed';})?0:1;};
+  (S.subjects||[]).forEach(function(s){if(s.proofOn)S.people.forEach(function(p){if(p.id===me)return;if((s.proofOff||[]).indexOf(p.id)<0)ids[p.id]=1;});});
+  return S.people.filter(function(p){return p.id!==me&&(ids[p.id]||(p.proofConsent&&Object.keys(p.proofConsent).length));}).sort(function(a,b){return agreed(a)-agreed(b)||a.name.localeCompare(b.name);});}
+function proofTabOn(){return !!(S&&((S.owner&&(S.subjects.some(function(s){return s.proofOn;})||S.settings.proofUsed))||Object.keys(S.proofMe||{}).length||(S.myShots||[]).length));}
+function proofTab(T){var ppl=S.owner?proofPeople():[],P=T.pf=T.pf||{who:S.owner?((ppl[0]||{}).id||me):me,day:today()};
+  var key=P.who+'|'+P.day,R=V.pd=V.pd||{},a=R[key];
+  if(!a){a=R[key]={busy:true};server('proofDay',{personId:P.who,day:P.day}).then(function(res){a.busy=false;a.data=res.proofDay;render();}).catch(function(e){a.busy=false;a.err=e.message;if(!lost(e))render();});}
+  var D=a.data,shots=D?D.shots.filter(function(x){return !x.removed;}).length:0,rem=D?D.shots.filter(function(x){return x.removed;}).length:0,np=D?D.entries.reduce(function(s,e){return s+((e.proof||{}).noProofMin||0);},0):0;
+  var surf=D?D.entries.map(function(e){return (e.proof||{}).surface;}).filter(function(v,i,l){return v&&l.indexOf(v)===i;}):[];
+  return [h('p',{class:'note',style:'margin:0 0 10px',text:S.owner?'Screenshots from clients with Proof mode on, released after each person had 10 minutes to delete any. Only you and the person see them.':'Your own Proof mode screenshots. Only you and the owner see them, and the owner only after your 10 minutes.'}),
+    h('div',{class:'prow2'},S.owner?fld('Person',h('select',{class:'in',id:'pf-who',value:P.who,onchange:function(e){P.who=e.target.value;render();}},(ppl.length?ppl:S.people.filter(function(p){return p.id!==me;})).map(function(p){return h('option',{value:p.id,text:p.name});}))):null,
+      fld('Day',h('div',{class:'pday'},h('button',{class:'x',type:'button','aria-label':'Day before',html:I.l,onclick:function(){P.day=addDays(P.day,-1);render();}}),
+        h('input',{class:'in',id:'pf-day',type:'date',max:today(),value:P.day,onchange:function(e){if(e.target.value)P.day=e.target.value;render();}}),
+        h('button',{class:'x',type:'button','aria-label':'Day after',html:I.r,disabled:P.day>=today(),onclick:function(){P.day=addDays(P.day,1);render();}})))),
+    a.busy?h('p',{class:'note'},'Loading the screenshots…'):a.err?h('p',{class:'note-warn',text:'They could not load: '+a.err+'.'}):[
+      h('div',{class:'tiles',style:'margin:12px 0'},h('div',{class:'tile dark'},h('b',{text:String(shots)}),h('span',null,S.owner?'Screenshots released':'Screenshots')),h('div',{class:'tile'},h('b',{text:String(rem)}),h('span',null,'Removed by the person')),
+        h('div',{class:'tile'},h('b',{style:np?'color:var(--danger)':'',text:mins(np)}),h('span',null,'No proof')),h('div',{class:'tile'},h('b',{style:'font-size:16px',text:surf.length?surf.join(', '):'·'}),h('span',null,'Shared'))),
+      proofTimeline(D,!!S.owner)]];}
+/* Account: where Proof mode applies to me, my consent, and withdrawing it */
+function proofBlock(){var m=S.proofMe||{},ids=Object.keys(m);if(!ids.length)return null;
+  return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Proof mode'),
+    h('p',{class:'note',style:'margin:0',text:'Screenshots for these clients are taken only while you share your screen in this browser and time runs for them. You see each one first.'}),
+    ids.map(function(id){var c=m[id];return h('div',{class:'prow'},h('div',null,h('b',{text:sName(id)}),h('small',{text:c.state==='agreed'?'You agreed on '+stamp(c.at)+' · '+c.rate+' each 10 minutes, '+(c.blur?'blurred':'sharp'):c.state==='withdrawn'?'You withdrew your consent':c.state==='changed'?'The settings changed since you agreed':'Not agreed yet'})),
+      c.state==='agreed'?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.wd=id;renderSheet();}},'Withdraw'):h('button',{class:'btn sm',type:'button',onclick:function(){openConsent(id,null);}},'Read and agree'));}),
+    M.wd&&m[M.wd]?h('div',{class:'panel dz',style:'display:flex;flex-direction:column;gap:8px'},h('strong',{text:'Withdraw consent for '+sName(M.wd)+'?'}),
+      h('p',{style:'margin:0;font-size:14px',text:'Nothing more is captured, your running time for '+sName(M.wd)+' stops, and screenshots the owner has not seen are deleted. You cannot add time for this client until you agree again or the owner switches Proof mode off for you.'}),
+      h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=M.wd;M.wd='';server('proofConsent',{subjectId:id,agree:false}).then(function(res){if(accept(res)){pickMe();render();}pfTick();if(M)renderSheet();toast(res.msg||'Consent withdrawn');}).catch(function(e){if(!lost(e))toast(e.message+'.');});}},'Withdraw consent'),
+        h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.wd='';renderSheet();}},'Keep it'))):null,
+    h('button',{class:'btn ghost sm',type:'button',style:'align-self:flex-start',onclick:openTray},'Open Proof tray'));}
+/* the owner's switch on a client: off by default; each person still agrees for themselves */
+function proofPanel(d){if(!S.owner||d.privateTo)return null;var team=S.people.filter(function(p){return p.id!==me;}),off=d.proofOff||[];
+  var stOf=function(p){var k=(p.proofConsent||{})[d.id];return off.indexOf(p.id)>=0?'Proof mode off for them':!k?'Has not agreed yet':k.state==='withdrawn'?'Withdrew on '+stamp(k.at):'Agreed on '+stamp(k.at)+', version '+k.version;};
+  return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Proof mode'),
+    h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-proof',checked:!!d.proofOn,onchange:function(e){d.proofOn=e.target.checked;renderSheet();}}),'Proof mode for this client'),
+    h('p',{class:'note',style:'margin:0',text:d.proofOn?'Each person who times work for '+(d.name||'this client')+' is asked to agree first; you can never agree for them. Screenshots are taken only in their browser, while they share their screen and their time runs for this client. They see each one first and can delete it within 10 minutes; then you see it. Never keystrokes, apps or websites.':'Off. Turn it on to ask for screenshots while your team works for this client, with each person\'s consent. Nothing is captured until they agree.'}),
+    d.proofOn?[fld('Why, shown to your team (optional)',h('input',{class:'in',id:'s-pnote',maxlength:300,placeholder:'For example: the client asked for proof of hours this quarter',value:d.proofNote||'',oninput:bind(d,'proofNote')})),
+      h('div',{class:'frow'},fld('Screenshots in each 10 minutes',h('select',{class:'in',id:'s-prate',value:String(d.proofRate||1),onchange:function(e){d.proofRate=+e.target.value;}},[1,2,3].map(function(n){return h('option',{value:String(n),text:n+(n===1?', at a random time':', at random times')});}))),
+        fld('Pictures',h('select',{class:'in',id:'s-pblur',value:d.proofBlur===false?'sharp':'blur',onchange:function(e){d.proofBlur=e.target.value!=='sharp';}},h('option',{value:'blur',text:'Blurred, text cannot be read'}),h('option',{value:'sharp',text:'Sharp'})))),
+      h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-pphone',checked:!!d.proofPhone,onchange:function(e){d.proofPhone=e.target.checked;}}),'Allow time from a phone. Phones cannot share a screen; without this, that time shows as no proof (phone)'),
+      h('p',{class:'note',style:'margin:0',text:'Asking for more screenshots, or sharp ones, asks everyone to agree again. Screenshots are kept '+(S.settings.proofDays||30)+' days (Settings, Time assurance) and count toward your file storage.'}),
+      team.length?h('div',{class:'ppl'},h('small',{class:'note'},'Your team'),team.map(function(p){var isOff=off.indexOf(p.id)>=0;
+        return h('div',{class:'prow'},h('div',null,h('b',{text:p.name}),h('small',{text:stOf(p)})),h('label',{class:'switch'},h('input',{type:'checkbox','aria-label':'Proof mode on for '+p.name,checked:!isOff,onchange:function(e){var l=(d.proofOff||[]).filter(function(x){return x!==p.id;});if(!e.target.checked)l.push(p.id);d.proofOff=l;renderSheet();}}),'On'));})):null]:null);}
 /* Home: tasks near or over their time budget, for the person doing them and for the lead */
 function budgetCard(){var list=S.tasks.filter(function(t){if(!open(t)||!(t.budgetMin>0))return false;var pc=usedOf(t)/t.budgetMin*100;return (t.assignee===me&&pc>=80)||((S.owner||t.createdBy===me)&&pc>=100);})
   .sort(function(a,b){return usedOf(b)/b.budgetMin-usedOf(a)/a.budgetMin;}).slice(0,4);if(!list.length)return null;
@@ -1987,19 +2559,19 @@ function flagChips(e,max){var on=e.flags||[];if(!on.length)return [];var shown=o
 function blockingOf(list,week,pid){var w=(S.weekFlags||{})[(pid||me)+'_'+week];if(w&&w.ok&&w.ok.proof)return [];return list.filter(function(e){return !e.invoiceId&&(e.status==='draft'||e.status==='rejected')&&(e.flags||[]).some(function(c){return c==='noNote'||c==='overNoReason';});});}
 function flagsView(T,r){var list=(S.time||[]).filter(function(e){return inRange(e.start,r)&&(e.flags||[]).length&&(!T.sid||e.subjectId===T.sid)&&(!T.fc||e.flags.indexOf(T.fc)>=0);}).sort(function(a,b){return b.start-a.start;});
   var all=(S.time||[]).filter(function(e){return inRange(e.start,r)&&(e.flags||[]).length&&(!T.sid||e.subjectId===T.sid);}),counts={};all.forEach(function(e){e.flags.forEach(function(c){counts[c]=(counts[c]||0)+1;});});
-  var claims=(S.time||[]).filter(function(e){return e.unconfirmed&&e.claim&&e.claim.state==='pending'&&(S.owner||e.personId===me);});
-  var wk=Object.keys(S.weekFlags||{}).filter(function(k){var w=S.weekFlags[k],i=k.lastIndexOf('_'),wd=k.slice(i+1);return w.on.length&&(S.owner||k.slice(0,i)===me)&&(!r.from||addDays(wd,6)>=r.from)&&(!r.to||wd<=r.to);});
-  var out=[h('p',{class:'note',style:'margin:0 0 10px',text:S.owner?'Flags point at time worth a second look. They never change or remove time. Open an entry to see why, then mark it OK or ask for a fix.':'These are the flags on your own time, the same ones the owner sees. Open one to see what to do.'})];
+  var claims=(S.time||[]).filter(function(e){return e.unconfirmed&&e.claim&&e.claim.state==='pending'&&(looksAfter(e.personId)||e.personId===me);});
+  var wk=Object.keys(S.weekFlags||{}).filter(function(k){var w=S.weekFlags[k],i=k.lastIndexOf('_'),wd=k.slice(i+1);return w.on.length&&(looksAfter(k.slice(0,i))||k.slice(0,i)===me)&&(!r.from||addDays(wd,6)>=r.from)&&(!r.to||wd<=r.to);});
+  var out=[h('p',{class:'note',style:'margin:0 0 10px',text:LEADS()?'Flags point at time worth a second look. They never change or remove time. Open an entry to see why, then mark it OK or ask for a fix.':'These are the flags on your own time, the same ones the owner sees. Open one to see what to do.'})];
   if(Object.keys(counts).length)out.push(h('div',{class:'chips',style:'padding-top:0'},h('button',{class:'chip',type:'button','aria-pressed':String(!T.fc),onclick:function(){T.fc='';render();}},'All flags · '+all.length),
     Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).map(function(c){return h('button',{class:'chip',type:'button','aria-pressed':String(T.fc===c),onclick:function(){T.fc=c;render();}},FLAGT[c][0]+' · '+counts[c]);})));
   if(claims.length)out.push(h('div',{class:'sec'},h('h3',null,'Claimed time'),h('span',{text:claims.length+' waiting'})),h('div',{class:'shifts'},claims.map(function(e){
-    return h('div',{class:'lv wkf'},h('div',null,h('strong',{text:(S.owner?first(pName(e.personId))+' · ':'')+entryLabel(e)+' · '+mins(e.minutes)}),h('br'),h('small',{text:dIn(e.start)+', '+tIn(e.start)+' to '+tIn(e.end)+' · '+e.claim.note})),h('b',{class:'badge-s o'},'Waiting'),
-      S.owner?h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('decideClaim',{id:e.id,ok:true});}},'Approve'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideClaim',{id:e.id,ok:false});}},'Decline')):null);})));
+    return h('div',{class:'lv wkf'},h('div',null,h('strong',{text:(LEADS()&&e.personId!==me?first(pName(e.personId))+' · ':'')+entryLabel(e)+' · '+mins(e.minutes)}),h('br'),h('small',{text:dIn(e.start)+', '+tIn(e.start)+' to '+tIn(e.end)+' · '+e.claim.note})),h('b',{class:'badge-s o'},'Waiting'),
+      mayDecide(e.personId)?h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('decideClaim',{id:e.id,ok:true});}},'Approve'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('decideClaim',{id:e.id,ok:false});}},'Decline')):null);})));
   if(wk.length)out.push(h('div',{class:'sec'},h('h3',null,'Weeks')),h('div',{class:'shifts'},wk.map(function(k){var w=S.weekFlags[k],i=k.lastIndexOf('_'),pid=k.slice(0,i),wd=k.slice(i+1);
-    return h('div',{class:'lv wkf'},h('div',null,h('strong',{text:(S.owner?pName(pid)+' · ':'')+'Week of '+short(wd)}),h('br'),h('small',{text:w.on.map(function(c){return FLAGT[c][1];}).join(' ')})),h('div',{class:'fl'},w.on.map(function(c){return h('b',{class:'badge-s fg o'},FLAGT[c][0]);})),
-      S.owner?h('div',{class:'acts'},w.on.map(function(c){return h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('flagOk',{week:k,code:c});}},'Mark '+FLAGT[c][0].toLowerCase()+' OK');})):null);})));
+    return h('div',{class:'lv wkf'},h('div',null,h('strong',{text:(LEADS()&&pid!==me?pName(pid)+' · ':'')+'Week of '+short(wd)}),h('br'),h('small',{text:w.on.map(function(c){return FLAGT[c][1];}).join(' ')})),h('div',{class:'fl'},w.on.map(function(c){return h('b',{class:'badge-s fg o'},FLAGT[c][0]);})),
+      mayDecide(pid)?h('div',{class:'acts'},w.on.map(function(c){return h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('flagOk',{week:k,code:c});}},'Mark '+FLAGT[c][0].toLowerCase()+' OK');})):null);})));
   out.push(h('div',{class:'sec'},h('h3',null,T.fc?FLAGT[T.fc][0]:'Flagged entries'),h('span',{text:list.length?list.length+(list.length===1?' entry':' entries'):''})),
-    list.length?h('div',{class:'shifts'},list.slice(0,T.all?400:40).map(function(e){return entryRow(e,S.owner);})):h('div',{class:'empty'},ill('all_done'),h('b',null,'Nothing to review'),'No flags on the time in this range.'));
+    list.length?h('div',{class:'shifts'},list.slice(0,T.all?400:40).map(function(e){return entryRow(e,LEADS());})):h('div',{class:'empty'},ill('all_done'),h('b',null,'Nothing to review'),'No flags on the time in this range.'));
   if(list.length>40&&!T.all)out.push(h('button',{class:'btn ghost sm',type:'button',style:'margin-top:10px',onclick:function(){T.all=true;render();}},'Show all '+list.length));
   return out;}
 /* budget versus actual: per type and person, against the team median for the type; only the lead's budget is used, never a person's own estimate */
@@ -2022,7 +2594,7 @@ function estView(T,r){var x=T.x||cfgA().outlierX,key=r.from+'|'+r.to+'|'+x,R=V.r
         :h('p',{class:'note',style:'margin:6px 0 0'},'You finished none of these in this range.')));});
   return out;}
 /* client questions about hours: the owner replies, adjusts if needed, and sends the line back to approve */
-function queriesBlock(){if(!S.owner)return null;var qs=(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';});if(!qs.length)return null;V.qa=V.qa||{};
+function queriesBlock(){if(!CAN('billing'))return null;var qs=(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';});if(!qs.length)return null;V.qa=V.qa||{};
   return [h('div',{class:'sec'},h('h3',null,'Client questions'),h('span',{text:qs.length+' to answer'})),h('div',{class:'shifts'},qs.map(function(e){var A2=V.qa[e.id]=V.qa[e.id]||{text:'',min:String(e.minutes)},th=e.clientThread||[],last=th[th.length-1]||{};
     return h('div',{class:'cq'},h('div',null,h('strong',{text:sName(e.subjectId)+' · '+dIn(e.start)+' · '+mins(e.minutes)}),h('br'),h('small',{text:pName(e.personId)+(taskTitle(e)?' · '+taskTitle(e):'')})),h('b',{class:'badge-s r'},e.clientOk.withdrew?'Approval withdrawn':'Queried'),
       h('p',{class:'cqq',text:'"'+(last.text||e.clientOk.note||'')+'" · '+(e.clientOk.name||'Client')}),
@@ -2032,7 +2604,7 @@ function queriesBlock(){if(!S.owner)return null;var qs=(S.time||[]).filter(funct
 /* Settings: the owner's time assurance choices */
 function assurePanel(){var c=cfgA(),sel=function(id,val,opts){return h('select',{class:'in',id:id,value:String(val)},opts.map(function(o){return h('option',{value:String(o[0]),text:o[1]});}));};
   return [h('div',{class:'sec',id:'assure'},h('h3',null,'Time assurance')),h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
-    h('p',{class:'note',style:'margin:0'},'Kind by design: no screenshots, no keystroke logging, no webcam. These rules only read the time, updates and files people already add, and everyone sees the flags and checks about their own time.'),
+    h('p',{class:'note',style:'margin:0'},'Kind by design: no keystroke logging, no webcam, and no screenshots unless you turn on Proof mode for a client, which then needs each person\'s own consent. These rules only read the time, updates and files people already add, and everyone sees the flags and checks about their own time.'),
     h('div',{class:'frow'},fld('A note is needed on time longer than',sel('as-note',c.noteMin,[[0,'Never ask'],[15,'15 minutes'],[30,'30 minutes'],[45,'45 minutes'],[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours']])),
       fld('Flag entries longer than',sel('as-long',c.longH,[[2,'2 hours'],[3,'3 hours'],[4,'4 hours'],[5,'5 hours'],[6,'6 hours'],[8,'8 hours']]))),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'as-proof',checked:c.proofDone}),'Ask for an update, file or link when work is marked done or sent for sign off'),
@@ -2041,13 +2613,14 @@ function assurePanel(){var c=cfgA(),sel=function(id,val,opts){return h('select',
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'as-chk',checked:c.checkOn}),'Still working check while a timer or client clock runs'),
     h('div',{class:'frow'},fld('Ask after this long without activity',sel('as-min',c.checkMin,[[15,'15 minutes'],[30,'30 minutes'],[45,'45 minutes'],[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours']])),
       fld('Estimate report: highlight at',sel('as-x',c.outlierX,XOPTS.map(function(o){return [o[0],o[1]+' the median'];})))),
+    h('div',{class:'frow'},fld('Keep Proof mode screenshots for',sel('as-pdays',S.settings.proofDays||30,[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days']]))),
     h('p',{class:'note',style:'margin:0',text:'Nobody answers within 10 minutes: the time stops at the last activity plus 10 minutes, and the gap is kept as unconfirmed time the person can claim with a note.'}),
-    h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){send('saveSettings',{settings:{assure:{noteMin:+$('#as-note').value,longH:+$('#as-long').value,proofDone:$('#as-proof').checked,manualPct:+$('#as-man').value,roundDays:+$('#as-round').value,checkOn:$('#as-chk').checked,checkMin:+$('#as-min').value,outlierX:+$('#as-x').value}}});}},'Save')))];}
+    h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){send('saveSettings',{settings:{assure:{noteMin:+$('#as-note').value,longH:+$('#as-long').value,proofDone:$('#as-proof').checked,manualPct:+$('#as-man').value,roundDays:+$('#as-round').value,checkOn:$('#as-chk').checked,checkMin:+$('#as-min').value,outlierX:+$('#as-x').value},proofDays:+$('#as-pdays').value}});}},'Save')))];}
 /* each person: the check setting and their own history of checks */
 var CHKW={yes:'Yes, kept going',pause:'Paused',stopped:'Stopped',active:'Answered by working',none:'No answer, time paused',ended:'Timer stopped first'};
 function myChecksBlock(){var c=cfgA(),list=(S.myChecks||[]).slice(0,6);
   return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:8px'},h('strong',null,'Still working check'),
-    h('p',{class:'note',style:'margin:0',text:c.checkOn?'On. While your timer or client clock runs, '+BRAND+' asks after '+c.checkMin+' minutes with no activity. With no answer in 10 minutes, the time stops and the gap is kept for you to claim with a note. No screenshots, no keystrokes.':'Off for this workspace.'}),
+    h('p',{class:'note',style:'margin:0',text:c.checkOn?'On. While your timer or client clock runs, '+BRAND+' asks after '+c.checkMin+' minutes with no activity. With no answer in 10 minutes, the time stops and the gap is kept for you to claim with a note. It never takes screenshots or logs keystrokes.':'Off for this workspace.'}),
     list.length?h('div',{class:'chkl'},list.map(function(k){return h('div',null,h('span',{text:stamp(k.askedAt)+' · '+k.what}),h('b',{text:(CHKW[k.answer]||'Waiting for you')+(k.late?', answer arrived late':'')}));})):h('small',{class:'note'},'No checks in the last 30 days.'));}
 /* exports: a ZIP made right here, with a tiny store only writer */
 var CRCT=null;
@@ -2055,7 +2628,7 @@ function crc32(b){if(!CRCT){CRCT=new Uint32Array(256);for(var n=0;n<256;n++){var
   var x=0xFFFFFFFF;for(var i=0;i<b.length;i++)x=CRCT[(x^b[i])&255]^(x>>>8);return (x^0xFFFFFFFF)>>>0;}
 function makeZip(files){var enc=new TextEncoder(),parts=[],central=[],off=0,d=new Date(),names=Object.keys(files);
   var dt=((d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))&0xFFFF,dd=(((Math.max(1980,d.getFullYear())-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xFFFF;
-  names.forEach(function(name){var data=enc.encode(files[name]),nm=enc.encode(name),crc=crc32(data),L=new DataView(new ArrayBuffer(30)),C=new DataView(new ArrayBuffer(46));
+  names.forEach(function(name){var data=typeof files[name]==='string'?enc.encode(files[name]):files[name],nm=enc.encode(name),crc=crc32(data),L=new DataView(new ArrayBuffer(30)),C=new DataView(new ArrayBuffer(46));
     [[0,0x04034b50,4],[4,20,2],[6,0x0800,2],[8,0,2],[10,dt,2],[12,dd,2],[14,crc,4],[18,data.length,4],[22,data.length,4],[26,nm.length,2],[28,0,2]].forEach(function(f){if(f[2]===4)L.setUint32(f[0],f[1],true);else L.setUint16(f[0],f[1],true);});
     [[0,0x02014b50,4],[4,20,2],[6,20,2],[8,0x0800,2],[10,0,2],[12,dt,2],[14,dd,2],[16,crc,4],[20,data.length,4],[24,data.length,4],[28,nm.length,2],[30,0,2],[32,0,2],[34,0,2],[36,0,2],[38,0,4],[42,off,4]].forEach(function(f){if(f[2]===4)C.setUint32(f[0],f[1],true);else C.setUint16(f[0],f[1],true);});
     parts.push(new Uint8Array(L.buffer),nm,data);central.push(new Uint8Array(C.buffer),nm);off+=30+nm.length+data.length;});
@@ -2065,8 +2638,11 @@ function makeZip(files){var enc=new TextEncoder(),parts=[],central=[],off=0,d=ne
 /* the temporary link to the file is let go once the browser has started the download */
 function downloadBlob(blob,name){var u=URL.createObjectURL(blob),a=h('a',{href:u,download:name});document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){try{URL.revokeObjectURL(u);}catch(e){}},30000);toast('Downloaded');}
-function exportZip(action,label){toast('Preparing your export');server(action,{}).then(function(res){var d=res.exportData;if(!d||!d.files)throw new Error('nothing came back');
-  downloadBlob(makeZip(d.files),BRAND+' '+label+' '+today().replace(/-/g,'')+'.zip');}).catch(function(e){if(!lost(e))toast('Could not export: '+e.message+'.');});}
+function exportZip(action,label,payload){toast('Preparing your export');server(action,payload||{}).then(function(res){var d=res.exportData;if(!d||!d.files)throw new Error('nothing came back');
+  // with "Include proof screenshots": each picture is fetched from its short lived link into the proof_screenshots folder
+  var shots=d.shots||[],files=Object.assign({},d.files),i=0,miss=0;if(shots.length)toast('Adding '+shots.length+' screenshots');
+  var next=function(){if(i>=shots.length)return Promise.resolve();var x=shots[i++];return fetch(x.url).then(function(r){if(!r.ok)throw new Error('');return r.arrayBuffer();}).then(function(b){files[x.name]=new Uint8Array(b);},function(){miss++;}).then(next);};
+  return next().then(function(){downloadBlob(makeZip(files),BRAND+' '+label+' '+today().replace(/-/g,'')+'.zip');if(miss)setTimeout(function(){toast(miss+(miss===1?' screenshot':' screenshots')+' could not be added. Try again later.');},1500);});}).catch(function(e){if(!lost(e))toast('Could not export: '+e.message+'.');});}
 /* the archive: finished work older than 90 days, loaded from the server on demand */
 function viewArchive(){var A=V.arch=V.arch||{q:'',sid:'',from:'',to:'',res:null,busy:false};
   var go=function(){A.busy=true;render();server('archiveSearch',{q:A.q,subjectId:A.sid,from:A.from,to:A.to}).then(function(r){A.busy=false;A.res=r.archive||{items:[],total:0};render();}).catch(function(e){A.busy=false;if(!lost(e)){toast(e.message+'.');render();}});};
@@ -2271,12 +2847,12 @@ function viewStats(){var td=today(),o=S.tasks.filter(open);
   var load=S.people.map(function(p){return {p:p,n:o.filter(function(t){return t.assignee===p.id;}).length};});load.push({p:{name:'Unassigned'},n:o.filter(function(t){return !person(t.assignee);}).length});
   var lm=Math.max.apply(null,load.map(function(x){return x.n;}).concat([1]));
   var stale=o.filter(function(t){return Date.now()-(t.updatedAt||t.createdAt)>5*864e5;}).sort(function(a,b){return (a.updatedAt||0)-(b.updatedAt||0);}).slice(0,5);
-  var tabs=[['work','Work'],['hours','Time'],['me','My patterns'],['exp','Expenses'],['time','Time clock'],['leave','Leave and holidays']].concat(S.owner?[['pay','Payroll'],['inv','Invoices']]:[]);if(!V.ins||!tabs.some(function(x){return x[0]===V.ins;}))V.ins='work';
+  var tabs=[['work','Work'],['hours','Time'],['me','My patterns'],['exp','Expenses'],['time','Time clock'],['sched','Schedule'],['att','Attendance'],['leave','Leave and holidays']].concat(CAN('rates')?[['pay','Payroll']]:[],CAN('billing')?[['inv','Invoices']]:[]);if(!V.ins||!tabs.some(function(x){return x[0]===V.ins;}))V.ins='work';
   var tabRow=h('div',{class:'itabs',role:'tablist'},tabs.map(function(x){return h('button',{type:'button',role:'tab','aria-pressed':String(V.ins===x[0]),onclick:function(){V.ins=x[0];render();}},x[1]);}));
   if(V.ins==='me')return viewPatterns(tabRow);
   if(V.ins==='hours')return [topbar('Insights','How the work, hours and money are moving'),tabRow,timeSection()];
   if(V.ins==='exp')return [topbar('Insights','How the work, hours and money are moving'),tabRow,expenseSection()];
-  if(V.ins!=='work')return [topbar('Insights','How the work, hours and money are moving'),tabRow,V.ins==='time'?clockSection():V.ins==='leave'?leaveSection():V.ins==='pay'?paySection():invoiceSection()];
+  if(V.ins!=='work')return [topbar('Insights','How the work, hours and money are moving'),tabRow,V.ins==='time'?clockSection():V.ins==='sched'?schedSection():V.ins==='att'?attSection():V.ins==='leave'?leaveSection():V.ins==='pay'?paySection():invoiceSection()];
   return [topbar('Insights','How the work, hours and money are moving'),tabRow,
     S.owner&&S.features.ai?h('div',{class:'runbar',style:'border-left-color:var(--plum-ink)'},h('div',null,h('small',null,'AI writer'),h('strong',null,'Get a short summary of today for your boss or client')),h('button',{class:'btn sm',type:'button',onclick:aiStandup},'Write summary')):null,
     h('div',{class:'chips',style:'padding-top:0;margin-bottom:6px'},IRANGES.map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(IR.k===x[0]),onclick:function(){IR.k=x[0];render();}},x[1]);})),
@@ -2410,20 +2986,21 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
   var clk=zoneList(),pins=clk.filter(function(z){return offMin(z.tz)!==offMin(myTz||st.deadlineTz);}).slice(0,2);
   return [topbar('Settings',p?'Signed in as '+p.name+(sess&&sess.user?' ('+sess.user.email+')':''):''),
     h('div',{class:'two'},
-      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'People'),S.owner?h('button',{type:'button',onclick:function(){openPerson();}},'New person'):null),
-        h('div',{class:'panel list'},S.people.map(function(x){return h(S.owner?'button':'div',{class:'li',type:S.owner?'button':null,onclick:S.owner?function(){openPerson(x.id);}:null},h('span',{class:'who',text:initials(x.name)}),
+      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'People'),MGR()?h('button',{type:'button',onclick:function(){openPerson();}},'New person'):null),
+        h('div',{class:'panel list'},S.people.map(function(x){var op=mgrOf(x.id)||x.id===me;return h(op?'button':'div',{class:'li',type:op?'button':null,onclick:op?function(){openPerson(x.id);}:null},h('span',{class:'who',text:initials(x.name)}),
           h('div',null,h('strong',{text:x.name}),h('small',{text:[x.role,x.email,x.id===me?'':x.joined?'Joined':x.inviteExpired?'Invite expired':'Not joined yet',x.id!==me&&localText(x)?localText(x)+' their time':'',x.workStart&&x.workEnd?'Hours '+x.workStart+' to '+x.workEnd:'',x.canPrivate&&x.id!==me?'Can keep private lists':'',x.hidden?(x.ownerSees?'Hidden, visible to you':'Hidden'):''].filter(Boolean).join(' · ')||'No details yet'})),x.id===me?h('span',{class:'tagr'},'This is you'):null);})),
-        S.owner?h('p',{class:'note',text:'Add someone, then open them to copy their invite link and send it, for example on WhatsApp. They join as soon as they create an account from the link.'+(S.features.mail?' If you add their email, they also get the invitation by email.':'')}):null),
+        MGR()?h('p',{class:'note',text:'Add someone, then open them to copy their invite link and send it, for example on WhatsApp. They join as soon as they create an account from the link.'+(S.features.mail?' If you add their email, they also get the invitation by email.':'')}):null),
       h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Clients'),newClientLabel()||newListLabel()?h('div',{class:'acts',style:'margin:0;flex-wrap:wrap;justify-content:flex-end'},newClientLabel()?h('button',{type:'button',onclick:function(){openSubject();}},newClientLabel()):null,newListLabel()?h('button',{type:'button',onclick:function(){openList();}},newListLabel()):null):null),
-        S.owner?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:6px;margin-bottom:10px'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-madd',checked:!!S.settings.membersAddClients,onchange:function(e){send('saveSettings',{settings:{membersAddClients:e.target.checked}});}}),'Members can add clients'),
+        CAN('settings')?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:6px;margin-bottom:10px'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-madd',checked:!!S.settings.membersAddClients,onchange:function(e){send('saveSettings',{settings:{membersAddClients:e.target.checked}});}}),'Members can add clients'),
           h('p',{class:'note',style:'margin:0',text:S.settings.membersAddClients?'Members can add Client and Internal clients. Rates, billing, client page links, retainers and client emails stay yours.':'Only you add clients. Members pick from your clients.'}),
           h('p',{class:'note',id:'x-madd-lists',style:'margin:0',text:'Assistants can still keep their own private lists if you allow it for that person under People. A private list is never a client: you never see it, and its time is never billed.'})):null,
         h('div',{class:'panel list'},S.subjects.map(function(s){return h('button',{class:'li',type:'button',onclick:function(){openSubject(s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:14px;height:14px'}),
           h('div',null,h('strong',{text:s.name}),h('small',{text:kindOf(s)+', '+S.tasks.filter(function(t){return t.subjectId===s.id&&open(t);}).length+' open'})),h('span',{class:'tagr',text:s.archived?'Archived':''}));})))),
+    teamsPanel(),
     h('div',{class:'sec'},h('h3',null,'Templates'),h('button',{type:'button',onclick:function(){openTemplate();}},'New template')),
     h('div',{class:'panel list'},S.templates.length?S.templates.map(function(x){var n=tplItems(x,'').length;return h('button',{class:'li',type:'button',onclick:function(){openTemplate(x.id);}},h('div',null,h('strong',{text:x.name}),h('small',{text:n+(n===1?' step':' steps')})));})
       :h('p',{class:'note',style:'margin:0'},'A template is a saved list of steps you can turn into tasks in one go.')),
-    S.owner?[h('div',{class:'sec'},h('h3',null,'Workspace')),
+    CAN('settings')?[h('div',{class:'sec'},h('h3',null,'Workspace')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
       fld('Workspace name',h('input',{class:'in',id:'ws-name',maxlength:80,value:S.workspace.name})),
       h('fieldset',{class:'fs'},h('legend',null,'Header clocks'),
@@ -2443,9 +3020,10 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
           var fixed=$('#ck-fixed').checked,c=fixed&&$('#ck-0')?[0,1].map(function(i){return $('#ck-'+i).value;}).filter(function(v,i,a){return v&&a.indexOf(v)===i;}).map(function(tz){var old=clk.find(function(z){return z.tz===tz;});return (old?old.city:tzLabel(tz))+'|'+tz;}).join(', '):null;
           if(fixed&&!c){toast('Choose a place to pin, or pick Just me plus the team pill.');return;}
           var ss={workspaceName:n,clockMode:fixed?'fixed':'auto',clockLoc:$('#ck-loc').checked,showTeamTimes:$('#x-ttimes').checked,quietHours:$('#x-quiet').checked,tipsDefault:$('#x-tips').checked};if(c)ss.clocks=c;send('saveSettings',{settings:ss});}},'Save'),
-        h('button',{class:'btn ghost sm',type:'button',onclick:function(){exportZip('exportData','everything');}},'Export everything'),h('button',{class:'btn ghost sm',type:'button',onclick:openHistory},'History of changes'),
-        st.setupHidden?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveSettings',{settings:{setupHidden:false}});V.tab='home';}},'Show the getting started list'):null)),
-    sitesPanel(),assurePanel(),billingPanel(),referPanel(),payPanel(),securityPanel(),videoPanel(),
+        h('button',{class:'btn ghost sm',type:'button',onclick:function(){exportZip('exportData','everything',V.exShots?{withShots:true}:{});}},'Export everything'),h('button',{class:'btn ghost sm',type:'button',onclick:openHistory},'History of changes'),
+        st.setupHidden?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveSettings',{settings:{setupHidden:false}});V.tab='home';}},'Show the getting started list'):null),
+      st.proofUsed?h('label',{class:'switch'},h('input',{id:'x-exshots',type:'checkbox',checked:!!V.exShots,onchange:function(e){V.exShots=e.target.checked;}}),'Include proof screenshots in Export everything, in a proof_screenshots folder. Without this, the export has their details only'):null),
+    sitesPanel(),assurePanel(),attendancePanel(),leavePanel(),S.owner?[billingPanel(),referPanel(),payPanel(),securityPanel()]:null,videoPanel(),
     S.admin?[h('div',{class:'sec'},h('h3',null,'Running '+BRAND)),h('div',{class:'panel',style:'display:flex;gap:12px;align-items:center;flex-wrap:wrap'},h('p',{style:'margin:0;flex:1;min-width:200px'},'Every customer workspace, sign ups, trials, paying plans and monthly income. Only you see this.'),h('button',{class:'btn sm',type:'button',onclick:function(){V.tab='admin';V.adm=null;render();window.scrollTo(0,0);}},'Open business dashboard'))]:null,
     h('div',{class:'sec',id:'hol-set'},h('h3',null,'WhatsApp, AI, holidays and invoices')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
@@ -2453,18 +3031,21 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
       h('label',{class:'switch',hidden:!S.features.wa},h('input',{id:'x-dwa',type:'checkbox',checked:!!st.digestWa}),'Send me a short daily summary on WhatsApp too'),
       h('label',{class:'switch',hidden:!S.features.ai||!S.features.mail},h('input',{id:'x-ai',type:'checkbox',checked:!!st.aiDigest}),'Start the daily summary email with an AI written summary'),
       !S.features.wa||!S.features.ai?h('p',{class:'note',style:'margin:0',text:[!S.features.wa?'WhatsApp':'',!S.features.ai?'AI':''].filter(Boolean).join(' and ')+' can be switched on later, once you add the keys in Supabase. See the setup guide.'}):null,
-      h('div',{class:'lbl'},'Public holidays to show'),
-      h('div',{class:'acts',style:'margin:0'},[['NG','Nigeria'],['US','United States']].map(function(r){var on=String(st.holidayRegions===undefined?'NG,US':st.holidayRegions).split(',').indexOf(r[0])>=0;
-        return h('label',{class:'switch'},h('input',{type:'checkbox',class:'x-reg',value:r[0],checked:on}),r[1]);})),
+      h('div',{class:'lbl'},'Public holidays'),
+      h('p',{class:'note',style:'margin:0'},'Each person\'s holidays follow their own country, set under People (or worked out from their time zone). Leave never counts them, and attendance never marks them missed. The list on Leave shows the team\'s countries; tick others to show them too.'),
+      h('div',{class:'acts hcs',style:'margin:0'},Object.keys(HOLIDAY_COUNTRIES).map(function(c){var on=String(st.holidayRegions===undefined?'NG,US':st.holidayRegions).split(',').indexOf(c)>=0;
+        return h('label',{class:'switch'},h('input',{type:'checkbox',class:'x-reg',value:c,checked:on}),HOLIDAY_COUNTRIES[c]);})),
       fld('Your own holidays, one per line as date and name',h('textarea',{class:'in',id:'x-ch',rows:2,placeholder:'2026-12-31|Office closed',value:String(st.customHolidays||'').split(', ').join('\n')})),
-      h('div',{class:'frow'},fld('Invoice numbers start with',h('input',{class:'in',id:'x-pre',maxlength:8,value:st.invoicePrefix||'INV'})),
+      CAN('billing')?[h('div',{class:'frow'},fld('Invoice numbers start with',h('input',{class:'in',id:'x-pre',maxlength:8,value:st.invoicePrefix||'INV'})),
         fld('Main currency',h('select',{class:'in',id:'x-cur',value:st.currency||'USD'},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});})))),
       h('label',{class:'switch'},h('input',{id:'x-appr',type:'checkbox',checked:!!st.billApprovedOnly}),'Only approved timesheets can be billed'),
       fld('Your business name and address, for invoices',h('textarea',{class:'in',id:'x-from',rows:2,maxlength:400,value:st.invoiceFrom||''})),
-      fld('How clients pay you, shown on invoices',h('textarea',{class:'in',id:'x-note',rows:2,maxlength:600,placeholder:'Bank, account name and number, or a payment link',value:st.invoiceNote||''})),
+      fld('How clients pay you, shown on invoices',h('textarea',{class:'in',id:'x-note',rows:2,maxlength:600,placeholder:'Bank, account name and number, or a payment link',value:st.invoiceNote||''}))]:null,
       h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){var regs=[].map.call(document.querySelectorAll('.x-reg'),function(c){return c.checked?c.value:'';}).filter(Boolean).join(',');
-        send('saveSettings',{settings:{waOn:$('#x-wa').checked,digestWa:$('#x-dwa').checked,aiDigest:$('#x-ai').checked,holidayRegions:regs,customHolidays:$('#x-ch').value,invoicePrefix:$('#x-pre').value,currency:$('#x-cur').value,invoiceFrom:$('#x-from').value,invoiceNote:$('#x-note').value,billApprovedOnly:$('#x-appr').checked}});}},'Save'))),
-    st.waOn?waBlock():null,waOwnPanel(),
+        var ss={waOn:$('#x-wa').checked,digestWa:$('#x-dwa').checked,aiDigest:$('#x-ai').checked,holidayRegions:regs,customHolidays:$('#x-ch').value};
+        if(CAN('billing'))Object.assign(ss,{invoicePrefix:$('#x-pre').value,currency:$('#x-cur').value,invoiceFrom:$('#x-from').value,invoiceNote:$('#x-note').value,billApprovedOnly:$('#x-appr').checked});
+        send('saveSettings',{settings:ss});}},'Save'))),
+    st.waOn?waBlock():null,S.owner?waOwnPanel():null,
     h('div',{class:'sec'},h('h3',null,'Emails and deadlines')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
       S.features.mail?null:h('p',{class:'ok-note',style:'margin:0;background:var(--blush);color:var(--ink)'},'Email is not set up yet, so reminders and the daily summary email are on hold. Everything else works. Add a domain and Resend when you are ready; see the setup guide.'),
@@ -2475,7 +3056,7 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
       h('div',{class:'frow'},h('label',{class:'f'},'Send at, deadline time',h('select',{class:'in',id:'dg-hour',value:String(st.digestHour)},hours.map(function(x){return h('option',{value:String(x),text:pad(x)+':00'});}))),
         h('label',{class:'f'},'Send to, separate with commas',h('input',{class:'in',id:'dg-to',type:'text',placeholder:'name@example.com',value:st.digestEmails}))),
       h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('saveSettings',{settings:{remindOn:$('#rm-on').checked,deadlineTz:$('#dl-tz').value,digestOn:$('#dg-on').checked,digestHour:Number($('#dg-hour').value),digestEmails:$('#dg-to').value.trim()}});}},'Save'),
-        h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('sendDigestNow',{});}},'Send summary now')))]:null,
+        S.owner?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('sendDigestNow',{});}},'Send summary now'):null))]:null,
     h('div',{class:'sec'},h('h3',null,'Your workspaces')),wsSwitcher(),S.owner?dangerPanel():null,
     h('div',{class:'sec'},h('h3',null,'Alerts, calendar and sign in')),h('div',{class:'two'},alertsBlock(),calendarBlock()),h('div',{style:'margin-top:14px'},homeBlock('set-tips')),
     twofaBlock()||emailBlock()?h('div',{class:'two',style:'margin-top:14px'},twofaBlock(),emailBlock()):null,
@@ -2490,7 +3071,7 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
 var VIEWS={home:viewHome,tasks:viewTasks,cal:viewCal,stats:viewStats,more:viewMore,guides:viewGuides,admin:viewAdmin,meet:viewMeet,archive:viewArchive};
 function keep(fn){var a=document.activeElement,id=a&&a.id,ss,se;try{ss=a.selectionStart;se=a.selectionEnd;}catch(e){}
   fn();if(id&&document.activeElement.id!==id){var n=document.getElementById(id);if(n){n.focus();try{if(ss!=null)n.setSelectionRange(ss,se);}catch(e){}}}}
-function render(){if(!S||FULL)return;if(V.tab==='more'&&!S.owner)V.tab='home';if(V.tab==='admin'&&!S.admin)V.tab='home';keep(function(){
+function render(){if(!S||FULL)return;if(V.tab==='more'&&!MGR())V.tab='home';if(V.tab==='admin'&&!S.admin)V.tab='home';keep(function(){
   var app=$('#app'),parts=[];(function f(a){a.forEach(function(x){if(Array.isArray(x))f(x);else if(x!=null&&x!==false)parts.push(x);});})(VIEWS[V.tab]());
   var sl=[].map.call(document.querySelectorAll('#app .chips'),function(c){return c.scrollLeft;});
   if(S.workspace&&S.workspace.active===false)parts.splice(1,0,h('div',{class:'banner ro',role:'status'},S.owner?['Your free trial or plan has ended, so this workspace is read only.',h('button',{class:'btn sm',type:'button',onclick:function(){V.tab='more';render();setTimeout(function(){var b=$('#billing');if(b)b.scrollIntoView({behavior:'smooth'});},50);}},'Choose a plan')]:'This workspace is read only until its owner renews the plan. You can still export what you can see from your account.'));
@@ -2498,6 +3079,7 @@ function render(){if(!S||FULL)return;if(V.tab==='more'&&!S.owner)V.tab='home';if
   if(us&&us.seats.over&&V.tab!=='more')parts.splice(1,0,h('div',{class:'banner ro',role:'status'},'You have '+us.seats.used+' people on a plan for '+us.seats.limit+'. Everyone keeps working, but nobody new can be added.',
     h('button',{class:'btn sm',type:'button',onclick:function(){V.tab='more';render();setTimeout(function(){var b=$('#billing');if(b)b.scrollIntoView({behavior:'smooth'});},50);}},'See the plan')));
   var stb=stillBanner();if(stb)parts.splice(1,0,stb);
+  var pfb=proofBanner();if(pfb)parts.splice(1,0,pfb);
   if(offline)parts.splice(1,0,h('div',{class:'banner off',role:'status'},ill('offline','off-ill'),Q.length?'You are offline. '+Q.length+(Q.length===1?' change is':' changes are')+' saved on this device and will be sent when you reconnect.':'You are offline. Showing the last saved view. New changes will be sent when you reconnect.'));
   app.replaceChildren.apply(app,parts.filter(Boolean));
   [].forEach.call(document.querySelectorAll('#app .chips'),function(c,i){if(sl[i])c.scrollLeft=sl[i];});
@@ -2506,7 +3088,7 @@ function render(){if(!S||FULL)return;if(V.tab==='more'&&!S.owner)V.tab='home';if
   var items=[h('div',{class:'brand'},h('span',{class:'logo',html:LOGO}),h('span',{class:'bn'},h('span',{text:BRAND}),h('br'),h('em',{text:S.workspace&&S.workspace.name||''}))),tab('home','Home'),tab('tasks','Tasks'),
     h('button',{class:'fab',type:'button','aria-label':'Add task',html:I.plus,onclick:function(){openTask(null,V.tab==='cal'?{due:V.cal}:{});}},h('span',{class:'lb'},'New task')),
     tab('cal','Calendar'),tab('stats','Insights')];
-  if(S.owner)items.push(tab('more','Settings','only-d'));
+  if(MGR())items.push(tab('more','Settings','only-d'));
   nav.replaceChildren.apply(nav,items);renderFocus();tick();});}
 
 /* ---------- sheets (modals) ---------- */
@@ -2588,15 +3170,16 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
     out.push(h('div',{class:'panel'},h('strong',null,'Time'),
       h('div',{class:'tm'},h('div',null,h('b',{class:'tmd',text:mineRun?'':dur(tot),'data-run':mineRun?String(run.e.start):null,'data-base':mineRun?String(spent(t)-(Date.now()-run.e.start)):null}),h('small',{text:mineRun?'Timer running':'Tracked on this task'})),
         mineRun?h('button',{class:'btn danger sm',type:'button',onclick:function(){stopTimer(t);}},'Stop timer'):h('button',{class:'btn plum sm',type:'button',onclick:function(){startTimer(t);}},'Start timer')),
+      proofOf(t.subjectId)?h('p',{class:'note pfn',style:'margin:8px 0 0',text:'Proof mode is on for '+sName(t.subjectId)+'. '+(!pfCan()?'Proof is collected only on a computer'+(proofOf(t.subjectId).phone?'; the owner allows time from a phone.':', so time from this phone shows as no proof (phone).'):proofOf(t.subjectId).state==='agreed'?'Starting the timer asks you to share your screen.':'Starting the timer asks you to agree first.')}):null,
       t.budgetMin>0?budgetBar(t):canBudget(t)?h('p',{class:'note',style:'margin:8px 0 0'},'No time budget. Set one above to get an alert at 80% and 100%.'):null,
       t.budgetMin>0&&usedOf(t)>=t.budgetMin&&open(t)?h('p',{class:'note',style:'margin:8px 0 0',text:'Over budget. Anyone adding more time gives a short reason, and '+(canBudget(t)?'you see it here':(t.createdBy&&person(t.createdBy)?first(pName(t.createdBy)):'the owner')+' sees it')+'.'}):null,
       (t.overReasons||[]).length?h('div',{class:'orl'},h('small',{class:'note'},'Reasons for going over'),t.overReasons.map(function(o){return h('div',null,h('span',{text:o.reason||'No reason yet'}),h('small',{text:o.who+' · '+mins(o.minutes)+' · '+stamp(o.at)}));})):null,
-      S.owner||t.assignee===me||t.createdBy===me?h('div',{class:'acts',style:'margin-top:10px'},[15,30,60].map(function(m){return h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('addTime',{id:t.id,minutes:m},true);toast('Added '+(m===60?'1 hour':m+' minutes'));}},'+ '+(m===60?'1 hr':m+' min'));})):null,
+      MGR()||t.assignee===me||t.createdBy===me?h('div',{class:'acts',style:'margin-top:10px'},[15,30,60].map(function(m){return h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('addTime',{id:t.id,minutes:m},true);toast('Added '+(m===60?'1 hour':m+' minutes'));}},'+ '+(m===60?'1 hr':m+' min'));})):null,
       Object.keys(who).length>1?h('p',{class:'note',style:'margin:8px 0 0',text:Object.keys(who).map(function(id){return pName(id)+' '+dur(spent(t,id));}).join(' · ')}):null));
     out.push(h('div',{class:'panel'},h('strong',null,'Files and links'),
       t.files.length?t.files.map(function(f){return h('div',{class:'cl'},f.uploading?h('span',{text:f.name+' (uploading)'}):h('a',{href:f.url,target:'_blank',rel:'noopener noreferrer',class:'fl',text:f.name}),
         h('small',{class:'note',text:f.link?'Link':f.size?(f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB'):''}),
-        f.uploading||!(S.owner||t.createdBy===me||f.by===me)?null:h('button',{class:'rm',type:'button','aria-label':'Remove '+f.name,html:I.x,onclick:function(){send('removeFile',{id:t.id,key:f.id||f.url},true);}}));}):h('p',{class:'note',style:'margin:4px 0 0'},'Nothing attached yet.'),
+        f.uploading||!(MGR()||t.createdBy===me||f.by===me)?null:h('button',{class:'rm',type:'button','aria-label':'Remove '+f.name,html:I.x,onclick:function(){send('removeFile',{id:t.id,key:f.id||f.url},true);}}));}):h('p',{class:'note',style:'margin:4px 0 0'},'Nothing attached yet.'),
       h('div',{class:'addrow'},h('input',{class:'in',id:'t-link',type:'url',maxlength:1000,placeholder:'Paste a link','aria-label':'Link to add',value:M.link,oninput:bind(M,'link')}),
         h('button',{class:'btn plum sm',type:'button',onclick:function(){var v=M.link.trim();if(!/^https?:\/\/\S+$/.test(v)){toast('Paste a full link that starts with https://');return;}M.link='';send('addLink',{id:t.id,url:v,name:v.replace(/^https?:\/\/(www\.)?/,'').slice(0,60)},true);}},'Add link')),
       h('label',{class:'btn ghost sm filebtn'},'Attach a file',h('input',{type:'file',id:'t-file',hidden:true,onchange:function(e){var f=e.target.files[0];if(f)attachFile(t.id,f);e.target.value='';}})),
@@ -2609,7 +3192,7 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
       h('div',{id:'t-offn','aria-live':'polite'},mentionNotes(M.note)),
       ups.length?ups.map(function(u){return h('div',{class:'up'+(u.question?' q':(u.mentions||[]).indexOf(me)>=0?' me':'')},u.question?h('span',{class:'qt',text:(u.kind==='why'?'Asked why, to ':'Question for ')+(u.to===me?'you':pName(u.to))+(u.answeredAt?' · answered':' · waiting for an answer')}):null,h('p',{text:u.text}),h('small',{text:pName(u.by)+' · '+stamp(u.at)+((u.mentions||[]).indexOf(me)>=0?' · mentioned you':'')}));}):h('p',{class:'note',style:'margin:0'},'No updates yet.')));
     out.push(h('p',{class:'note',style:'margin:0',text:'Added by '+pName(t.createdBy)+' on '+stamp(t.createdAt)+(t.assignee&&person(t.assignee)&&t.createdBy!==t.assignee?(t.seenAt?'. Seen by '+pName(t.assignee)+' on '+stamp(t.seenAt):'. Not yet seen by '+pName(t.assignee)):'')+(t.approvedBy?'. Signed off by '+pName(t.approvedBy)+' on '+stamp(t.approvedAt):'')+'.'}));
-    if(S.owner||t.createdBy===me)out.push(h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=t.id;closeSheet();send('deleteTask',{id:id},true);toast('Task deleted. You can restore it from the bin for 30 days');}},'Confirm delete'),
+    if(MGR()||t.createdBy===me)out.push(h('div',{class:'acts'},M.del?[h('button',{class:'btn danger sm',type:'button',onclick:function(){var id=t.id;closeSheet();send('deleteTask',{id:id},true);toast('Task deleted. You can restore it from the bin for 30 days');}},'Confirm delete'),
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=false;renderSheet();}},'Keep it')]:h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.del=true;renderSheet();}},'Delete task')));}
   return out;}
 /* Getting started: a tiny first step, an estimate, a start by day, and a plan for when and where */
@@ -2663,14 +3246,14 @@ function saveTask(){var d=M.d;
   var task=Object.assign({},d,{title:title,id:M.id||uid()}),isNew=!M.id,old=M.id?S.tasks.find(function(x){return x.id===M.id;}):null,moved=!!old&&old.subjectId!==d.subjectId,all=!!M.moveAll;
   closeSheet();send('saveTask',Object.assign({task:task},moved&&all?{moveTime:'all'}:{}),!moved);if(!moved)toast(isNew?'Task added':'Task saved');}
 /* the owner moving a task to another client: sent and approved time stays with the old client unless they choose to move it */
-function moveTimeAsk(t,d){if(!S.owner||!t||t.subjectId===d.subjectId)return null;
+function moveTimeAsk(t,d){if(!CAN('billing')||!t||t.subjectId===d.subjectId)return null;
   var n=(S.time||[]).filter(function(e){return e.taskId===t.id&&!e.invoiceId&&(e.status==='submitted'||e.status==='approved');}).length;if(!n)return null;
   return h('label',{class:'switch'},h('input',{type:'checkbox',id:'t-moveall',checked:!!M.moveAll,onchange:function(e){M.moveAll=e.target.checked;}}),'Also move '+n+' sent or approved time '+(n===1?'entry':'entries')+' to the new client');}
 
 function openSubject(id){var s=id?subj(id):null;if(isList(s)){openList(id);return;}if(!s&&!canAddClients()){toast('Only the owner can add clients.');return;}
   M={kind:'subject',id:id||null,d:s?Object.assign({},s):{id:uid(),name:'',kind:'Client',color:COLORS[S.subjects.length%COLORS.length],archived:false}};$('#ov').hidden=false;renderSheet();var f=$('#s-name');if(f&&!id)f.focus();}
 function renderSubject(){var d=M.d;
-  if(M.id&&!S.owner&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:kindOf(d)+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
+  if(M.id&&!MGR()&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:kindOf(d)+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
     h('p',{class:'panel',style:'margin:0'},'Only the owner can rename, recolour or archive a shared client. You can still add tasks to it'+(canPriv()?' and keep your own private lists.':'.')),
     h('button',{class:'btn wide',type:'button',onclick:function(){var id=d.id;closeSheet();goTasks('open',id);}},'See its tasks')];
   return [head(M.id?'Client':newClientLabel()||'New client'),
@@ -2699,6 +3282,7 @@ function renderSubject(){var d=M.d;
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();openBill(id,{});}},'Bill hours'),
       S.features.mail?h('button',{class:'btn ghost sm',type:'button',onclick:function(){if(!d.clientEmail){toast('Add the client email first.');return;}send('saveSubject',{subject:Object.assign({},d,{shareToken:undefined})},true);send('sendClientReport',{id:M.id});}},'Send this week\'s report now'):null,
       S.features.ai?h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();aiStandup(id);}},'Write summary with AI'):null):null):null,
+  S.owner?proofPanel(d):null,
   S.owner&&M.id&&!d.privateTo?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Client page'),
     h('p',{class:'note',style:'margin:0'},'A private link where this client sees progress on their work, comments, approves finished tasks and views invoices. No login needed. Private tasks never show.'),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-pts',checked:!!d.portalTimesheet,onchange:function(e){d.portalTimesheet=e.target.checked;}}),'Show a detailed timesheet on the page: date, first name, task and hours. Team only notes stay hidden'),
@@ -2730,14 +3314,16 @@ function renderPerson(){var d=M.d,w=S.workspace||{};
     h('button',{class:'btn wide',type:'button',onclick:function(){closeSheet();setTimeout(function(){var b=$('#billing');if(b)b.scrollIntoView({behavior:'smooth'});},50);}},'See plans')];
   return [head(M.id?'Person':'New person'),
   h('input',{class:'title-in',id:'p-name',maxlength:60,placeholder:'Name','aria-label':'Name',value:d.name,oninput:bind(d,'name')}),
-  h('div',{class:'frow'},fld(d.joined?'Email, used to sign in':'Email, for the invitation',h('input',{class:'in',id:'p-email',type:'email',maxlength:120,value:d.email,disabled:!!d.joined||d.id===me,oninput:bind(d,'email')})),fld('Role, optional',h('input',{class:'in',id:'p-role',maxlength:40,placeholder:'Manager, Assistant',value:d.role,oninput:bind(d,'role')}))),
+  h('div',{class:'frow'},fld(d.joined?'Email, used to sign in':'Email, for the invitation',h('input',{class:'in',id:'p-email',type:'email',maxlength:120,value:d.email,disabled:!!d.joined||d.id===me,oninput:bind(d,'email')})),fld('Job title, optional',h('input',{class:'in',id:'p-role',maxlength:40,placeholder:'Bookkeeper, Assistant',value:d.role,oninput:bind(d,'role')}))),
   h('div',{class:'frow'},fld('Work starts, their time',h('input',{class:'in',id:'p-ws',type:'time',value:d.workStart||'',oninput:bind(d,'workStart')})),fld('Work ends, their time',h('input',{class:'in',id:'p-we',type:'time',value:d.workEnd||'',oninput:bind(d,'workEnd')}))),
-  S.owner?h('div',{class:'frow'},fld('Pay',h('select',{class:'in',id:'p-pt',value:d.payType||'',onchange:function(e){d.payType=e.target.value;renderSheet();}},[['','Not set'],['hourly','By the hour'],['monthly','Monthly salary']].map(function(o){return h('option',{value:o[0],text:o[1]});}))),
+  personExtra(d),
+  CAN('rates')&&(d.id!==me||S.owner)?h('div',{class:'frow'},fld('Pay',h('select',{class:'in',id:'p-pt',value:d.payType||'',onchange:function(e){d.payType=e.target.value;renderSheet();}},[['','Not set'],['hourly','By the hour'],['monthly','Monthly salary']].map(function(o){return h('option',{value:o[0],text:o[1]});}))),
     d.payType?fld(d.payType==='hourly'?'Rate per hour':'Monthly salary',h('input',{class:'in',id:'p-rate',type:'number',min:'0',step:'0.01',value:d.payRate||'',oninput:function(e){d.payRate=Number(e.target.value)||0;}})):null,
     fld('Bill rate per hour, what clients pay',h('input',{class:'in',id:'p-bill',type:'number',min:'0',step:'0.01',placeholder:'Client rate',value:d.billRate||'',oninput:function(e){d.billRate=Number(e.target.value)||0;}})),
     d.payType?fld('Currency',h('select',{class:'in',id:'p-cur',value:d.payCurrency||S.settings.currency||'USD',onchange:bind(d,'payCurrency')},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});}))):null,
-    d.payType==='hourly'?fld('Overtime after, hours a week',h('input',{class:'in',id:'p-ot',type:'number',min:'0',max:'168',value:d.otAfter||40,oninput:function(e){d.otAfter=Number(e.target.value)||40;}})):null,
-    d.payType==='hourly'?fld('Overtime pays',h('select',{class:'in',id:'p-otr',value:String(d.otRate||1.5),onchange:function(e){d.otRate=Number(e.target.value);}},[['1','Normal rate'],['1.5','Time and a half'],['2','Double time']].map(function(o){return h('option',{value:o[0],text:o[1]});}))):null):null,
+    d.payType==='hourly'?fld('Overtime after, hours a day',h('input',{class:'in',id:'p-otd',type:'number',min:'0',max:'24',placeholder:'Workspace, '+(hoursRules().dailyOt||'none'),value:d.otDaily==null?'':d.otDaily,oninput:function(e){d.otDaily=e.target.value===''?'':Number(e.target.value);}})):null,
+    d.payType==='hourly'?fld('Overtime after, hours a week',h('input',{class:'in',id:'p-ot',type:'number',min:'0',max:'168',placeholder:'Workspace, '+(hoursRules().weeklyOt||'none'),value:d.otAfter==null?'':d.otAfter,oninput:function(e){d.otAfter=e.target.value===''?'':Number(e.target.value);}})):null,
+    d.payType==='hourly'?fld('Overtime pays',h('select',{class:'in',id:'p-otr',value:d.otRate==null?'':String(d.otRate),onchange:function(e){d.otRate=e.target.value===''?'':Number(e.target.value);}},[['','Workspace rule, '+hoursRules().otRate+' times']].concat(OTR).map(function(o){return h('option',{value:o[0],text:o[1]});}))):null):null,
   S.owner&&!d.waOn&&S.settings.waOn?fld('WhatsApp number, they turn alerts on themselves',h('input',{class:'in',id:'p-phone',type:'tel',placeholder:'+2348012345678',value:d.phone||'',oninput:bind(d,'phone')})):null,
   d.waOn?h('p',{class:'their',text:'WhatsApp alerts are on for '+(d.phone||'this person')+'.'}):null,
   d.tz?h('p',{class:'their',text:(d.id===me?'Your':d.name.split(' ')[0]+"'s")+' device is set to '+tzCity(d.tz)+' time. It is '+tIn(Date.now(),d.tz)+' there now.'}):h('p',{class:'their'},'Their time zone is picked up automatically the first time they open the app.'),
@@ -2835,7 +3421,7 @@ function homeBlock(id){var p=person(me),own=p&&(p.tips==='on'||p.tips==='off');
     h('p',{class:'note',style:'margin:0',text:'Short ideas for a good working day, a new one every 12 seconds. Lines about your own day still show when tips are off.'+(own?'':' This follows the workspace default for now.')}));}
 function openMe(){M={kind:'me'};$('#ov').hidden=false;renderSheet();}
 function renderMe(){var p=person(me);return [head(p?'Signed in as '+p.name:'Your account'),sess&&sess.user?h('p',{class:'note',style:'margin:0',text:sess.user.email}):null,
-  alertsBlock(),homeBlock(),calendarBlock(),myChecksBlock(),twofaBlock(),emailBlock(),
+  alertsBlock(),homeBlock(),calendarBlock(),myChecksBlock(),proofBlock(),twofaBlock(),emailBlock(),
   waBlock(),h('button',{class:'btn ghost',type:'button',onclick:function(){openLeave();}},'Ask for leave'),
   h('button',{class:'btn ghost',type:'button',onclick:function(){exportZip('exportMine','what I can see');}},'Export what I can see'),
   payerBlock(),
@@ -2853,7 +3439,7 @@ function renderMe(){var p=person(me);return [head(p?'Signed in as '+p.name:'Your
       h('button',{class:'linkb',type:'button',style:'color:var(--danger)',onclick:openDeleteMe},'Delete my account')),
   h('p',{class:'note',style:'margin:0;text-align:center',text:BRAND+' version '+APP_VERSION})];}
 
-function renderSheet(){if(!M)return;document.body.style.overflow='hidden';keep(function(){var k=M.kind,kids=k==='task'?renderTask():k==='subject'?renderSubject():k==='list'?renderList():k==='person'?renderPerson():k==='me'?renderMe():k==='shift'?renderShift():k==='leave'?renderLeave():k==='invoice'?renderInvoice():k==='invview'?renderInvView():k==='ai'?renderAi():k==='handoff'?renderHandoff():k==='pinv'?renderPinv():k==='stuck'?renderStuck():k==='guide'?renderGuide():k==='import'?renderImport():k==='expense'?renderExpense():k==='history'?renderHistory():k==='twofa'?renderTwofa():k==='meet'?renderMeet():k==='entry'?renderEntry():k==='bill'?renderBill():k==='clockfor'?renderClockFor():k==='sendback'?renderSendBack():k==='delws'?renderDelWs():k==='delme'?renderDelMe():k==='help'?renderHelp():k==='bin'?renderBin():k==='sites'?renderSites():k==='proof'?renderProof():k==='timerask'?renderTimerAsk():k==='team'?renderTeamTime():renderTemplate();
+function renderSheet(){if(!M)return;document.body.style.overflow='hidden';keep(function(){var k=M.kind,kids=k==='task'?renderTask():k==='subject'?renderSubject():k==='list'?renderList():k==='person'?renderPerson():k==='me'?renderMe():k==='shift'?renderShift():k==='leave'?renderLeave():k==='bal'?renderBalance():k==='sched'?renderSched():k==='occ'?renderOcc():k==='swap'?renderSwap():k==='reason'?renderReason():k==='teamed'?renderTeamEd():k==='invoice'?renderInvoice():k==='invview'?renderInvView():k==='ai'?renderAi():k==='handoff'?renderHandoff():k==='pinv'?renderPinv():k==='stuck'?renderStuck():k==='guide'?renderGuide():k==='import'?renderImport():k==='expense'?renderExpense():k==='history'?renderHistory():k==='twofa'?renderTwofa():k==='meet'?renderMeet():k==='entry'?renderEntry():k==='bill'?renderBill():k==='clockfor'?renderClockFor():k==='sendback'?renderSendBack():k==='delws'?renderDelWs():k==='delme'?renderDelMe():k==='help'?renderHelp():k==='bin'?renderBin():k==='sites'?renderSites():k==='proof'?renderProof():k==='timerask'?renderTimerAsk():k==='team'?renderTeamTime():k==='pconsent'?renderPConsent():k==='ptray'?renderPTray():k==='pshot'?renderPShot():k==='pday'?renderPDay():renderTemplate();
   if(M){var sh=$('#sh'),flat=[];(function f(a){a.forEach(function(k){if(Array.isArray(k))f(k);else if(k)flat.push(k);});})(kids);sh.replaceChildren.apply(sh,flat);tick();}});}
 
 /* ---------- Client page: opened from a private link, no login ---------- */
@@ -2916,6 +3502,7 @@ function portalApproval(P){var A2=PT.ap=PT.ap||{k:'month',q:'',qt:''},r=A2.k==='
       h('tbody',null,rows.map(function(x){var b=BAD[x.state];return [h('tr',{class:'st-'+x.state},h('td',{'data-l':'Date',text:short(x.date)}),h('td',{'data-l':'Who',text:x.person}),h('td',{class:'wk','data-l':'Work',text:x.task+(x.note?' · '+x.note:'')}),h('td',{'data-l':'Hours',class:'hrs'},String(x.hours),h('span',{class:'u',text:x.hours===1?' hour':' hours'})),
         h('td',{class:'act'},x.state==='approved'?h('b',{class:b[1]},b[0]):[x.state==='queried'?h('b',{class:b[1]},b[0]):null,h('button',{class:'btn sm',type:'button',onclick:function(){portalDo('approveHours',{ids:[x.id]});}},'Approve'),
           x.state==='queried'?null:h('button',{class:'btn ghost sm',type:'button',onclick:function(){A2.q=A2.q===x.id?'':x.id;A2.qt='';renderPortal();var f=$('#pq-text');if(f)f.focus();}},'Query')])),
+        (x.shots||[]).length?h('tr',{class:'thr'},h('td',{colspan:'5'},h('div',{class:'pshr'},h('small',{class:'note',text:'Screenshots the team chose to show you for this line'}),h('div',{class:'pgrid sm'},x.shots.map(function(sh){return h('a',{class:'pimg',href:sh.url,target:'_blank',rel:'noopener noreferrer','aria-label':'Screenshot from '+tIn(sh.at)},h('img',{src:sh.url,alt:'Screenshot from '+tIn(sh.at),loading:'lazy'}));}))))):null,
         x.thread.length?h('tr',{class:'thr'},h('td',{colspan:'5'},x.thread.map(function(m){return h('div',{class:'tm'+(m.from==='team'?' team':'')},h('small',{text:(m.from==='team'?m.name:(m.name||'You'))+' · '+stamp(m.at)}),h('span',{text:m.text}));}))):null,
         A2.q===x.id?h('tr',{class:'thr'},h('td',{colspan:'5'},h('div',{class:'row'},h('input',{class:'in',id:'pq-text',style:'flex:1;min-width:200px',maxlength:500,'aria-label':'What looks wrong',placeholder:'What looks wrong with this line?',value:A2.qt,oninput:function(e){A2.qt=e.target.value;}}),
           h('button',{class:'btn sm',type:'button',onclick:function(){if(!A2.qt.trim()){toast('Say what looks wrong.');return;}portalDo('queryHours',{id:x.id,text:A2.qt.trim()});A2.q='';A2.qt='';}},'Send query')))):null];}))))
@@ -3102,6 +3689,7 @@ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
 var OPEN_MEET='';
 (function start(){var q=new URLSearchParams(location.search);if(/^[A-Za-z0-9]{6,40}$/.test(q.get('meeting')||'')){OPEN_MEET=q.get('meeting');history.replaceState(null,'',location.pathname);}
   if(/^[A-Za-z0-9_-]{1,40}$/.test(q.get('time')||'')){var tq=q.get('time');V.tab='stats';V.ins='hours';if(tq!=='week'&&tq!=='sheets')V.tm={k:'month',from:'',to:'',sid:tq,open:{},all:false,wk:weekStart(today())};history.replaceState(null,'',location.pathname);}
+  if(q.get('sched')||q.get('att')){var aq=q.get('att')||'';V.tab='stats';V.ins=aq&&aq!=='hours'?'att':aq==='hours'?'time':'sched';history.replaceState(null,'',location.pathname);}
   if(/^[A-Za-z2-9]{7}$/.test(q.get('ref')||''))store.set('hv-ref',q.get('ref').toUpperCase());
   if(/^[0-9a-f]{24}$/.test(q.get('client')||'')){portalScreen(q.get('client'),q.get('invoice'),q.get('reference')||'');return;}
   if(q.get('paid')){history.replaceState(null,'',location.pathname);setTimeout(function(){toast('Thank you. Your plan updates as soon as the payment is confirmed.');},800);[5000,15000,40000].forEach(function(ms){setTimeout(refresh,ms);});}
