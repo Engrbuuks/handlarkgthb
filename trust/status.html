@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Service status | Handlark</title>
+<meta name="description" content="Whether Handlark is working now, and incidents from the last 90 days.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="../app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="../app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../" aria-label="Handlark home"><img class="light-only" src="../app/logo.svg" alt="Handlark" width="150" height="40"><img class="dark-only" src="../brand/handlark_logo_dark_mode.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Site"><a href="../help/">Help centre</a><a href="../trust/" aria-current="page">Trust centre</a><a href="../api.html">API</a><a href="../privacy.html">Privacy</a></nav>
+    <a class="btn" href="../app/">Open <span data-brand>Handlark</span></a>
+  </header>
+  <div class="hero">
+    <p class="crumbs"><a href="./">Trust centre</a></p>
+    <h1>Service status</h1>
+    <p>Whether Handlark is working now, and incidents from the last 90 days.</p>
+    <p class="upd">Last updated 17 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#incidents">Recent incidents</a></li><li><a href="#what">What is checked</a></li></ol></aside>
+    <div style="min-width:0"><div id="status" class="card noprint" role="status" style="margin-bottom:18px"><p style="margin:0">Loading the status…</p></div><article id="main">
+<p class="sum">The operator updates this page when something is wrong. For minute by minute checks, the <a data-cfg="status" href="#" id="monitor">uptime monitor</a> tests the app every few minutes.</p><section id="incidents"><h2>Recent incidents</h2><div id="incidents"><p>None in the last 90 days.</p></div></section><section id="what"><h2>What is checked</h2><ul><li><b>App and website</b>: the pages load.</li><li><b>Server and API</b>: sign in, saving and the public API answer.</li><li><b>Emails</b>: invitations, reminders and summaries go out.</li><li><b>Payments</b>: Paystack and Lemon Squeezy checkouts and notices.</li><li><b>Backups</b>: last night's encrypted backup finished and was checked.</li></ul></section>
+    </article></div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="More pages"><a href="../">Home</a><a href="../help/">Help centre</a><a href="../trust/">Trust centre</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a><a href="../security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="../app/config.js"></script>
+<script src="../main.js"></script>
+<script src="status.js"></script>
+<script src="trust.js"></script>
+</body>
+</html>

@@ -3,104 +3,106 @@
    Everything here works from what the server already sent the viewer, so nothing private is added. */
 (function (root) {
 'use strict';
+/* the words people read: T('English') from strings.js (version 1.15.0), English when it is not loaded (the tests) */
+var T = (root.HL_I18N && root.HL_I18N.T) || function (s, v) { return v ? String(s).replace(/\{(\w+)\}/g, function (m, k) { return k in v ? v[k] : m; }) : s; };
 
 /* ---------- tips: short, original, kind, about work ---------- */
 var NUGGETS = [
-  'Start with the smallest step you can see.',
-  'Five minutes of work beats an hour of worry.',
-  'Name the next action, then do only that.',
-  'One clear task at a time is plenty.',
-  'Close the tabs you are not using.',
-  'Write down what done looks like first.',
-  'A rough first draft is still progress.',
-  'Ask your question early. It saves a day.',
-  'A quick question now beats a guess later.',
-  'Clear handovers make tomorrow lighter.',
-  'Leave notes your future self will thank you for.',
-  'Say what you finished, not only what is left.',
-  'Tell the client before they need to ask.',
-  'Share good news with clients the same day.',
-  'Deadlines are easier when everyone knows them early.',
-  'If a deadline is slipping, say so today.',
-  'Bad news early is kinder than bad news late.',
-  'Rest is part of the work.',
-  'Short breaks keep your best thinking sharp.',
-  'Water, a stretch, then back to it.',
-  'Protect one quiet hour for deep work.',
-  'Turn off alerts while you focus.',
-  'Finish one thing before starting the next.',
-  'Done and sent is better than perfect and waiting.',
-  'Celebrate small wins. They add up.',
-  'Tick it off and enjoy the moment.',
-  'Progress counts, even on slow days.',
-  'Saying no kindly protects your yes.',
-  'It is fine to ask for more time.',
-  'Unclear task? Ask one question before you start.',
-  'Break big jobs into pieces you can finish.',
-  'Plan tomorrow before you log off today.',
-  'Let your calendar show what matters most.',
-  'Batch small replies into one sitting.',
-  'Answer messages at set times, not all day.',
-  'The hardest part is opening the file.',
-  'Start rough. Polish comes later.',
-  'A clear subject line saves everyone time.',
-  'Put the deadline and owner on every request.',
-  'Repeat back what the client asked for.',
-  'Confirm the brief before you begin.',
-  'When stuck, explain the problem out loud.',
-  'Stuck for twenty minutes? Ask for help.',
-  'Help a teammate today. It comes back around.',
-  'Thank someone for their work today.',
-  'Good work deserves a proper handover.',
-  'Hand over with links, not only words.',
-  'Write the next step at the top.',
-  'Keep notes where the team can find them.',
-  'Check the brief once more before you send.',
-  'Read it once aloud before sending.',
-  'Mistakes happen. Fix them and share the lesson.',
-  'A calm reply works better than a fast one.',
-  'Hard email? Draft it now, send it after lunch.',
-  'Mornings suit your hardest task.',
-  'Match the task to your energy.',
-  'Tired? Do the easy admin now.',
-  'A tidy desk makes a clearer head.',
-  'Leave work at work when the day ends.',
-  'Log off on time. Tomorrow needs you rested.',
-  'Your best work needs good sleep too.',
-  'Track your time while it is fresh.',
-  'Note your hours today, not on Friday.',
-  'Clients trust what they can see.',
-  'A short update keeps clients calm.',
-  'Promise what you can do, then do it well.',
-  'Ask the client what success looks like.',
-  'Small checklists prevent big misses.',
-  'Use a template for work you repeat.',
-  'Write the steps once and reuse them.',
-  'Tiny jobs piling up? Clear three now.',
-  'Delete one task you will never do.',
-  'Pick the task that moves a client forward.',
-  'Ten focused minutes can unstick a whole day.',
-  'Set a timer and begin.',
-  'Begin before you feel ready.',
-  'Momentum starts with one small thing done.',
-  'Every finished task frees up headspace.',
-  'Celebrate finishing as much as starting.',
-  'Look back at what you did this week.',
-  'Friday notes make Monday easier.',
-  'Plan the week, then trust the plan.',
-  'Leave space in your day for surprises.',
-  'Every meeting needs an agenda and an end time.',
-  'End each meeting with clear next steps.',
-  'Write action items while the call is fresh.',
-  'Quiet colleague? Invite their view.',
-  'Kind words help hard feedback land.',
-  'Give feedback on the work, not the person.',
-  'Ask what would make their day easier.',
-  'Different time zone? Leave a complete message.',
-  'Write messages that make sense while you sleep.',
-  'A steady pace is a good pace.',
-  'Good questions are a sign of good work.',
-  'Check what is due before you open email.'
+  T('Start with the smallest step you can see.'),
+  T('Five minutes of work beats an hour of worry.'),
+  T('Name the next action, then do only that.'),
+  T('One clear task at a time is plenty.'),
+  T('Close the tabs you are not using.'),
+  T('Write down what done looks like first.'),
+  T('A rough first draft is still progress.'),
+  T('Ask your question early. It saves a day.'),
+  T('A quick question now beats a guess later.'),
+  T('Clear handovers make tomorrow lighter.'),
+  T('Leave notes your future self will thank you for.'),
+  T('Say what you finished, not only what is left.'),
+  T('Tell the client before they need to ask.'),
+  T('Share good news with clients the same day.'),
+  T('Deadlines are easier when everyone knows them early.'),
+  T('If a deadline is slipping, say so today.'),
+  T('Bad news early is kinder than bad news late.'),
+  T('Rest is part of the work.'),
+  T('Short breaks keep your best thinking sharp.'),
+  T('Water, a stretch, then back to it.'),
+  T('Protect one quiet hour for deep work.'),
+  T('Turn off alerts while you focus.'),
+  T('Finish one thing before starting the next.'),
+  T('Done and sent is better than perfect and waiting.'),
+  T('Celebrate small wins. They add up.'),
+  T('Tick it off and enjoy the moment.'),
+  T('Progress counts, even on slow days.'),
+  T('Saying no kindly protects your yes.'),
+  T('It is fine to ask for more time.'),
+  T('Unclear task? Ask one question before you start.'),
+  T('Break big jobs into pieces you can finish.'),
+  T('Plan tomorrow before you log off today.'),
+  T('Let your calendar show what matters most.'),
+  T('Batch small replies into one sitting.'),
+  T('Answer messages at set times, not all day.'),
+  T('The hardest part is opening the file.'),
+  T('Start rough. Polish comes later.'),
+  T('A clear subject line saves everyone time.'),
+  T('Put the deadline and owner on every request.'),
+  T('Repeat back what the client asked for.'),
+  T('Confirm the brief before you begin.'),
+  T('When stuck, explain the problem out loud.'),
+  T('Stuck for twenty minutes? Ask for help.'),
+  T('Help a teammate today. It comes back around.'),
+  T('Thank someone for their work today.'),
+  T('Good work deserves a proper handover.'),
+  T('Hand over with links, not only words.'),
+  T('Write the next step at the top.'),
+  T('Keep notes where the team can find them.'),
+  T('Check the brief once more before you send.'),
+  T('Read it once aloud before sending.'),
+  T('Mistakes happen. Fix them and share the lesson.'),
+  T('A calm reply works better than a fast one.'),
+  T('Hard email? Draft it now, send it after lunch.'),
+  T('Mornings suit your hardest task.'),
+  T('Match the task to your energy.'),
+  T('Tired? Do the easy admin now.'),
+  T('A tidy desk makes a clearer head.'),
+  T('Leave work at work when the day ends.'),
+  T('Log off on time. Tomorrow needs you rested.'),
+  T('Your best work needs good sleep too.'),
+  T('Track your time while it is fresh.'),
+  T('Note your hours today, not on Friday.'),
+  T('Clients trust what they can see.'),
+  T('A short update keeps clients calm.'),
+  T('Promise what you can do, then do it well.'),
+  T('Ask the client what success looks like.'),
+  T('Small checklists prevent big misses.'),
+  T('Use a template for work you repeat.'),
+  T('Write the steps once and reuse them.'),
+  T('Tiny jobs piling up? Clear three now.'),
+  T('Delete one task you will never do.'),
+  T('Pick the task that moves a client forward.'),
+  T('Ten focused minutes can unstick a whole day.'),
+  T('Set a timer and begin.'),
+  T('Begin before you feel ready.'),
+  T('Momentum starts with one small thing done.'),
+  T('Every finished task frees up headspace.'),
+  T('Celebrate finishing as much as starting.'),
+  T('Look back at what you did this week.'),
+  T('Friday notes make Monday easier.'),
+  T('Plan the week, then trust the plan.'),
+  T('Leave space in your day for surprises.'),
+  T('Every meeting needs an agenda and an end time.'),
+  T('End each meeting with clear next steps.'),
+  T('Write action items while the call is fresh.'),
+  T('Quiet colleague? Invite their view.'),
+  T('Kind words help hard feedback land.'),
+  T('Give feedback on the work, not the person.'),
+  T('Ask what would make their day easier.'),
+  T('Different time zone? Leave a complete message.'),
+  T('Write messages that make sense while you sleep.'),
+  T('A steady pace is a good pace.'),
+  T('Good questions are a sign of good work.'),
+  T('Check what is due before you open email.')
 ];
 
 /* ---------- rotation: no tip repeats until every one has shown ---------- */
@@ -163,17 +165,17 @@ function spanText(min) { return min >= 60 ? Math.round(min / 60) + 'h' : Math.ma
 function personStatus(p, now, o) {
   o = o || {};
   var tz = validTz(p && p.tz) ? p.tz : validTz(o.tz) ? o.tz : '';
-  if (!tz) return { state: 'unknown', label: 'Time zone not known yet', off: false, away: false, local: '', tz: '' };
+  if (!tz) return { state: 'unknown', label: T('Time zone not known yet'), off: false, away: false, local: '', tz: '' };
   var lp = parts(tz, now), h = hoursOf(p), wk = lp.wd === 0 || lp.wd === 6, r = { tz: tz, local: lp.hm, day: lp.day, wd: lp.wd, min: lp.min, hours: h, own: !!(p && validTz(p.tz)) };
   r.night = lp.min < 6 * 60 || lp.min >= 22 * 60;
   r.inHours = inside(lp.min, h);
-  if (o.leave) { r.state = 'leave'; r.label = 'On leave'; }
-  else if (o.holiday) { r.state = 'holiday'; r.label = 'Public holiday'; r.holiday = String(o.holiday); }
-  else if (wk) { r.state = 'weekend'; r.label = 'Weekend'; }
-  else if (inside(lp.min, h)) { r.state = 'working'; r.label = 'Working now'; r.leftMin = ((h.end - lp.min) + 1440) % 1440; }
+  if (o.leave) { r.state = 'leave'; r.label = T('On leave'); }
+  else if (o.holiday) { r.state = 'holiday'; r.label = T('Public holiday'); r.holiday = String(o.holiday); }
+  else if (wk) { r.state = 'weekend'; r.label = T('Weekend'); }
+  else if (inside(lp.min, h)) { r.state = 'working'; r.label = T('Working now'); r.leftMin = ((h.end - lp.min) + 1440) % 1440; }
   else if (h.start <= h.end ? lp.min < h.start : lp.min >= h.end && lp.min < h.start) {
-    r.state = 'before'; r.startsInMin = h.start - lp.min; r.label = 'Starts in ' + spanText(r.startsInMin);
-  } else { r.state = 'after'; r.label = 'Finished for the day'; }
+    r.state = 'before'; r.startsInMin = h.start - lp.min; r.label = T('Starts in ') + spanText(r.startsInMin);
+  } else { r.state = 'after'; r.label = T('Finished for the day'); }
   r.off = r.state !== 'working'; r.away = r.state === 'leave' || r.state === 'holiday';
   return r;
 }
@@ -182,10 +184,10 @@ function teamSummary(list) {
   var c = { working: 0, off: 0, away: 0, total: 0 };
   list.forEach(function (s) { if (!s || s.state === 'unknown') return; c.total++; if (s.state === 'working') c.working++; else if (s.away) c.away++; else c.off++; });
   var bits = [];
-  if (c.working) bits.push(c.working + ' working');
-  if (c.off) bits.push(c.off + ' off');
-  if (c.away) bits.push(c.away + ' away');
-  c.text = bits.length ? 'Team: ' + bits.join(', ') : 'Team time';
+  if (c.working) bits.push(T('{n} working', { n: c.working }));
+  if (c.off) bits.push(T('{n} off', { n: c.off }));
+  if (c.away) bits.push(T('{n} away', { n: c.away }));
+  c.text = bits.length ? T('Team: ') + bits.join(', ') : T('Team time');
   return c;
 }
 
@@ -230,14 +232,15 @@ function bestOverlap(people, o) {
 }
 
 /* ---------- personal lines ---------- */
-var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
-var andList = function (a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };
+var plural = function (n, one, many) { return T(n === 1 ? '{n} ' + one : '{n} ' + many, { n: n }); };
+var andList = function (a) { return a.length < 2 ? a.join('') : T('{list} and {last}', { list: a.slice(0, -1).join(', '), last: a[a.length - 1] }); };
 var hmSpan = function (ms) { var m = Math.round(ms / 6e4); return Math.floor(m / 60) + 'h ' + ('0' + m % 60).slice(-2) + 'm'; };
 
 /**
  * One to three short lines about what is going on for the person viewing, most important first.
- * ctx comes from contextFrom(). Lines that are about other people's work (approvals, client requests, queries, retainers)
- * are only ever made for the owner. Outside working hours, on leave or on a holiday only calm lines are given.
+ * ctx comes from contextFrom(). Approvals are counted for the owner, and for team leads and managers among the people they
+ * look after; client requests, queries and retainers only for the owner. Outside working hours, on leave or on a holiday only
+ * calm lines are given.
  * Each line: {id, text, go, ref}. go says where tapping it leads.
  */
 function personalLines(ctx, max) {
@@ -247,38 +250,40 @@ function personalLines(ctx, max) {
   // a meeting soon is the one thing worth knowing at any hour
   (c.meetings || []).forEach(function (m) {
     var mins = Math.round((m.startAt - c.now) / 6e4);
-    if (m.startAt <= c.now && m.endAt > c.now) add(100, 'meeting', m.title + ' is happening now. Join when you are ready.', 'meeting', m.id, true);
-    else if (mins >= 0 && mins <= 30) add(100 - mins / 100, 'meeting', m.title + ' starts in ' + plural(Math.max(1, mins), 'minute', 'minutes') + '.', 'meeting', m.id, true);
+    if (m.startAt <= c.now && m.endAt > c.now) add(100, 'meeting', T('{title} is happening now. Join when you are ready.', { title: m.title }), 'meeting', m.id, true);
+    else if (mins >= 0 && mins <= 30) add(100 - mins / 100, 'meeting', T('{title} starts in {time}.', { title: m.title, time: plural(Math.max(1, mins), 'minute', 'minutes') }), 'meeting', m.id, true);
   });
-  if (st.state === 'leave') add(95, 'leave', 'You are on leave today. Enjoy it, the work will keep.', '', '', true);
-  else if (st.state === 'holiday') add(94, 'holiday', 'It is ' + (st.holiday || 'a public holiday') + ' where you are. Enjoy the day off.', '', '', true);
-  else if (st.state === 'weekend') add(93, 'weekend', 'It is the weekend. Anything here can wait for Monday.', '', '', true);
-  else if (st.state === 'after') add(92, 'after', 'You are past your working hours. This can all wait for tomorrow.', '', '', true);
-  else if (st.state === 'before' && st.startsInMin > 20) add(91, 'before', 'Your day starts at ' + hmOf(st.hours.start) + '. Nothing needs you yet.', '', '', true);
-  if (c.shift && c.shift.sinceBreakMs >= 4 * 36e5 && !c.shift.onBreak) add(90, 'break', 'You have worked ' + hmSpan(c.shift.sinceBreakMs) + ' without a break. A short pause will help.', 'clock');
-  if (owner) {
+  if (st.state === 'leave') add(95, 'leave', T('You are on leave today. Enjoy it, the work will keep.'), '', '', true);
+  else if (st.state === 'holiday') add(94, 'holiday', T('It is {holiday} where you are. Enjoy the day off.', { holiday: st.holiday || T('a public holiday') }), '', '', true);
+  else if (st.state === 'weekend') add(93, 'weekend', T('It is the weekend. Anything here can wait for Monday.'), '', '', true);
+  else if (st.state === 'after') add(92, 'after', T('You are past your working hours. This can all wait for tomorrow.'), '', '', true);
+  else if (st.state === 'before' && st.startsInMin > 20) add(91, 'before', T('Your day starts at {time}. Nothing needs you yet.', { time: hmOf(st.hours.start) }), '', '', true);
+  if (c.shift && c.shift.sinceBreakMs >= 4 * 36e5 && !c.shift.onBreak) add(90, 'break', T('You have worked {time} without a break. A short pause will help.', { time: hmSpan(c.shift.sinceBreakMs) }), 'clock');
+  if (owner || c.approver) {   // the owner, and team leads and managers for the people they look after
     var ap = c.approvals || {}, kinds = [];
     if (ap.sheets) kinds.push(plural(ap.sheets, 'timesheet', 'timesheets'));
     if (ap.claims) kinds.push(plural(ap.claims, 'time claim', 'time claims'));
     if (ap.expenses) kinds.push(plural(ap.expenses, 'expense', 'expenses'));
     if (ap.leave) kinds.push(plural(ap.leave, 'leave request', 'leave requests'));
     var nAp = (ap.sheets || 0) + (ap.claims || 0) + (ap.expenses || 0) + (ap.leave || 0);
-    if (nAp) add(80, 'approvals', kinds.length === 1 ? kinds[0] + (nAp === 1 ? ' is' : ' are') + ' waiting for your approval.' : nAp + ' things are waiting for your approval: ' + andList(kinds) + '.',
+    if (nAp) add(80, 'approvals', kinds.length === 1 ? T(nAp === 1 ? '{what} is waiting for your approval.' : '{what} are waiting for your approval.', { what: kinds[0] }) : T('{n} things are waiting for your approval: {list}.', { n: nAp, list: andList(kinds) }),
       'approvals', ap.sheets || ap.claims ? 'time' : ap.expenses ? 'exp' : 'leave');
-    if (c.queries) add(78, 'queries', c.queries === 1 && c.queryClient ? c.queryClient + ' has a question about some hours.' : plural(c.queries, 'client question about hours is', 'client questions about hours are') + ' waiting.', 'queries');
-    if (c.requests) add(76, 'requests', c.requests === 1 ? 'A client request is waiting for you.' : c.requests + ' client requests are waiting for you.', 'requests');
+  }
+  if (owner) {
+    if (c.queries) add(78, 'queries', c.queries === 1 && c.queryClient ? T('{client} has a question about some hours.', { client: c.queryClient }) : T('{what} waiting.', { what: plural(c.queries, 'client question about hours is', 'client questions about hours are') }), 'queries');
+    if (c.requests) add(76, 'requests', c.requests === 1 ? T('A client request is waiting for you.') : T('{n} client requests are waiting for you.', { n: c.requests }), 'requests');
     (c.retainers || []).filter(function (r) { return r.pct >= 85; }).slice(0, 1).forEach(function (r) {
-      add(60, 'retainer', r.pct >= 100 ? r.name + ' has used all of this month\'s retainer.' : r.name + ' has used ' + r.pct + '% of this month\'s retainer.', 'retainer', r.id);
+      add(60, 'retainer', r.pct >= 100 ? T('{client} has used all of this month\'s retainer.', { client: r.name }) : T('{client} has used {n}% of this month\'s retainer.', { client: r.name, n: r.pct }), 'retainer', r.id);
     });
   }
-  if (c.questions) add(74, 'questions', c.questions === 1 && c.questionFrom ? c.questionFrom + ' is waiting on your answer.' : plural(c.questions, 'person is', 'people are') + ' waiting on your answers.', 'questions');
-  if (c.sentBack) add(72, 'sentback', c.sentBack === 1 ? (c.sentBackBy ? c.sentBackBy + ' sent a task back to you with a note.' : 'A task came back to you with a note.') : c.sentBack + ' tasks came back to you with notes.', 'sentback', c.sentBackId || '');
-  if (c.overdue) add(70, 'overdue', c.overdue === 1 ? 'One of your tasks is past its date. One small step is enough.' : c.overdue + ' of your tasks are past their dates. Pick one small step.', 'late');
-  if (c.dueToday > 0 && c.dueToday === c.doneToday && !c.overdue) add(55, 'alldone', 'Everything for today is done. Well played.', '', '', true);
-  if (c.firstDay) add(50, 'firstday', 'Welcome' + (c.workspace ? ' to ' + c.workspace : '') + (first ? ', ' + first : '') + '. One small task is a fine start.', 'today', '', true);
-  if (!resting && st.wd === 1 && st.min < 12 * 60) add(45, 'monday', 'Monday morning. A good time to plan the week.', 'week');
-  if (!resting && st.wd === 5 && st.min >= 13 * 60) add(45, 'friday', owner ? 'Friday afternoon. Wrap up and send clients their updates.' : 'Friday afternoon. Wrap up and send your updates.', 'today');
-  if (c.streak >= 2) add(40, 'streak', c.startedToday ? c.streak + ' days in a row you have started something. Nice rhythm.' : c.streak + ' days in a row so far. One small start keeps it going.', 'start');
+  if (c.questions) add(74, 'questions', c.questions === 1 && c.questionFrom ? T('{name} is waiting on your answer.', { name: c.questionFrom }) : T('{who} waiting on your answers.', { who: plural(c.questions, 'person is', 'people are') }), 'questions');
+  if (c.sentBack) add(72, 'sentback', c.sentBack === 1 ? (c.sentBackBy ? T('{name} sent a task back to you with a note.', { name: c.sentBackBy }) : T('A task came back to you with a note.')) : T('{n} tasks came back to you with notes.', { n: c.sentBack }), 'sentback', c.sentBackId || '');
+  if (c.overdue) add(70, 'overdue', c.overdue === 1 ? T('One of your tasks is past its date. One small step is enough.') : T('{n} of your tasks are past their dates. Pick one small step.', { n: c.overdue }), 'late');
+  if (c.dueToday > 0 && c.dueToday === c.doneToday && !c.overdue) add(55, 'alldone', T('Everything for today is done. Well played.'), '', '', true);
+  if (c.firstDay) add(50, 'firstday', T(c.workspace ? 'Welcome to {workspace}' : 'Welcome', { workspace: c.workspace }) + (first ? ', ' + first : '') + T('. One small task is a fine start.'), 'today', '', true);
+  if (!resting && st.wd === 1 && st.min < 12 * 60) add(45, 'monday', T('Monday morning. A good time to plan the week.'), 'week');
+  if (!resting && st.wd === 5 && st.min >= 13 * 60) add(45, 'friday', owner ? T('Friday afternoon. Wrap up and send clients their updates.') : T('Friday afternoon. Wrap up and send your updates.'), 'today');
+  if (c.streak >= 2) add(40, 'streak', c.startedToday ? T('{n} days in a row you have started something. Nice rhythm.', { n: c.streak }) : T('{n} days in a row so far. One small start keeps it going.', { n: c.streak }), 'start');
   return out.filter(function (l) { return !resting || l.calm; })
     .sort(function (a, b) { return b.pri - a.pri; })
     .filter(function (l, i, a) { return a.findIndex(function (x) { return x.id === l.id; }) === i; })
@@ -289,7 +294,8 @@ function personalLines(ctx, max) {
 /**
  * What the personal lines need, worked out from the state the server sent this viewer.
  * Only the viewer's own work is counted (tasks assigned to them, their questions, their meetings);
- * approvals, client requests, queries and retainers are counted for the owner only.
+ * approvals are counted for the owner, and for a team lead or manager among the people they look after (S.scope, never their
+ * own); client requests, queries and retainers for the owner only.
  * o: {me, now, tz (the device's), holiday(name) lookup: holidayFor(tz, day)}.
  */
 function contextFrom(S, o) {
@@ -320,12 +326,17 @@ function contextFrom(S, o) {
     questions: qs.filter(function (v, i, a) { return a.indexOf(v) === i; }).length, questionFrom: qs.length ? nameOf(qs[0]) : '',
     streak: (S.myPatterns || {}).streak || 0, startedToday: !!(S.myPatterns || {}).startedToday, shift: shift,
     firstDay: !!((p.joinedAt || p.addedAt) && parts(tz, p.joinedAt || p.addedAt).day === myDay) };   // the day they joined, in their own time
+  if (S.owner || (S.role && S.role !== 'member')) {
+    var sc = {}; (S.scope || []).forEach(function (id) { sc[id] = 1; });
+    var mayAp = function (pid) { return !!S.owner || (pid !== me && !!sc[pid]); };
+    ctx.approver = true;
+    ctx.approvals = { sheets: (S.sheets || []).filter(function (x) { return x.status === 'submitted' && mayAp(x.personId); }).length,
+      claims: (S.time || []).filter(function (e) { return e.claim && e.claim.state === 'pending' && mayAp(e.personId); }).length,
+      expenses: (S.expenses || []).filter(function (e) { return e.status === 'pending' && mayAp(e.personId); }).length,
+      leave: (S.leaves || []).filter(function (l) { return l.status === 'pending' && mayAp(l.personId); }).length };
+  }
   if (S.owner) {
     var queried = (S.time || []).filter(function (e) { return e.clientOk && e.clientOk.state === 'queried'; }), subj = function (id) { return (S.subjects || []).find(function (s) { return s.id === id; }); };
-    ctx.approvals = { sheets: (S.sheets || []).filter(function (x) { return x.status === 'submitted'; }).length,
-      claims: (S.time || []).filter(function (e) { return e.claim && e.claim.state === 'pending'; }).length,
-      expenses: (S.expenses || []).filter(function (e) { return e.status === 'pending'; }).length,
-      leave: (S.leaves || []).filter(function (l) { return l.status === 'pending'; }).length };
     ctx.queries = queried.length;
     ctx.queryClient = queried.length === 1 && subj(queried[0].subjectId) ? subj(queried[0].subjectId).name : '';
     ctx.requests = (S.tasks || []).filter(function (t) { return t.request && t.request.state === 'new'; }).length;

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Data retention | Handlark</title>
+<meta name="description" content="How long each kind of record is kept, and when it is deleted. Every line is checked against the code that does it.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="../app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="../app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../" aria-label="Handlark home"><img class="light-only" src="../app/logo.svg" alt="Handlark" width="150" height="40"><img class="dark-only" src="../brand/handlark_logo_dark_mode.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Site"><a href="../help/">Help centre</a><a href="../trust/" aria-current="page">Trust centre</a><a href="../api.html">API</a><a href="../privacy.html">Privacy</a></nav>
+    <a class="btn" href="../app/">Open <span data-brand>Handlark</span></a>
+  </header>
+  <div class="hero">
+    <p class="crumbs"><a href="./">Trust centre</a></p>
+    <h1>Data retention</h1>
+    <p>How long each kind of record is kept, and when it is deleted. Every line is checked against the code that does it.</p>
+    <p class="upd">Last updated 17 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#table">The table</a></li><li><a href="#owner">What the owner controls</a></li><li><a href="#backups">Backups and deletion</a></li></ol></aside>
+    <div style="min-width:0"><article id="main">
+<p class="sum">Nothing in a workspace is deleted while you use it, except what this table says. The scheduled job runs every 10 minutes and does the deleting. Your workspace's own data stays yours to export at any time.</p><section id="table"><h2>The table</h2><div class="tbl"><table><thead><tr><th scope="col">What</th><th scope="col">Kept</th><th scope="col">Then</th></tr></thead><tbody>
+<tr><td>Workspace content: tasks, clients, time entries, timesheets, shifts, leave, invoices, meetings, guides, expenses</td><td>While the workspace exists</td><td>Purged 30 days after the workspace is deleted</td></tr>
+<tr><td>Finished tasks</td><td>In the live list for 90 days</td><td>Moved to the archive, still searchable and exported; not deleted</td></tr>
+<tr><td>Clock shifts</td><td>In the live list for 62 days</td><td>Moved to the archive; not deleted</td></tr>
+<tr><td>Invoiced time</td><td>In the live list for 400 days</td><td>Moved to the archive; client totals keep it; not deleted</td></tr>
+<tr><td>Meetings</td><td>400 days after they took place</td><td>Deleted</td></tr>
+<tr><td>Deleted tasks in the bin</td><td>30 days</td><td>Deleted with their files</td></tr>
+<tr><td>A deleted workspace</td><td>30 days, when the owner can restore it</td><td>Every file, record, history line, email copy and retry note purged</td></tr>
+<tr><td>History of changes</td><td>400 days</td><td>Deleted</td></tr>
+<tr><td>Record of requests already applied (so a retry never applies twice)</td><td>400 days</td><td>Deleted</td></tr>
+<tr><td>Copies of sent emails, WhatsApp messages and phone alerts</td><td>30 days (unsent ones are retried for 3 days)</td><td>Deleted</td></tr>
+<tr><td>Alerts held for quiet hours (text only)</td><td>Up to 3 days</td><td>Dropped</td></tr>
+<tr><td>Webhook and chat alert delivery log</td><td>30 days</td><td>Deleted</td></tr>
+<tr><td>Still working checks and their answers</td><td>120 days</td><td>Deleted</td></tr>
+<tr><td>Attendance notes and shift swap requests</td><td>400 days</td><td>Deleted</td></tr>
+<tr><td>Focus sessions</td><td>90 days</td><td>Deleted</td></tr>
+<tr><td>Private notes about feeling stuck</td><td>120 days</td><td>Deleted</td></tr>
+<tr><td>Proof mode screenshots</td><td>7, 14, 30 or 60 days, as the owner chose (30 by default)</td><td>Deleted with their files; also when the person leaves, and when they withdraw consent for that client, their screenshots for it, except released ones on time already approved or invoiced, which stay until the period above ends</td></tr>
+<tr><td>Uploads that were never attached</td><td>24 hours</td><td>Deleted from storage</td></tr>
+<tr><td>Invite links</td><td>Work for 14 days</td><td>Stop working; the owner sends a new one</td></tr>
+<tr><td>Browser extension codes</td><td>10 minutes, once</td><td>Removed within the hour</td></tr>
+<tr><td>API tokens (the browser extension's too), webhooks and chat alerts, payout details</td><td>Until revoked or removed, or the person they belong to (or who made them) leaves</td><td>Deleted. A webhook or chat alert whose maker can no longer manage integrations is switched off at once</td></tr>
+<tr><td>Changes to who a lead or manager looks after</td><td>200 days (the last 100 changes for each), so team totals count each person only while they were in that person's teams; removed when that lead or manager leaves</td><td>Deleted</td></tr>
+<tr><td>Revoked API tokens</td><td>30 days after they were revoked, so the list shows what was revoked and when</td><td>Deleted</td></tr>
+<tr><td>Pay runs and payout batches (amounts, statuses, the bank and last 4 digits)</td><td>7 years, as financial records</td><td>Deleted</td></tr>
+<tr><td>Rate limit counters</td><td>2 days</td><td>Deleted</td></tr>
+<tr><td>Monthly usage counts (WhatsApp messages, AI requests)</td><td>13 months</td><td>Deleted</td></tr>
+<tr><td>Payment notices from Paystack and Lemon Squeezy (type, amount, currency, reference, status, time)</td><td>13 months</td><td>Deleted. Receipts for your Handlark plan are kept by Paystack or Lemon Squeezy under their own tax duties</td></tr>
+<tr><td>Database backups, encrypted</td><td>Every night for 35 days, and the first of each month for 13 months</td><td>Deleted inside the backup bucket</td></tr>
+<tr><td>File backups, encrypted</td><td>Copied every Sunday; files deleted from the app stay 35 days</td><td>Deleted inside the backup bucket</td></tr>
+<tr><td>Your account (sign in)</td><td>Until you delete it</td><td>Deleted at once; your name leaves workspaces you do not own</td></tr></tbody></table></div></section><section id="owner"><h2>What the owner controls</h2><p>The owner can export everything at any time, delete tasks (to the bin), choose how long Proof mode screenshots are kept, delete people's time, and delete the whole workspace. Members can export what they can see and delete their own account.</p></section><section id="backups"><h2>Backups and deletion</h2><p>Backups exist only to recover the service after a fault. When a workspace is purged, its data stays in database backups until they age out, within 13 months. If we ever restore a backup, we delete again anything that had already been deleted.</p></section>
+    </article></div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="More pages"><a href="../">Home</a><a href="../help/">Help centre</a><a href="../trust/">Trust centre</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a><a href="../security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="../app/config.js"></script>
+<script src="../main.js"></script>
+</body>
+</html>

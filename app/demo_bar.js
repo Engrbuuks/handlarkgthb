@@ -1,5 +1,6 @@
 /* Demo only: the demo bar. Who you are viewing as, and windows onto the simulated outside services: the emails the server
-   sent, a WhatsApp chat with the server's real command handling, phone alerts, and an authenticator app for two step sign in.
+   sent, a WhatsApp chat with the server's real command handling, phone alerts, an authenticator app for two step sign in, the Slack,
+   Teams and Discord channels chat alerts go to, a webhook receiver that checks each signature, and the agency's Paystack transfers.
    Loaded right after the bar in the page body. */
 (function () {
   var D = window.HANDLARK_DEMO, sel = document.getElementById('demo-who'), more = document.getElementById('demo-more');
@@ -141,7 +142,51 @@
     tick(); timer = setInterval(tick, 1000);
   }
 
-  [].forEach.call(document.querySelectorAll('#demo-more [data-panel]'), function (b) { b.addEventListener('click', function () { ({ mail: mails, wa: wa, alerts: alerts, auth: auth })[b.getAttribute('data-panel')](); }); });
+
+  /* chat alerts: what Slack, Microsoft Teams and Discord received, drawn the way each shows it */
+  function chat() {
+    var list = D.chat();
+    var who = { slack: 'Slack', teams: 'Microsoft Teams', discord: 'Discord' };
+    var card = function (m) {
+      var b = {}; try { b = JSON.parse(m.body || '{}'); } catch (e) { b = {}; }
+      var title = '', body = '', foot = '', link = '';
+      if (m.kind === 'slack') {
+        var sec = (b.blocks || []).find(function (x) { return x.type === 'section'; }), act = (b.blocks || []).find(function (x) { return x.type === 'actions'; }), ctx = (b.blocks || []).find(function (x) { return x.type === 'context'; });
+        var tx = sec && sec.text ? String(sec.text.text).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : String(b.text || '');
+        var parts = tx.split('\n'); title = parts[0].replace(/^\*|\*$/g, ''); body = parts.slice(1).join('\n');
+        foot = ctx && ctx.elements && ctx.elements[0] ? String(ctx.elements[0].text).replace(/&amp;/g, '&') : ''; link = act && act.elements && act.elements[0] ? act.elements[0].text.text : '';
+      } else if (m.kind === 'discord') { var e = (b.embeds || [])[0] || {}; title = String(e.title || '').replace(/\\(.)/g, '$1'); body = String(e.description || '').replace(/\\(.)/g, '$1'); foot = (e.footer || {}).text || ''; link = e.url ? 'Open' : ''; }
+      else { var c = (((b.attachments || [])[0] || {}).content || {}), bl = c.body || []; title = (bl[0] || {}).text || ''; body = bl.length > 2 ? (bl[1] || {}).text || '' : ''; foot = (bl[bl.length - 1] || {}).text || ''; link = (c.actions || [])[0] ? c.actions[0].title : ''; }
+      return el('li', { class: 'dp-slack' }, [el('span', { class: 'dp-ch', text: who[m.kind] + (m.kind === 'slack' ? ', #brightline-team' : '') }),
+        el('div', { class: 'dp-app' }, [el('b', { text: 'Handlark' }), el('span', { class: 'dp-tag', text: 'APP' }), el('small', { text: when(m.at) })]),
+        el('strong', { text: title }), body ? el('span', { class: 'dp-tx', text: body }) : null, link ? el('span', { class: 'dp-btnl', text: link }) : null, foot ? el('small', { class: 'dp-ctx', text: foot }) : null]);
+    };
+    open('chat', 'Slack, Teams and Discord', [note('What chat channels received from Handlark, newest first. Set channels up in the app under Settings, Integrations, Chat alerts; this channel is the sample #brightline-team in Slack. Quiet hours hold alerts overnight.'),
+      list.length ? el('ul', { class: 'dp-list' }, list.map(card)) : el('p', { text: 'No messages yet. Finish a task, and the channel gets it.' })]);
+  }
+  /* webhook receiver: what an endpoint such as Zapier received, with the signature checked as a receiver should */
+  function hooksPanel() {
+    var list = D.received(), items = list.map(function (m) {
+      var ok = el('span', { class: 'dp-note', text: 'Checking the signature…' }), pretty = m.body;
+      try { pretty = JSON.stringify(JSON.parse(m.body), null, 2); } catch (e) {}
+      D.verifyReceived(m).then(function (v) { ok.className = v ? 'dp-ok' : 'dp-bad'; ok.textContent = v ? 'Signature checked with the signing secret: genuine' : 'Signature did not match'; });
+      return el('li', { class: 'dp-hook' }, [el('strong', { text: (m.headers['Handlark-Event'] || 'event') + ' to ' + m.url.replace(/^https:\/\//, '').slice(0, 48) }), el('small', { text: when(m.at) + ', delivery ' + (m.headers['Handlark-Delivery'] || '') + ', key ' + (m.headers['Idempotency-Key'] || '') }), ok,
+        el('small', { text: 'Handlark-Signature: ' + (m.headers['Handlark-Signature'] || '').slice(0, 40) + '…' }), el('pre', { text: pretty.slice(0, 3000) })]);
+    });
+    open('hooks', 'Webhook receiver', [note('What webhook endpoints received, such as the sample Zapier hook. Each event is signed with HMAC SHA256 so the receiver can check it came from Handlark. Earlier sample deliveries are in the delivery log in the app, under Settings, Integrations, Webhooks.'),
+      list.length ? el('ul', { class: 'dp-list' }, items) : el('p', { text: 'Nothing received in this visit yet. As Ada, add a task: the Zapier webhook gets it straight away.' })]);
+  }
+  /* Paystack Transfers: the transfers the agency's Paystack received (demo money), whether it asks for a code (OTP) on each, and the codes it texts */
+  function paystackPanel() {
+    var list = D.transfers().slice().reverse(), texts = D.transferTexts(), otp = D.transferOtp();
+    var sw = el('label', { class: 'dp-row' }, [el('input', { type: 'checkbox', id: 'dp-otp', onchange: function (e) { D.transferOtp(e.target.checked); paystackPanel(); } }), ' Ask for a code (OTP) before each transfer']);
+    if (otp) sw.querySelector('input').checked = true;
+    open('paystack', 'Paystack transfers', [note('The agency\'s own Paystack account, standing in for the real one. Transfers here are demo money: nothing leaves this browser. Live, the money goes from the agency\'s Paystack balance straight to each person\'s bank.'),
+      sw, note(otp ? 'With OTP on, Paystack sends one transfer at a time and texts a code for each to the business phone. Type it in Handlark to approve the transfer.' : 'With OTP off, as the setup guide suggests, Handlark sends everyone in one bulk transfer.'),
+      texts.length ? el('div', null, [el('strong', { text: 'Texts to the business phone' }), el('ul', { class: 'dp-list' }, texts.map(function (t) { return el('li', { class: 'dp-alert' }, [el('span', { class: 'dp-otptext', text: t.text }), el('small', { text: when(t.at) })]); }))]) : null,
+      list.length ? el('ul', { class: 'dp-list' }, list.map(function (x) { return el('li', { class: 'dp-alert' }, [el('strong', { text: x.currency + ' ' + (x.amount / 100).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ', ' + x.status }), el('small', { text: x.reference })]); })) : el('p', { text: 'No transfers yet. As Ada, approve a month under Insights, Payroll, then choose Pay with Paystack.' })]);
+  }
+  [].forEach.call(document.querySelectorAll('#demo-more [data-panel]'), function (b) { b.addEventListener('click', function () { ({ mail: mails, wa: wa, alerts: alerts, auth: auth, chat: chat, hooks: hooksPanel, paystack: paystackPanel })[b.getAttribute('data-panel')](); }); });
   document.getElementById('demo-reset').addEventListener('click', function () { more.open = false; D.reset(); });
   document.getElementById('demo-still').addEventListener('click', function () { more.open = false; window.dispatchEvent(new Event('handlark:still')); });
   document.getElementById('demo-cron').addEventListener('click', function () {
@@ -164,6 +209,8 @@
     counts();
     if (kind === 'wa' && (d === 'wa')) wa();
     if (kind === 'alerts' && d.alert) alerts();
+    if (kind === 'chat' && d === 'chat') chat();
+    if (kind === 'hooks' && d === 'received') hooksPanel();
   });
   counts();
 })();

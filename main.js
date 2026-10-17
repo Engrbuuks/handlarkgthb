@@ -3,6 +3,8 @@
      contactEmail     the address customers write to (also shown on the legal pages)
      supportWhatsApp  optional WhatsApp number for support, international format, for example '+2348012345678'
      company          optional registered business name for the legal pages (defaults to the brand)
+     supportChatUrl   optional link to a hosted live chat page (for example Tawk.to's Direct Chat Link), opened in a new tab
+     statusUrl        optional link to a public uptime status page (for example Better Stack), shown on the status page and in help
    Every part below checks that its elements exist, so the same file serves every page. */
 (function(){
   var cfg=window.APP_CONFIG||{},brand=cfg.brand||'Handlark';
@@ -18,7 +20,13 @@
     $$('[data-cfg="mailto"]').forEach(function(e){e.href='mailto:'+email;});
   }
   if(wa){$$('[data-cfg="whatsapp"]').forEach(function(e){e.href='https://wa.me/'+wa;e.hidden=false;});}
+  /* live chat and the status monitor (version 1.15.0): links to pages of their own, opened in a new tab, never loaded into these pages */
+  var chat=String(cfg.supportChatUrl||''),stat=String(cfg.statusUrl||'');
+  if(/^https:\/\/[^\s"'<>]+$/.test(chat))$$('[data-cfg="chat"]').forEach(function(e){e.href=chat;e.hidden=false;});
+  if(/^https:\/\/[^\s"'<>]+$/.test(stat))$$('[data-cfg="status"]').forEach(function(e){e.href=stat;e.hidden=false;});
   var yr=document.getElementById('yr');if(yr)yr.textContent=new Date().getFullYear();
+  /* the API guide: the address of this app's own API */
+  var sb=String(cfg.supabaseUrl||'').replace(/\/+$/,'');if(/^https:\/\/[\w.-]+$/.test(sb)&&!/YOUR_PROJECT_REF/.test(sb))$$('[data-cfg="apibase"]').forEach(function(e){e.textContent=sb+'/functions/v1/api/v1';});
 
   /* prices */
   var fmt=function(n){return Number(n).toLocaleString('en-US');};

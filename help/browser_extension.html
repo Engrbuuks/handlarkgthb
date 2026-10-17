@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>The browser extension | Handlark</title>
+<meta name="description" content="Your timer in Chrome, Edge and Firefox: start, stop and add tasks from the toolbar and from GitHub, Jira, Trello, Asana, Google Docs and Gmail.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="../app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="../app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../" aria-label="Handlark home"><img class="light-only" src="../app/logo.svg" alt="Handlark" width="150" height="40"><img class="dark-only" src="../brand/handlark_logo_dark_mode.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Site"><a href="../help/" aria-current="page">Help centre</a><a href="../trust/">Trust centre</a><a href="../api.html">API</a><a href="../privacy.html">Privacy</a></nav>
+    <a class="btn" href="../app/">Open <span data-brand>Handlark</span></a>
+  </header>
+  <div class="hero">
+    <p class="crumbs"><a href="./">Help centre</a> &rsaquo; Insights, meetings and connections</p>
+    <h1>The browser extension</h1>
+    <p>Your timer in Chrome, Edge and Firefox: start, stop and add tasks from the toolbar and from GitHub, Jira, Trello, Asana, Google Docs and Gmail.</p>
+    <form class="search" id="search" role="search" action="./" method="get"><label class="sr" for="q">Search the help centre</label><input id="q" name="q" type="search" placeholder="Search the help centre" autocomplete="off"><button type="submit">Search</button></form>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#install">Install it</a></li><li><a href="#connect">Connect it</a></li><li><a href="#use">Using it</a></li><li><a href="#sites">Start timer on other sites</a></li><li><a href="#privacy">Privacy and Proof mode</a></li></ol></aside>
+    <article id="main">
+<p class="sum">The Handlark extension puts your timer one click away. It uses your own token, sees only your own tasks and time, and never captures your screen.</p><section id="install"><h2>Install it</h2><p>Install <b>Handlark: timer and tasks</b> from the Firefox Add ons site or Microsoft Edge Add ons, or from the Chrome Web Store when it is listed there. Until then, your administrator can load it unpacked from the Handlark folder (see <code>extension/README.md</code>).</p></section><section id="connect"><h2>Connect it</h2><ol><li>In Handlark, open your account (owners: Settings, This device) and choose <b>Browser extension</b>, then <b>Show a code</b>.</li>
+<li>In the extension, open its settings and type the 10 character code. It works once, for 10 minutes.</li>
+<li>Pin the extension to the toolbar.</li></ol>
+<p>Before it is used, the extension shows the workspace and the name the code belongs to. Choose <b>Yes, connect</b> only if both are yours; if someone sent you the code, choose <b>Cancel</b>. Until you choose, the connection does nothing, and if you close the settings without choosing it is cancelled after 10 minutes. Type the code only into the extension in your own browser, and never read it to anyone. You see each connected browser in Handlark with its computer, such as Chrome on Windows, and can disconnect it there at any time.</p>
+<p>Instead of a code you can paste a personal API token, but only one with just tasks, time and clients ticked; a token that can do more is refused.</p></section><section id="use"><h2>Using it</h2><ul><li><b>Toolbar:</b> pick a client and a task and start the timer; the badge shows how long it has run. Stop it with an optional line on what you did.</li>
+<li><b>New task:</b> add a task for today and start it in one go.</li>
+<li><b>Today:</b> your tasks due today, overdue or in progress.</li>
+<li><b>Still working:</b> the badge shows a question mark and you can answer from the popup.</li></ul></section><section id="sites"><h2>Start timer on other sites</h2><p>In the extension settings, turn on the sites you use: GitHub issues and pull requests, Jira, Trello, Asana, Google Docs, Sheets and Slides, and Gmail. The browser asks you for each site. A small <b>Start timer</b> button then appears on an issue, card, task, document or email; pressing it finds the Handlark task linked to that page, or makes one with the page's title and link, and starts your timer.</p></section><section id="privacy"><h2>Privacy and Proof mode</h2><p>Nothing is read from a page until you press its button. Your token is kept encrypted in the browser, where the pages the extension adds buttons to cannot read it. The extension never captures your screen, never reads your history or other tabs, and has no analytics. For a client with Proof mode on, it opens the task in Handlark instead, where you share your screen with consent. The optional <b>idle hint</b> uses only whether the computer is in use, and asks you, privately, what to do with time away.</p></section><nav class="next noprint" aria-label="More articles"><a href="meetings.html">&larr; Meetings</a><a href="integrations.html">API, webhooks, Slack, Teams, Discord, Zapier and Make &rarr;</a></nav><div class="help noprint"><p><b>Still stuck?</b> Write to us and we answer within one working day.</p><a class="btn ghost" data-cfg="mailto" href="mailto:hello@example.com">Email us</a><a class="btn ghost" data-cfg="whatsapp" href="#" hidden target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="btn" data-cfg="chat" href="#" hidden target="_blank" rel="noopener noreferrer">Chat with us</a></div>
+    </article>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="More pages"><a href="../">Home</a><a href="../help/">Help centre</a><a href="../trust/">Trust centre</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a><a href="../security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="../app/config.js"></script>
+<script src="../main.js"></script>
+<script src="search_index.js"></script>
+<script src="help.js"></script>
+</body>
+</html>

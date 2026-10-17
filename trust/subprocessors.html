@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Sub processors | Handlark</title>
+<meta name="description" content="Every service that helps run Handlark: what it does, what it handles, where, and when it is used.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="../app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="../app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../" aria-label="Handlark home"><img class="light-only" src="../app/logo.svg" alt="Handlark" width="150" height="40"><img class="dark-only" src="../brand/handlark_logo_dark_mode.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Site"><a href="../help/">Help centre</a><a href="../trust/" aria-current="page">Trust centre</a><a href="../api.html">API</a><a href="../privacy.html">Privacy</a></nav>
+    <a class="btn" href="../app/">Open <span data-brand>Handlark</span></a>
+  </header>
+  <div class="hero">
+    <p class="crumbs"><a href="./">Trust centre</a></p>
+    <h1>Sub processors</h1>
+    <p>Every service that helps run Handlark: what it does, what it handles, where, and when it is used.</p>
+    <p class="upd">Last updated 17 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#always">Always used</a></li><li><a href="#features">Used when a feature is on</a></li><li><a href="#yours">Services you connect yourself</a></li><li><a href="#not">Not used</a></li></ol></aside>
+    <div style="min-width:0"><article id="main">
+<p class="sum">These are the services Handlark uses to provide the service. Some are used only when you switch a feature on. We announce changes here and to workspace owners at least 30 days before a new one starts.</p><section id="always"><h2>Always used</h2><div class="tbl"><table><thead><tr><th scope="col">Provider</th><th scope="col">What it does</th><th scope="col">Data it handles</th><th scope="col">Where</th></tr></thead><tbody>
+<tr><td>Supabase</td><td>Database and server functions</td><td>All account and workspace data, encrypted at rest</td><td>United Kingdom (London region)</td></tr>
+<tr><td>Google Firebase Authentication</td><td>Sign up, sign in, email confirmation and password reset</td><td>Email address, name, password (held by Google), sign in records</td><td>United States and Google's network</td></tr>
+<tr><td>Cloudflare (Pages and R2)</td><td>Hosting the website and app, network protection, private file storage, backup storage</td><td>Requests and IP addresses, attached files, encrypted backups</td><td>Cloudflare's global network</td></tr>
+<tr><td>Cloudflare DNS over HTTPS (<code>cloudflare-dns.com</code>)</td><td>Looking up the address of a webhook or chat alert before anything is sent to it, so nothing goes to a private network</td><td>Only the host name of the address the workspace added, such as hooks.example.com; no personal data and nothing from the workspace</td><td>Cloudflare's global network, when webhooks or chat alerts are used and the server cannot look the name up itself</td></tr>
+<tr><td>GitHub (Actions)</td><td>Running the nightly backup job</td><td>Data passes through while it is encrypted; nothing readable is kept</td><td>United States</td></tr>
+<tr><td>Google Fonts</td><td>Fonts for the website and app</td><td>IP address when fonts load</td><td>Google's network</td></tr></tbody></table></div></section><section id="features"><h2>Used when a feature is on</h2><div class="tbl"><table><thead><tr><th scope="col">Provider</th><th scope="col">What it does</th><th scope="col">Data it handles</th><th scope="col">When</th></tr></thead><tbody>
+<tr><td>Resend, then Brevo when Resend's daily allowance is used</td><td>Sending emails</td><td>Recipient name and email address, the email itself</td><td>Once email is set up (United States; Brevo in the European Union)</td></tr>
+<tr><td>Paystack</td><td>Plan payments in naira</td><td>Billing details given to Paystack, payment status</td><td>When a plan is paid in naira (Nigeria)</td></tr>
+<tr><td>Lemon Squeezy</td><td>Plan payments in US dollars, as merchant of record</td><td>Billing details given to Lemon Squeezy, sales tax details</td><td>When a plan is paid in dollars (United States)</td></tr>
+<tr><td>Meta (WhatsApp Cloud API)</td><td>WhatsApp alerts and replies</td><td>Phone number, message text</td><td>When WhatsApp is switched on</td></tr>
+<tr><td>Anthropic</td><td>AI summaries and tasks from text</td><td>The text needed for the request; never private tasks</td><td>When AI is used (United States)</td></tr>
+<tr><td>Groq, or another speech to text provider the operator sets</td><td>Turning voice notes into text</td><td>The recording, for the moment it is transcribed; never stored</td><td>When a voice note is used (United States)</td></tr>
+<tr><td>Google and Microsoft</td><td>Sign in with a Google or Microsoft account</td><td>Name, email address and whether it is verified</td><td>When a person chooses it</td></tr>
+<tr><td>Browser push services: Google Firebase Cloud Messaging (Chrome, Edge on Android), Apple Push Notification service (Safari), Mozilla Push Service (Firefox), Windows Push Notification Services (Edge)</td><td>Delivering phone and browser alerts to a device</td><td>The device's push address and the alert itself, encrypted end to end so the push service cannot read it: a short title and line such as a task name or a reminder</td><td>When a person turns on alerts for a device; the service is the one their browser uses (United States and the provider's network)</td></tr>
+<tr><td>Jitsi (meet.jit.si, run by 8x8)</td><td>Free video rooms</td><td>Whatever is shared in the call; Handlark stores only the room link</td><td>When a meeting uses the free room</td></tr>
+<tr><td>Live chat provider (Tawk.to, if the operator sets one)</td><td>Live chat with support</td><td>What a person types in the chat, and what the chat page itself collects</td><td>Only when a person opens the chat, in a new tab; nothing from it loads inside the app</td></tr></tbody></table></div></section><section id="yours"><h2>Services you connect yourself</h2><p>These are your own accounts and choices, not providers we pick, and they are not our sub processors: Slack, Microsoft Teams and Discord chat alerts, Zapier, Make, your own webhook addresses, your own Paystack account for client invoices and staff pay, and your own WhatsApp Business number. Handlark sends them only what you choose, with the same privacy rules as the app.</p></section><section id="not"><h2>Not used</h2><p>No analytics, advertising or tracking services, and no session recording. The uptime monitor that checks Handlark is up only loads public pages and holds no personal data.</p></section>
+    </article></div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="More pages"><a href="../">Home</a><a href="../help/">Help centre</a><a href="../trust/">Trust centre</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a><a href="../security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="../app/config.js"></script>
+<script src="../main.js"></script>
+</body>
+</html>

@@ -1,0 +1,4290 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Handlark API",
+  "version": "1.1.0",
+  "description": "Tasks, time, clients, people, timesheets, invoices and meetings, with the same permissions as the app. See api.html for the guide. Private tasks, hidden people, pay and Proof mode screenshots never leave.",
+  "contact": {
+   "url": "api.html"
+  }
+ },
+ "servers": [
+  {
+   "url": "https://{project}.supabase.co/functions/v1/api/v1",
+   "variables": {
+    "project": {
+     "default": "YOUR_PROJECT_REF",
+     "description": "Your Supabase project ref"
+    }
+   }
+  }
+ ],
+ "security": [
+  {
+   "token": []
+  }
+ ],
+ "paths": {
+  "/me": {
+   "get": {
+    "operationId": "me",
+    "summary": "The workspace, the token and the person it acts as",
+    "responses": {
+     "200": {
+      "description": "Who this token is",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "operationId": "disconnect",
+    "summary": "The token revokes itself",
+    "responses": {
+     "200": {
+      "description": "Revoked",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "object",
+           "properties": {
+            "id": {
+             "type": "string"
+            },
+            "revoked": {
+             "type": "boolean"
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/tasks": {
+   "get": {
+    "operationId": "listTasks",
+    "summary": "List tasks",
+    "description": "Scope tasks:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "description": "new, in_progress, waiting, review or done",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "client_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this client",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "assignee_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this person",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "updated_since",
+      "in": "query",
+      "required": false,
+      "description": "ISO time, a day or milliseconds",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "request",
+      "in": "query",
+      "required": false,
+      "description": "true for client requests only",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "open",
+      "in": "query",
+      "required": false,
+      "description": "true for everything not done",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "link",
+      "in": "query",
+      "required": false,
+      "description": "Only tasks that carry this web address as a link",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Task"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "operationId": "createTask",
+    "summary": "Create a task",
+    "description": "Scope tasks:write. The same rules as the app.",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "title": {
+          "type": "string"
+         },
+         "details": {
+          "type": "string"
+         },
+         "client_id": {
+          "type": "string"
+         },
+         "assignee_id": {
+          "type": "string"
+         },
+         "due": {
+          "type": "string",
+          "description": "YYYY-MM-DD"
+         },
+         "priority": {
+          "type": "string",
+          "enum": [
+           "high",
+           "normal",
+           "low"
+          ]
+         },
+         "status": {
+          "type": "string",
+          "enum": [
+           "new",
+           "in_progress",
+           "waiting",
+           "review",
+           "done"
+          ]
+         },
+         "type": {
+          "type": "string"
+         },
+         "start_time": {
+          "type": "string"
+         },
+         "end_time": {
+          "type": "string"
+         },
+         "budget_minutes": {
+          "type": "integer"
+         },
+         "proof": {
+          "type": "string",
+          "description": "When marking done: the line posted as proof of work"
+         },
+         "link": {
+          "type": "string",
+          "description": "An https web page to attach to the task as a link"
+         },
+         "link_name": {
+          "type": "string",
+          "description": "The link's name; the task title by default"
+         }
+        },
+        "required": [
+         "title"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Created",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Task"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Refused, with the reason",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/tasks/{id}": {
+   "get": {
+    "operationId": "getTask",
+    "summary": "One task",
+    "description": "Scope tasks:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Task"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "operationId": "updateTask",
+    "summary": "Change a task, or mark it done",
+    "description": "Scope tasks:write.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The task id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "title": {
+          "type": "string"
+         },
+         "details": {
+          "type": "string"
+         },
+         "client_id": {
+          "type": "string"
+         },
+         "assignee_id": {
+          "type": "string"
+         },
+         "due": {
+          "type": "string",
+          "description": "YYYY-MM-DD"
+         },
+         "priority": {
+          "type": "string",
+          "enum": [
+           "high",
+           "normal",
+           "low"
+          ]
+         },
+         "status": {
+          "type": "string",
+          "enum": [
+           "new",
+           "in_progress",
+           "waiting",
+           "review",
+           "done"
+          ]
+         },
+         "type": {
+          "type": "string"
+         },
+         "start_time": {
+          "type": "string"
+         },
+         "end_time": {
+          "type": "string"
+         },
+         "budget_minutes": {
+          "type": "integer"
+         },
+         "proof": {
+          "type": "string",
+          "description": "When marking done: the line posted as proof of work"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Changed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Task"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/clients": {
+   "get": {
+    "operationId": "listClients",
+    "summary": "List clients",
+    "description": "Scope clients:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "include_archived",
+      "in": "query",
+      "required": false,
+      "description": "true to include archived clients",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Client"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/clients/{id}": {
+   "get": {
+    "operationId": "getClient",
+    "summary": "One client",
+    "description": "Scope clients:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Client"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/people": {
+   "get": {
+    "operationId": "listPeople",
+    "summary": "List people (names and roles only)",
+    "description": "Scope people:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Person"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/people/{id}": {
+   "get": {
+    "operationId": "getPerson",
+    "summary": "One person",
+    "description": "Scope people:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Person"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/time_entries": {
+   "get": {
+    "operationId": "listTimeEntries",
+    "summary": "List time entries",
+    "description": "Scope time:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "First day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "Last day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "person_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this person",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "client_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this client",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "description": "draft, submitted, approved or rejected",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "billable",
+      "in": "query",
+      "required": false,
+      "description": "true or false",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "updated_since",
+      "in": "query",
+      "required": false,
+      "description": "ISO time, a day or milliseconds",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/TimeEntry"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "operationId": "createTimeEntry",
+    "summary": "Log time",
+    "description": "Scope time:write. Send start and end, start and minutes, or date and minutes.",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "start": {
+          "type": "string"
+         },
+         "end": {
+          "type": "string"
+         },
+         "minutes": {
+          "type": "integer"
+         },
+         "date": {
+          "type": "string"
+         },
+         "task_id": {
+          "type": "string"
+         },
+         "client_id": {
+          "type": "string"
+         },
+         "note": {
+          "type": "string"
+         },
+         "billable": {
+          "type": "boolean"
+         },
+         "person_id": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Logged",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/TimeEntry"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Refused, with the reason",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/time_entries/{id}": {
+   "get": {
+    "operationId": "getTimeEntry",
+    "summary": "One time entry",
+    "description": "Scope time:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/TimeEntry"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timesheets": {
+   "get": {
+    "operationId": "listTimesheets",
+    "summary": "List weekly timesheets",
+    "description": "Scope time:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "First day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "Last day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "person_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this person",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "description": "draft, submitted, approved or rejected",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Timesheet"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/invoices": {
+   "get": {
+    "operationId": "listInvoices",
+    "summary": "List invoices",
+    "description": "Scope invoices:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "First day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "Last day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "description": "draft, sent, paid or void",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "client_id",
+      "in": "query",
+      "required": false,
+      "description": "Only this client",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Invoice"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/invoices/{id}": {
+   "get": {
+    "operationId": "getInvoice",
+    "summary": "One invoice",
+    "description": "Scope invoices:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Invoice"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/meetings": {
+   "get": {
+    "operationId": "listMeetings",
+    "summary": "List meetings",
+    "description": "Scope meetings:read.",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "description": "1 to 200, 50 by default",
+      "schema": {
+       "type": "integer"
+      }
+     },
+     {
+      "name": "cursor",
+      "in": "query",
+      "required": false,
+      "description": "next_cursor from the page before",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "description": "First day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "description": "Last day, YYYY-MM-DD",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "description": "scheduled or cancelled",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "One page",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Meeting"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "A filter is not right",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/meetings/{id}": {
+   "get": {
+    "operationId": "getMeeting",
+    "summary": "One meeting, with its video link",
+    "description": "Scope meetings:read.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Meeting"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/events": {
+   "get": {
+    "operationId": "listEventTypes",
+    "summary": "The events this token may follow",
+    "responses": {
+     "200": {
+      "description": "Event types",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/events/{type}/sample": {
+   "get": {
+    "operationId": "eventSamples",
+    "summary": "Up to three recent examples of an event, shaped as webhooks send them",
+    "parameters": [
+     {
+      "name": "type",
+      "in": "path",
+      "required": true,
+      "description": "An event type",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Examples",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Event"
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/hooks": {
+   "get": {
+    "operationId": "listHooks",
+    "summary": "Webhooks",
+    "description": "Scope webhooks.",
+    "responses": {
+     "200": {
+      "description": "Webhooks",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "array",
+           "items": {
+            "$ref": "#/components/schemas/Hook"
+           }
+          },
+          "next_cursor": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "has_more": {
+           "type": "boolean"
+          }
+         }
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "operationId": "createHook",
+    "summary": "Add a webhook (Zapier and Make subscribe this way)",
+    "description": "Scope webhooks. The address must be a public https address.",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "required": [
+         "url",
+         "events"
+        ],
+        "properties": {
+         "url": {
+          "type": "string"
+         },
+         "events": {
+          "type": "array",
+          "items": {
+           "$ref": "#/components/schemas/EventType"
+          }
+         },
+         "name": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Added, with its signing secret shown once",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Hook"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Refused, with the reason",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/hooks/{id}": {
+   "get": {
+    "operationId": "getHook",
+    "summary": "One webhook",
+    "description": "Scope webhooks.",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Found",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Hook"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Not found, or not visible to this token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "operationId": "deleteHook",
+    "summary": "Remove a webhook",
+    "parameters": [
+     {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The webhook id",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Removed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timer": {
+   "get": {
+    "operationId": "timer",
+    "summary": "Your own timer, clock, still working check and today's minutes",
+    "description": "Scope time:read.",
+    "responses": {
+     "200": {
+      "description": "The timer now",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Timer"
+          },
+          "message": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timer/start": {
+   "post": {
+    "operationId": "timerStart",
+    "summary": "Start a timer on a task",
+    "description": "Scope time:write. Stops any other timer. API timers never count as screen shared, so a Proof mode client answers 409 proof_mode.",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "task_id": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "task_id"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "The timer now",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Timer"
+          },
+          "message": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "No such task this token may see",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "proof_mode: start this timer in the app",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "The request broke a rule",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timer/stop": {
+   "post": {
+    "operationId": "timerStop",
+    "summary": "Stop the running timer",
+    "description": "Scope time:write.",
+    "requestBody": {
+     "required": false,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "note": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "The timer now",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Timer"
+          },
+          "message": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Nothing is running",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timer/answer": {
+   "post": {
+    "operationId": "timerAnswer",
+    "summary": "Answer the still working check",
+    "description": "Scope time:write.",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "check_id": {
+          "type": "string"
+         },
+         "answer": {
+          "type": "string",
+          "enum": [
+           "yes",
+           "pause",
+           "stopped"
+          ]
+         },
+         "stopped_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Required with stopped"
+         }
+        },
+        "required": [
+         "answer"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "The timer now",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Timer"
+          },
+          "message": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "The request broke a rule",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/timer/active": {
+   "post": {
+    "operationId": "timerActive",
+    "summary": "Say the person is active, as using the app does",
+    "description": "Scope time:write.",
+    "responses": {
+     "200": {
+      "description": "The timer now",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "$ref": "#/components/schemas/Timer"
+          },
+          "message": {
+           "type": "string"
+          }
+         }
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Nothing is running",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "No valid token",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Missing scope, or not allowed",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many requests; see Retry-After",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/connect": {
+   "post": {
+    "operationId": "connect",
+    "summary": "Swap a code from the app for a personal token (the browser extension)",
+    "description": "No token needed. A code works once, for 10 minutes. At most 20 tries in 10 minutes from one address.",
+    "security": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "code": {
+          "type": "string",
+          "description": "The 10 characters shown in the app"
+         },
+         "browser": {
+          "type": "string",
+          "description": "chrome, edge or firefox"
+         }
+        },
+        "required": [
+         "code"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Connected",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "data": {
+           "type": "object",
+           "properties": {
+            "token": {
+             "type": "string"
+            },
+            "workspace": {
+             "type": "object",
+             "properties": {
+              "id": {
+               "type": "string"
+              },
+              "name": {
+               "type": "string"
+              }
+             }
+            },
+            "person": {
+             "$ref": "#/components/schemas/PersonRef"
+            },
+            "scopes": {
+             "type": "array",
+             "items": {
+              "type": "string"
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "410": {
+      "description": "gone: the code expired",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "The code is wrong or used",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "429": {
+      "description": "Too many tries",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "webhooks": {
+  "task.created": {
+   "post": {
+    "summary": "The task.created event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "task.updated": {
+   "post": {
+    "summary": "The task.updated event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "task.done": {
+   "post": {
+    "summary": "The task.done event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "time_entry.created": {
+   "post": {
+    "summary": "The time_entry.created event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "time_entry.approved": {
+   "post": {
+    "summary": "The time_entry.approved event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "timesheet.approved": {
+   "post": {
+    "summary": "The timesheet.approved event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "invoice.sent": {
+   "post": {
+    "summary": "The invoice.sent event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "invoice.paid": {
+   "post": {
+    "summary": "The invoice.paid event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "client_request.created": {
+   "post": {
+    "summary": "The client_request.created event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "meeting.scheduled": {
+   "post": {
+    "summary": "The meeting.scheduled event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "attendance.late": {
+   "post": {
+    "summary": "The attendance.late event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "attendance.missed": {
+   "post": {
+    "summary": "The attendance.missed event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  },
+  "leave.approved": {
+   "post": {
+    "summary": "The leave.approved event",
+    "description": "Signed with HMAC SHA256 in the Handlark-Signature header: t=UNIX_SECONDS,v1=HEX of t and the body joined by a full stop. Answer with any 2xx status within 10 seconds.",
+    "parameters": [
+     {
+      "name": "Handlark-Signature",
+      "in": "header",
+      "required": false,
+      "description": "t=...,v1=...",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Event",
+      "in": "header",
+      "required": false,
+      "description": "The event type",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Handlark-Delivery",
+      "in": "header",
+      "required": false,
+      "description": "The delivery id",
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "Idempotency-Key",
+      "in": "header",
+      "required": false,
+      "description": "The event id; ignore one you have seen",
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Event"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Received"
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "securitySchemes": {
+   "token": {
+    "type": "http",
+    "scheme": "bearer",
+    "description": "An API token: hl_ws_ (workspace) or hl_pt_ (personal), made under Settings, Integrations, API tokens"
+   }
+  },
+  "schemas": {
+   "Error": {
+    "type": "object",
+    "required": [
+     "error"
+    ],
+    "properties": {
+     "error": {
+      "type": "object",
+      "required": [
+       "code",
+       "message"
+      ],
+      "properties": {
+       "code": {
+        "type": "string",
+        "enum": [
+         "unauthorized",
+         "forbidden",
+         "read_only",
+         "not_found",
+         "method",
+         "invalid",
+         "rate_limited",
+         "server"
+        ]
+       },
+       "message": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   },
+   "PersonRef": {
+    "type": [
+     "object",
+     "null"
+    ],
+    "properties": {
+     "id": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "name": {
+      "type": "string"
+     }
+    },
+    "description": "A person: their id and name. A hidden person shows as A teammate with no id."
+   },
+   "ClientRef": {
+    "type": [
+     "object",
+     "null"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     }
+    }
+   },
+   "Task": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "details": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "new",
+       "in_progress",
+       "waiting",
+       "review",
+       "done"
+      ]
+     },
+     "priority": {
+      "type": "string",
+      "enum": [
+       "high",
+       "normal",
+       "low"
+      ]
+     },
+     "type": {
+      "type": "string"
+     },
+     "client": {
+      "$ref": "#/components/schemas/ClientRef"
+     },
+     "assignee": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "created_by": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "due": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "start_time": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "end_time": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "needs_sign_off": {
+      "type": "boolean"
+     },
+     "budget_minutes": {
+      "type": "integer"
+     },
+     "request": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "state": {
+        "type": "string"
+       },
+       "from": {
+        "type": "string"
+       }
+      }
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "updated_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "done_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Client": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "client",
+       "internal"
+      ]
+     },
+     "color": {
+      "type": "string"
+     },
+     "archived": {
+      "type": "boolean"
+     },
+     "currency": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Person": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "job_title": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string",
+      "enum": [
+       "owner",
+       "manager",
+       "team_lead",
+       "member"
+      ]
+     },
+     "teams": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "joined": {
+      "type": "boolean"
+     }
+    }
+   },
+   "TimeEntry": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "person": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "client": {
+      "$ref": "#/components/schemas/ClientRef"
+     },
+     "task": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "title": {
+        "type": "string"
+       }
+      }
+     },
+     "start": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "end": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "minutes": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "running": {
+      "type": "boolean"
+     },
+     "billable": {
+      "type": "boolean"
+     },
+     "source": {
+      "type": "string",
+      "enum": [
+       "timer",
+       "clock",
+       "manual",
+       "focus"
+      ]
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "draft",
+       "submitted",
+       "approved",
+       "rejected"
+      ]
+     },
+     "note": {
+      "type": "string"
+     },
+     "invoiced": {
+      "type": "boolean"
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Timesheet": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "person": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "week": {
+      "type": "string",
+      "description": "The Monday of the week, YYYY-MM-DD"
+     },
+     "status": {
+      "type": "string"
+     },
+     "submitted_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "decided_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "decided_by": {
+      "$ref": "#/components/schemas/PersonRef"
+     }
+    }
+   },
+   "Invoice": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "number": {
+      "type": "string"
+     },
+     "client": {
+      "$ref": "#/components/schemas/ClientRef"
+     },
+     "client_name": {
+      "type": "string"
+     },
+     "currency": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "draft",
+       "sent",
+       "paid",
+       "void"
+      ]
+     },
+     "issued": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "due": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "period_from": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "period_to": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "subtotal": {
+      "type": "number"
+     },
+     "tax_percent": {
+      "type": "number"
+     },
+     "tax": {
+      "type": "number"
+     },
+     "total": {
+      "type": "number"
+     },
+     "lines": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "description": {
+         "type": "string"
+        },
+        "quantity": {
+         "type": "number"
+        },
+        "rate": {
+         "type": "number"
+        }
+       }
+      }
+     },
+     "sent_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "paid_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Meeting": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "start": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "duration_minutes": {
+      "type": "integer"
+     },
+     "status": {
+      "type": "string"
+     },
+     "client": {
+      "$ref": "#/components/schemas/ClientRef"
+     },
+     "attendees": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/PersonRef"
+      }
+     },
+     "place": {
+      "type": "string"
+     },
+     "join_url": {
+      "type": "string",
+      "description": "Only when one meeting is read by id"
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Attendance": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "person": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "day": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "late",
+       "missed",
+       "early"
+      ]
+     },
+     "late_minutes": {
+      "type": "integer"
+     },
+     "scheduled_start": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "scheduled_end": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "Leave": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "person": {
+      "$ref": "#/components/schemas/PersonRef"
+     },
+     "from": {
+      "type": "string"
+     },
+     "to": {
+      "type": "string"
+     },
+     "half_day": {
+      "type": "boolean"
+     },
+     "status": {
+      "type": "string"
+     }
+    }
+   },
+   "Hook": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "url": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "type": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "events": {
+      "type": "array",
+      "items": {
+       "$ref": "#/components/schemas/EventType"
+      }
+     },
+     "active": {
+      "type": "boolean"
+     },
+     "created_at": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "secret": {
+      "type": "string",
+      "description": "Only in the answer to POST /hooks: the signing secret, shown once"
+     }
+    }
+   },
+   "EventType": {
+    "type": "string",
+    "enum": [
+     "task.created",
+     "task.updated",
+     "task.done",
+     "time_entry.created",
+     "time_entry.approved",
+     "timesheet.approved",
+     "invoice.sent",
+     "invoice.paid",
+     "client_request.created",
+     "meeting.scheduled",
+     "attendance.late",
+     "attendance.missed",
+     "leave.approved"
+    ]
+   },
+   "Event": {
+    "type": "object",
+    "required": [
+     "id",
+     "type",
+     "created_at",
+     "workspace",
+     "data"
+    ],
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "The event id, also sent as the Idempotency-Key header"
+     },
+     "type": {
+      "$ref": "#/components/schemas/EventType"
+     },
+     "created_at": {
+      "type": "string"
+     },
+     "workspace": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "name": {
+        "type": "string"
+       }
+      }
+     },
+     "data": {
+      "oneOf": [
+       {
+        "$ref": "#/components/schemas/Task"
+       },
+       {
+        "$ref": "#/components/schemas/TimeEntry"
+       },
+       {
+        "$ref": "#/components/schemas/Timesheet"
+       },
+       {
+        "$ref": "#/components/schemas/Invoice"
+       },
+       {
+        "$ref": "#/components/schemas/Meeting"
+       },
+       {
+        "$ref": "#/components/schemas/Attendance"
+       },
+       {
+        "$ref": "#/components/schemas/Leave"
+       }
+      ]
+     }
+    }
+   },
+   "Timer": {
+    "type": "object",
+    "properties": {
+     "running": {
+      "type": "object",
+      "nullable": true,
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "task": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "title": {
+          "type": "string"
+         }
+        }
+       },
+       "client": {
+        "$ref": "#/components/schemas/ClientRef"
+       },
+       "start": {
+        "type": "string",
+        "format": "date-time"
+       },
+       "minutes": {
+        "type": "integer"
+       },
+       "focus": {
+        "type": "boolean"
+       }
+      }
+     },
+     "clock": {
+      "type": "object",
+      "properties": {
+       "clocked_in": {
+        "type": "boolean"
+       },
+       "on_break": {
+        "type": "boolean"
+       },
+       "client": {
+        "$ref": "#/components/schemas/ClientRef"
+       },
+       "since": {
+        "type": "string",
+        "nullable": true
+       }
+      }
+     },
+     "check": {
+      "type": "object",
+      "nullable": true,
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "asked_at": {
+        "type": "string",
+        "format": "date-time"
+       },
+       "what": {
+        "type": "string"
+       }
+      }
+     },
+     "today_minutes": {
+      "type": "integer"
+     },
+     "proof_client_ids": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Clients whose timers must be started in the app (Proof mode)"
+     }
+    }
+   }
+  }
+ }
+}

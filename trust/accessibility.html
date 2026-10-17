@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Accessibility statement | Handlark</title>
+<meta name="description" content="Our target is WCAG 2.1 level AA for the app, the client page, the sales page, the help centre and the extension. Here is how we test, and what we still have to fix.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="../app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="../app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../" aria-label="Handlark home"><img class="light-only" src="../app/logo.svg" alt="Handlark" width="150" height="40"><img class="dark-only" src="../brand/handlark_logo_dark_mode.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Site"><a href="../help/">Help centre</a><a href="../trust/" aria-current="page">Trust centre</a><a href="../api.html">API</a><a href="../privacy.html">Privacy</a></nav>
+    <a class="btn" href="../app/">Open <span data-brand>Handlark</span></a>
+  </header>
+  <div class="hero">
+    <p class="crumbs"><a href="./">Trust centre</a></p>
+    <h1>Accessibility statement</h1>
+    <p>Our target is WCAG 2.1 level AA for the app, the client page, the sales page, the help centre and the extension. Here is how we test, and what we still have to fix.</p>
+    <p class="upd">Last updated 17 October 2026</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol><li><a href="#target">Our target</a></li><li><a href="#how">How we test</a></li><li><a href="#results">What the last audit found</a></li><li><a href="#gaps">Known gaps</a></li><li><a href="#built">What is built in</a></li><li><a href="#contact">Tell us about a barrier</a></li></ol></aside>
+    <div style="min-width:0"><article id="main">
+<p class="sum"><b>In short:</b> Handlark aims to meet WCAG 2.1 level AA. We test with the axe engine on every release, our walkthroughs check keyboard use, we fixed what the last audit found, and we list the gaps we know about below. Tell us about any barrier at <a data-cfg="email" href="mailto:hello@example.com">hello@example.com</a> and we answer within 3 working days.</p><section id="target"><h2>Our target</h2><p>WCAG 2.1 level AA, and the newer 2.2 criteria where we can, for the web app (including the client page and the live demo), the sales page, the legal pages, the help centre, the trust centre and the browser extension's popup and settings.</p></section><section id="how"><h2>How we test</h2><p>On every release, <code>demo/check_trust.mjs</code> runs the axe engine (axe core 4) in Chromium over the main app screens (Home, Tasks, the task sheet, the time clock, Insights, Settings, the account sheet, the client page), the sales page, the legal pages, the help centre and this trust centre, in light and dark, at computer and phone widths; <code>demo/check_extension.mjs</code> does the same for the extension. Any serious or critical finding fails the release. The walkthroughs also check that sheets close with Escape, that focus moves into them, and that nothing scrolls sideways at phone width. An automated audit finds only part of what matters, so testing by hand with a screen reader is on our list below.</p></section><section id="results"><h2>What the last audit found</h2><p>Audit of 16 October 2026, version 1.15.0, axe core 4.14 with the WCAG 2.0 and 2.1 A and AA rules, in Chromium.</p>
+<p><b>The first run found 8 kinds of serious or critical issue, and all are fixed:</b></p>
+<ul><li>Text contrast below 4.5 to 1: finished steps on the setup checklist (they were faded), plain grey labels such as "Small starts count", the small words on an overdue countdown, the current page link in the legal pages' footer, and one small heading on the sales page.</li>
+<li>Buttons whose spoken name did not include the words you see: the team time pill and the account button.</li>
+<li>Insights tabs marked as pressed buttons instead of selected tabs.</li>
+<li>Labels on elements that cannot carry one: the bars of the week chart and the away from site marks.</li>
+<li>Map links placed inside a clickable time clock row, which screen readers cannot reach properly.</li>
+<li>Code examples in the API guide that scrolled sideways but could not be reached with the keyboard.</li>
+<li>A link inside a decorative picture on the sales page that keyboard users could land on.</li>
+<li>The referral link box in Settings had no label.</li></ul>
+<p><b>After the fixes, the audit finds no issues at any level</b> on the screens it covers, in light and dark, at computer and phone widths, and in French: Home, Tasks, the task sheet, the time clock, the Insights overview, Settings, the account sheet, the Help sheet, the browser extension sheet, the data processing agreement sheet, the client page, the sales page, the legal pages, the API guide, the help centre and every trust centre page. The extension's popup and settings page also pass.</p></section><section id="gaps"><h2>Known gaps</h2><ul><li><b>No test with a screen reader by hand yet.</b> We plan to test with NVDA on Windows and VoiceOver on iPhone and Mac, and will list what we find here.</li>
+<li><b>Screens the audit does not open yet:</b> billing and plans, payroll and payslips, the invoice editor, the calendar and meeting sheets, the Proof mode review, attendance and shift plans, and the operator's admin pages. They use the same parts as the audited screens, but have not been checked one by one.</li>
+<li><b>WCAG 2.2 criteria</b> such as target size and focus not hidden are not measured automatically, and we have not yet checked them by hand.</li>
+<li><b>Charts:</b> the week chart in Insights gives each bar a spoken label; the other charts have not been checked one by one.</li>
+<li><b>French</b> covers navigation, Home, tasks, the timer, the time clock, the client page and emails. Some owner settings, billing, payroll and admin screens are still in English, and numbers use a dot for decimals.</li>
+<li><b>The extension's Start timer button</b> sits on GitHub, Jira, Trello, Asana, Google Docs and Gmail pages, so how easy it is to reach also depends on those sites.</li></ul></section><section id="built"><h2>What is built in</h2><ul><li>Every colour pair is measured: body text at least 4.5 to 1, interface parts at least 3 to 1, in light and dark (<code>notes/brand_palette.md</code>).</li>
+<li>Coral buttons carry plum labels, since white on coral fails contrast.</li>
+<li>Everything works with a keyboard, with a visible coral focus ring; sheets close with Escape.</li>
+<li>Reduced motion stops the rotating line, slides and fills.</li>
+<li>Screen readers get labels on icon buttons, live regions for timers and messages, and the line on Home announces only when asked.</li>
+<li>Charts always have a legend with totals and a table view, so colour is never the only cue.</li>
+<li>The page language is set, and follows the language each person picks.</li></ul></section><section id="contact"><h2>Tell us about a barrier</h2><p>Write to <a data-cfg="email" href="mailto:hello@example.com">hello@example.com</a> with the page and what happened. If you are not happy with our answer you can contact your national regulator, such as the Equality and Human Rights Commission in the United Kingdom.</p></section>
+    </article></div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="More pages"><a href="../">Home</a><a href="../help/">Help centre</a><a href="../trust/">Trust centre</a><a href="../privacy.html">Privacy</a><a href="../terms.html">Terms</a><a href="../security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="../app/config.js"></script>
+<script src="../main.js"></script>
+</body>
+</html>

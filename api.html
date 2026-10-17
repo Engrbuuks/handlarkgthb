@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>API guide | Handlark</title>
+<meta name="description" content="The Handlark REST API, API tokens and scopes, signed webhooks, chat alerts, and Zapier and Make, with examples.">
+<meta name="theme-color" content="#2E1C47">
+<link rel="icon" href="app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="app/favicon_32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
+<style>
+:root{color-scheme:light;--page:#FBF8FA;--paper:#FFFFFF;--mist:#F3EEF7;--ink:#1E1230;--ink2:#25173B;--muted:#6F6680;--line:#EAE4EF;
+  --coral:#FF7059;--coral2:#E85A44;--coral-ink:#B83A27;--on-coral:#2E1C47;--blush:#FFE7E1;--blush2:#FFD5CB;--plum:#2E1C47;--plum2:#402862;--plum3:#5A3D82;
+  --code:#1E1230;--code-ink:#F3EEF8;--code-key:#FFD5CB;--ok:#1B7450;--ok-soft:#E2F3EA;--warn:#94580A;--warn-soft:#FFF0D6;
+  --display:"Bricolage Grotesque","Manrope","Segoe UI",system-ui,sans-serif;--body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--page:#150D20;--paper:#1F1530;--mist:#2A1E3D;--ink:#E9DEF8;--ink2:#F3EEF8;--muted:#B5AAC6;--line:#33264A;
+  --coral-ink:#FF9C88;--blush:#3A2233;--blush2:#FFD5CB;--plum2:#D9C8F2;--code:#0F0918;--ok:#5BCB97;--ok-soft:#163427;--warn:#F2B866;--warn-soft:#3A2913}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--page);color:var(--ink2);font:400 15.5px/1.7 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--plum2);text-decoration-color:var(--coral);text-underline-offset:3px}
+a:hover{color:var(--coral-ink)}
+:focus-visible{outline:2.5px solid var(--coral);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1160px,100%);margin:0 auto;padding-inline:20px}
+.top{display:flex;align-items:center;gap:18px;padding:22px 0}
+.top .logo img{display:block;height:36px;width:auto}
+@media (prefers-color-scheme:dark){.top .logo img{content:url(app/logo_white.svg)}}
+.top nav{display:flex;gap:22px;margin-left:auto;font:500 14px var(--body)}
+.top nav a{color:var(--ink);text-decoration:none}
+.top nav a[aria-current]{color:var(--coral-ink)}
+.btn{display:inline-flex;align-items:center;border-radius:12px;background:var(--plum);color:#fff;text-decoration:none;font:700 14px/1 var(--body);padding:12px 20px;box-shadow:0 8px 20px -10px rgba(30,18,48,.6)}
+.btn:hover{background:var(--plum2);color:#fff}
+@media (prefers-color-scheme:dark){.btn{background:#3A2559}.btn:hover{background:#4B3070}}
+.hero{background:radial-gradient(700px 380px at 100% 0%,rgba(122,86,170,.55),transparent 62%),#2E1C47;color:#fff;border-radius:24px;padding:44px 40px;position:relative;overflow:hidden}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--body);color:#FFD5CB}
+.eyebrow:before{content:"";width:22px;height:3px;border-radius:2px;background:var(--coral)}
+h1,h2,h3{font-family:var(--display);color:var(--ink);text-wrap:balance;letter-spacing:-.02em}
+.hero h1{color:#fff;font-size:clamp(32px,5vw,48px);line-height:1.1;margin:14px 0 10px;font-weight:600}
+.hero p{margin:0;color:#DED6EA;max-width:66ch}
+.hero .upd{margin-top:16px;font-size:13px;color:#FFD5CB}
+.base{margin-top:18px;display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:8px 12px;font-size:13.5px;color:#fff;max-width:100%}
+.base code{background:none;color:#FFD5CB;padding:0;overflow-wrap:anywhere}
+.body{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;margin:36px auto 80px;align-items:start}
+.toc{position:sticky;top:20px;background:var(--paper);border-radius:20px;padding:18px 18px 14px;font-size:13.5px;box-shadow:0 0 0 1px rgba(46,28,71,.05),0 8px 22px -12px rgba(46,28,71,.14);max-height:calc(100vh - 40px);overflow:auto}
+.toc b{display:block;font:700 13px var(--body);color:var(--muted);margin-bottom:8px}
+.toc ol{margin:0;padding:0 0 0 18px;display:grid;gap:6px}
+.toc a{color:var(--ink2);text-decoration:none}
+.toc a:hover{color:var(--coral-ink)}
+article{background:var(--paper);border-radius:24px;padding:36px 40px;min-width:0;box-shadow:0 0 0 1px rgba(46,28,71,.05),0 8px 22px -12px rgba(46,28,71,.14)}
+article section{padding:4px 0 10px;scroll-margin-top:20px}
+article section+section{border-top:1px solid var(--line);margin-top:18px;padding-top:22px}
+article h2{font-size:22px;line-height:1.25;margin:0 0 10px;font-weight:600}
+article h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+article p{margin:0 0 12px}
+article ul,article ol{margin:0 0 12px;padding-left:20px;display:grid;gap:6px}
+.sum{background:var(--blush);border-radius:16px;padding:16px 18px;margin:0 0 22px;color:var(--ink2)}
+.sum b{color:var(--ink)}
+.tbl{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font:700 13px var(--body);color:var(--muted);background:var(--mist)}
+tr:last-child td{border-bottom:0}
+code{font:13.5px/1.5 var(--mono);background:var(--mist);color:var(--ink);border-radius:6px;padding:1px 6px;overflow-wrap:anywhere}
+pre{background:var(--code);color:var(--code-ink);border-radius:14px;padding:14px 16px;overflow-x:auto;margin:0 0 14px;font:13px/1.6 var(--mono)}
+pre code{background:none;color:inherit;padding:0;overflow-wrap:normal;font:inherit}
+.m{display:inline-block;min-width:58px;text-align:center;font:700 12px/1 var(--mono);border-radius:6px;padding:5px 6px;background:var(--ok-soft);color:var(--ok)}
+.m.post{background:var(--blush);color:var(--coral-ink)}.m.patch,.m.del{background:var(--warn-soft);color:var(--warn)}
+.ep{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin:18px 0 6px}
+.ep code{font-weight:700;font-size:14px}
+.note{background:var(--mist);border-radius:12px;padding:12px 14px;font-size:14.5px;margin:0 0 14px}
+footer{background:#1E1230;color:#CEC4DC;padding:34px 0;font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:#CEC4DC;text-decoration:none}
+footer a:hover,footer a[aria-current]{color:#FF9C88}
+@media (max-width:900px){
+  .top nav{display:none}
+  .top .btn{margin-left:auto}
+  .body{grid-template-columns:1fr;gap:18px;margin-top:22px}
+  .toc{position:static;max-height:none}
+  .toc ol{grid-template-columns:1fr 1fr;gap:6px 18px}
+}
+@media (max-width:620px){
+  .wrap{padding-inline:16px}
+  .top{padding:16px 0}
+  .top .logo img{height:30px}
+  .top .btn{padding:10px 14px;font-size:13px}
+  .hero{padding:30px 22px;border-radius:22px}
+  article{padding:24px 18px;border-radius:20px}
+  .toc ol{grid-template-columns:1fr}
+  pre{font-size:12px;padding:12px}
+  footer .wrap{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="Handlark home"><img src="app/logo.svg" alt="Handlark" width="150" height="40"></a>
+    <nav aria-label="Pages"><a href="api.html" aria-current="page">API</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="security.html">Security</a></nav>
+    <a class="btn" href="./"><span>Back to <span data-brand>Handlark</span></span></a>
+  </header>
+  <div class="hero">
+    <span class="eyebrow">Developers</span>
+    <h1>API guide</h1>
+    <p>Connect <span data-brand>Handlark</span> to your own tools: read and add work with the REST API, get signed webhooks as things happen, post news to Slack, Microsoft Teams and Discord, or use Zapier and Make without writing code.</p>
+    <p class="base">Base address <code data-cfg="apibase">https://YOUR_PROJECT_REF.supabase.co/functions/v1/api/v1</code></p>
+    <p class="upd">Version 1, from <span data-brand>Handlark</span> 1.12.0. Last updated 16 October 2026. Machine readable: <a href="openapi.json" style="color:#FFD5CB">openapi.json</a> (OpenAPI 3.1).</p>
+  </div>
+  <div class="body">
+    <aside class="toc" aria-label="On this page"><b>On this page</b><ol>
+      <li><a href="#start">Start in two minutes</a></li><li><a href="#tokens">API tokens and scopes</a></li><li><a href="#privacy">What never leaves</a></li>
+      <li><a href="#requests">Requests, pages and errors</a></li><li><a href="#limits">Limits</a></li><li><a href="#endpoints">Endpoints</a></li>
+      <li><a href="#webhooks">Webhooks</a></li><li><a href="#verify">Checking a signature</a></li><li><a href="#events">Events</a></li>
+      <li><a href="#chat">Slack, Teams and Discord</a></li><li><a href="#nocode">Zapier and Make</a></li><li><a href="#changes">Versions</a></li></ol></aside>
+    <article>
+<p class="sum"><b>In short:</b> make a token under Settings, Integrations (or in your account), send it as <code>Authorization: Bearer hl_...</code>, and every request runs with exactly your permissions, cut down to the scopes you ticked. Lists come in pages of up to 200. Webhooks are signed with HMAC SHA256 and retried for about two days.</p>
+
+<section id="start"><h2>Start in two minutes</h2>
+<ol><li>In <span data-brand>Handlark</span>, open Settings, Integrations, API tokens (members: your account, API tokens) and choose <b>Make token</b>. Copy it: it is shown only once.</li>
+<li>Call the API with it. This lists your newest open tasks:</li></ol>
+<pre tabindex="0"><code>curl "https://YOUR_PROJECT_REF.supabase.co/functions/v1/api/v1/tasks?status=new&amp;limit=5" \
+  -H "Authorization: Bearer hl_ws_your_token_here"</code></pre>
+<p>Every answer is JSON. A list looks like this:</p>
+<pre tabindex="0"><code>{
+  "data": [
+    { "id": "t1", "title": "Reconcile September bank statements", "status": "in_progress", "priority": "high",
+      "client": { "id": "c9", "name": "Brooks Dental (US)" }, "assignee": { "id": "p-kemi", "name": "Kemi Bello" },
+      "due": "2026-10-16", "created_at": "2026-10-14T10:00:00.000Z", "updated_at": "2026-10-15T09:12:44.000Z" }
+  ],
+  "next_cursor": "eyJrIjoxNzYwNDM2MDAwMDAwLCJpZCI6InQxIn0",
+  "has_more": true
+}</code></pre>
+</section>
+
+<section id="tokens"><h2>API tokens and scopes</h2>
+<p>There are two kinds of token. Both are shown once, stored only as a SHA 256 hash, can be revoked at any time, show when they were last used, and every change they make is written to the history with the token's name.</p>
+<div class="tbl"><table><thead><tr><th scope="col">Kind</th><th scope="col">Who makes it</th><th scope="col">Acts as</th></tr></thead><tbody>
+<tr><td>Workspace token <code>hl_ws_</code></td><td>The owner</td><td>The owner, cut down to its scopes. Best for Zapier, Make and company systems. It stops working if the workspace gets a new owner.</td></tr>
+<tr><td>Personal token <code>hl_pt_</code></td><td>Anyone in the workspace</td><td>The person who made it, never with more than they may do in the app. If their role changes, the token follows at once.</td></tr></tbody></table></div>
+<div class="tbl"><table><thead><tr><th scope="col">Scope</th><th scope="col">Allows</th><th scope="col">Who may give it</th></tr></thead><tbody>
+<tr><td><code>tasks:read</code></td><td>Read tasks</td><td>Everyone</td></tr>
+<tr><td><code>tasks:write</code></td><td>Create tasks, change them, mark them done</td><td>Everyone</td></tr>
+<tr><td><code>time:read</code></td><td>Read time entries and timesheets</td><td>Everyone (members see their own time)</td></tr>
+<tr><td><code>time:write</code></td><td>Log time</td><td>Everyone</td></tr>
+<tr><td><code>clients:read</code></td><td>Read clients</td><td>Everyone</td></tr>
+<tr><td><code>people:read</code></td><td>Read people: names, job titles, roles and teams only</td><td>Everyone</td></tr>
+<tr><td><code>meetings:read</code></td><td>Read meetings</td><td>Everyone</td></tr>
+<tr><td><code>invoices:read</code></td><td>Read invoices</td><td>The owner, or a manager granted invoices and client billing</td></tr>
+<tr><td><code>webhooks</code></td><td>Add and remove webhooks (Zapier and Make need this)</td><td>The owner, or a manager granted workspace settings</td></tr></tbody></table></div>
+<p>Tokens are not affected by two step sign in: treat them like passwords, keep them out of code you share, and revoke any you no longer use.</p>
+</section>
+
+<section id="privacy"><h2>What never leaves</h2>
+<p>The API, webhooks and chat alerts follow the same rules as the app, with a little more held back:</p>
+<ul><li>Private tasks and anything in a private list never leave, not even through the owner's token.</li>
+<li>People the owner hid are never listed, and their work is left out. Where a name would show, it says "A teammate".</li>
+<li>People are names, job titles, roles and teams. Never emails, phone numbers, locations, pay rates or payout details.</li>
+<li>Time entries never carry pay or bill rates, and Proof mode screenshots never leave through the API at all.</li>
+<li>Leave says who and when, never the kind of leave or the note.</li></ul>
+</section>
+
+<section id="requests"><h2>Requests, pages and errors</h2>
+<h3>Pages</h3>
+<p>Lists are newest first. Send <code>limit</code> (1 to 200, 50 by default) and, for the next page, the <code>next_cursor</code> you got as <code>cursor</code>. When <code>has_more</code> is false you have everything.</p>
+<pre tabindex="0"><code>GET /tasks?limit=100
+GET /tasks?limit=100&amp;cursor=eyJrIjoxNzYwNDM2MDAwMDAwLCJpZCI6InQxIn0</code></pre>
+<h3>Dates and times</h3>
+<p>Days are <code>YYYY-MM-DD</code>. Moments are ISO 8601 in UTC, such as <code>2026-10-14T10:00:00.000Z</code>. Filters <code>from</code> and <code>to</code> are days in the workspace's deadline time zone; <code>updated_since</code> takes an ISO time, a day or milliseconds.</p>
+<h3>Errors</h3>
+<p>Every error has the same shape and a matching HTTP status:</p>
+<pre tabindex="0"><code>{ "error": { "code": "forbidden", "message": "This token does not have the invoices:read scope" } }</code></pre>
+<div class="tbl"><table><thead><tr><th scope="col">Status</th><th scope="col">code</th><th scope="col">Meaning</th></tr></thead><tbody>
+<tr><td>401</td><td><code>unauthorized</code></td><td>No token, an unknown one, or one that was revoked</td></tr>
+<tr><td>403</td><td><code>forbidden</code></td><td>The token lacks the scope, or its person may not do this</td></tr>
+<tr><td>403</td><td><code>read_only</code></td><td>The workspace's plan ended, so it is read only</td></tr>
+<tr><td>404</td><td><code>not_found</code></td><td>Nothing with that id that this token may see</td></tr>
+<tr><td>409</td><td><code>proof_mode</code></td><td>This client uses Proof mode, so its timer must be started in the app, where the screen is shared</td></tr>
+<tr><td>410</td><td><code>gone</code></td><td>A connect code that has expired</td></tr>
+<tr><td>405</td><td><code>method</code></td><td>That method is not allowed on that address</td></tr>
+<tr><td>422</td><td><code>invalid</code></td><td>The request broke a rule; the message says which</td></tr>
+<tr><td>429</td><td><code>rate_limited</code></td><td>Too many requests; wait for <code>Retry-After</code> seconds</td></tr>
+<tr><td>503</td><td><code>server</code></td><td>Something broke on our side; try again shortly</td></tr></tbody></table></div>
+</section>
+
+<section id="limits"><h2>Limits</h2>
+<ul><li>120 requests a minute for each token, and 600 a minute for all the tokens of one workspace together.</li>
+<li>Writes count toward the same daily limits as in the app (for example 200 new tasks an hour).</li>
+<li>Answers carry <code>X-RateLimit-Limit</code> and <code>X-RateLimit-Window</code>; a 429 carries <code>Retry-After</code>.</li></ul>
+</section>
+
+<section id="endpoints"><h2>Endpoints</h2>
+<p>All addresses below follow the base address at the top of this page.</p>
+<div class="ep"><span class="m">GET</span><code>/me</code></div><p>The workspace, the token (its kind and scopes as they apply right now) and the person it acts as.</p>
+<div class="ep"><span class="m">GET</span><code>/tasks</code></div><p>Filters: <code>status</code> (new, in_progress, waiting, review, done), <code>client_id</code>, <code>assignee_id</code>, <code>updated_since</code>, <code>request=true</code> (only client requests), <code>open=true</code> (everything not done), <code>link</code> (tasks that carry this web address as a link; <code>assignee_id=me</code> also works). Scope <code>tasks:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/tasks/{id}</code></div>
+<div class="ep"><span class="m post">POST</span><code>/tasks</code></div><p>Fields: <code>title</code> (required), <code>details</code>, <code>client_id</code>, <code>assignee_id</code>, <code>due</code>, <code>priority</code> (high, normal, low), <code>status</code>, <code>type</code>, <code>start_time</code>, <code>end_time</code>, <code>budget_minutes</code>, and <code>link</code> with <code>link_name</code> to attach a web page (https only) as a link on the task. Scope <code>tasks:write</code>. Answers 201 with the task.</p>
+<pre tabindex="0"><code>curl -X POST "$BASE/tasks" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"title":"Send the October invoice","client_id":"c9","assignee_id":"p-kemi","due":"2026-10-31","priority":"high"}'</code></pre>
+<div class="ep"><span class="m patch">PATCH</span><code>/tasks/{id}</code></div><p>Change any of the fields above. To finish a task send <code>{"status":"done","proof":"Sent to the client"}</code>: the proof line is posted on the task, as in the app. If the task needs sign off, it goes for review.</p>
+<div class="ep"><span class="m">GET</span><code>/clients</code></div><p>Clients and internal clients, without rates. <code>include_archived=true</code> adds archived ones. Scope <code>clients:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/people</code></div><p>Names, job titles, roles (owner, manager, team_lead, member) and teams. Scope <code>people:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/time_entries</code></div><p>Filters: <code>from</code>, <code>to</code>, <code>person_id</code>, <code>client_id</code>, <code>status</code> (draft, submitted, approved, rejected), <code>billable</code>, <code>updated_since</code>. Scope <code>time:read</code>. A member's token sees their own time; a manager's or team lead's, the time of the people they look after.</p>
+<div class="ep"><span class="m post">POST</span><code>/time_entries</code></div><p>Send <code>start</code> and <code>end</code> (ISO), <code>start</code> and <code>minutes</code>, or <code>date</code> and <code>minutes</code>; plus <code>task_id</code> or <code>client_id</code>, <code>note</code>, <code>billable</code>, and <code>person_id</code> to log for someone you manage. Scope <code>time:write</code>. The same checks as the app apply (at most 16 hours added by hand a day, no time in the future).</p>
+<pre tabindex="0"><code>curl -X POST "$BASE/time_entries" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"task_id":"t1","start":"2026-10-15T09:00:00Z","minutes":90,"note":"Matched the Chase statement"}'</code></pre>
+<div class="ep"><span class="m">GET</span><code>/timer</code></div><p>The token's own person right now: <code>running</code> (the timer, its task, client, start and minutes, or null), <code>clock</code> (clocked in, on a break, client, since), <code>check</code> (an open still working check, or null), <code>today_minutes</code> and <code>proof_client_ids</code> (clients whose timers must start in the app). Scope <code>time:read</code>.</p>
+<div class="ep"><span class="m post">POST</span><code>/timer/start</code> <span class="m post">POST</span><code>/timer/stop</code></div><p>Start a timer on <code>task_id</code> (stopping any other one), or stop the running timer with an optional <code>note</code>. Timers started through the API never count as screen shared, so a Proof mode client answers 409 <code>proof_mode</code>. Both answer with the same shape as <code>GET /timer</code>. Scope <code>time:write</code>.</p>
+<div class="ep"><span class="m post">POST</span><code>/timer/answer</code> <span class="m post">POST</span><code>/timer/active</code></div><p>Answer the still working check with <code>answer</code> (yes, pause or stopped, with <code>stopped_at</code> for stopped) and <code>check_id</code>; or tell <span data-brand>Handlark</span> the person is active, the same as using the app. Scope <code>time:write</code>.</p>
+<div class="ep"><span class="m post">POST</span><code>/connect</code></div><p>Used by the browser extension, with no token: send <code>code</code> (the 10 characters shown in the app under your account, Browser extension) and <code>browser</code>. Answers 201 with a personal <code>token</code> (scopes <code>tasks:read</code>, <code>tasks:write</code>, <code>time:read</code>, <code>time:write</code>, <code>clients:read</code>), the workspace and the person. A code works once, for 10 minutes; at most 20 tries in 10 minutes from one address.</p>
+<div class="ep"><span class="m del">DELETE</span><code>/me</code></div><p>The token revokes itself, for example when you disconnect the extension. Answers 200 with <code>{"data":{"id":"…","revoked":true}}</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/timesheets</code></div><p>Weekly timesheets with their status. Filters: <code>from</code>, <code>to</code> (the week's Monday), <code>person_id</code>, <code>status</code>. Scope <code>time:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/invoices</code> and <code>/invoices/{id}</code></div><p>Filters: <code>status</code> (draft, sent, paid, void), <code>client_id</code>, <code>from</code>, <code>to</code> (issue date). Scope <code>invoices:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/meetings</code></div><p>Meetings you can see, with their video link when you open one by id. Filters: <code>from</code>, <code>to</code>, <code>status</code>. Scope <code>meetings:read</code>.</p>
+<div class="ep"><span class="m">GET</span><code>/events</code></div><p>The webhook events this token may follow. <code>GET /events/{type}/sample</code> gives up to three recent examples, shaped exactly as webhooks send them.</p>
+<div class="ep"><span class="m">GET</span><code>/hooks</code> <span class="m post">POST</span><code>/hooks</code> <span class="m del">DELETE</span><code>/hooks/{id}</code></div><p>Webhooks added through the API, for tools such as Zapier and Make. POST takes <code>url</code> and <code>events</code>, and answers with the signing secret once. Scope <code>webhooks</code>.</p>
+</section>
+
+<section id="webhooks"><h2>Webhooks</h2>
+<p>The owner (or a manager granted workspace settings) adds webhooks under Settings, Integrations, Webhooks: an https address and the events it wants. Each event is sent as a POST with a JSON body:</p>
+<pre tabindex="0"><code>POST /your/endpoint
+Content-Type: application/json
+User-Agent: Handlark-Webhooks/1.0
+Handlark-Event: task.done
+Handlark-Delivery: 1043
+Idempotency-Key: evt_9f2c41a7b03e5d18c6a2f704
+Handlark-Signature: t=1760610000,v1=5b1f0e...c94d
+
+{ "id": "evt_9f2c41a7b03e5d18c6a2f704", "type": "task.done", "created_at": "2026-10-16T10:20:00.000Z",
+  "workspace": { "id": "7f3c2a10-...", "name": "Brightline Assistants" },
+  "data": { "id": "t1", "title": "Reconcile September bank statements", "status": "done", "...": "..." } }</code></pre>
+<ul><li><b>Answer quickly with any 2xx status.</b> Anything else, no answer in 10 seconds, or a redirect counts as a failure.</li>
+<li><b>Retries</b> wait 1, 5, 15 and 60 minutes, then 3, 6, 12 and 24 hours: nine tries over about two days. The delivery log in the app shows each one, and you can send any of them again.</li>
+<li><b>Exactly once on your side:</b> the same event can arrive twice if a reply was lost. Keep the <code>Idempotency-Key</code> (the event id) and ignore one you have seen.</li>
+<li><b>Switched off after 20 failures in a row</b>, and the owner gets an email. Switch it back on once the endpoint works.</li>
+<li><b>Only public https addresses.</b> Addresses that point to private networks, this machine, link local ranges or cloud metadata services are refused when saved and checked again before every delivery.</li>
+<li>The <b>Send test</b> button sends a <code>ping</code> event.</li></ul>
+</section>
+
+<section id="verify"><h2>Checking a signature</h2>
+<p>The signing secret (<code>whsec_...</code>) is shown once when you add the webhook; <b>New signing secret</b> replaces it. Work out HMAC SHA256 of <code>t + "." + body</code> with the secret, compare it with <code>v1</code> in constant time, and refuse a <code>t</code> more than 5 minutes away from now. Use the raw body exactly as it arrived.</p>
+<h3>Node.js</h3>
+<pre tabindex="0"><code>import crypto from 'node:crypto';
+function genuine(secret, header, rawBody) {
+  const m = /^t=(\d+),v1=([0-9a-f]{64})$/.exec(header || '');
+  if (!m || Math.abs(Date.now() / 1000 - Number(m[1])) &gt; 300) return false;
+  const want = crypto.createHmac('sha256', secret).update(m[1] + '.' + rawBody).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(want), Buffer.from(m[2]));
+}</code></pre>
+<h3>Python</h3>
+<pre tabindex="0"><code>import hmac, hashlib, re, time
+def genuine(secret, header, raw_body):
+    m = re.fullmatch(r't=(\d+),v1=([0-9a-f]{64})', header or '')
+    if not m or abs(time.time() - int(m[1])) &gt; 300:
+        return False
+    want = hmac.new(secret.encode(), (m[1] + '.').encode() + raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(want, m[2])</code></pre>
+<h3>PHP</h3>
+<pre tabindex="0"><code>function genuine($secret, $header, $rawBody) {
+  if (!preg_match('/^t=(\d+),v1=([0-9a-f]{64})$/', $header ?? '', $m) || abs(time() - (int)$m[1]) &gt; 300) return false;
+  return hash_equals(hash_hmac('sha256', $m[1] . '.' . $rawBody, $secret), $m[2]);
+}</code></pre>
+</section>
+
+<section id="events"><h2>Events</h2>
+<div class="tbl"><table><thead><tr><th scope="col">Event</th><th scope="col">When</th><th scope="col">data</th></tr></thead><tbody>
+<tr><td><code>task.created</code></td><td>A task is added (not a client request)</td><td>Task</td></tr>
+<tr><td><code>task.updated</code></td><td>Its title, client, details, dates, priority, status, assignee, type or budget changes</td><td>Task</td></tr>
+<tr><td><code>task.done</code></td><td>A task is marked done (after sign off, when it needs one)</td><td>Task</td></tr>
+<tr><td><code>client_request.created</code></td><td>A client asks for something on their client page</td><td>Task, with <code>request</code></td></tr>
+<tr><td><code>time_entry.created</code></td><td>A piece of time is finished: a timer stops, or time is added by hand</td><td>Time entry</td></tr>
+<tr><td><code>time_entry.approved</code></td><td>Time is approved, usually with its timesheet</td><td>Time entry</td></tr>
+<tr><td><code>timesheet.approved</code></td><td>A weekly timesheet is approved</td><td>Timesheet</td></tr>
+<tr><td><code>invoice.sent</code></td><td>An invoice is sent or marked sent</td><td>Invoice</td></tr>
+<tr><td><code>invoice.paid</code></td><td>An invoice is paid, online or marked paid</td><td>Invoice</td></tr>
+<tr><td><code>meeting.scheduled</code></td><td>A meeting is set up, or a client's request is accepted</td><td>Meeting</td></tr>
+<tr><td><code>attendance.late</code></td><td>Someone started a planned shift late, gave no reason, and their lead was told</td><td>Attendance</td></tr>
+<tr><td><code>attendance.missed</code></td><td>Someone has no clock in for a planned shift, gave no reason, and their lead was told</td><td>Attendance</td></tr>
+<tr><td><code>leave.approved</code></td><td>Leave is approved (who and when only)</td><td>Leave</td></tr></tbody></table></div>
+<p>Attendance events never go out the moment a shift is missed: the person is told first and has time to give a reason, as in the app. Invoice events need invoices and client billing.</p>
+</section>
+
+<section id="chat"><h2>Slack, Microsoft Teams and Discord</h2>
+<p>Under Settings, Integrations, Chat alerts, paste an incoming webhook address and choose events. Messages are formatted for each service, can be kept to one client or one team, and can wait through quiet hours (for example 18:00 to 08:00) so nobody is pinged at night.</p>
+<ul><li><b>Slack:</b> Apps, Incoming Webhooks, Add to Slack, pick the channel, copy the Webhook URL (it starts with <code>https://hooks.slack.com/services/</code>).</li>
+<li><b>Microsoft Teams:</b> in the channel, More options, Workflows, "Post to a channel when a webhook request is received", then copy the address it gives you.</li>
+<li><b>Discord:</b> channel settings, Integrations, Webhooks, New Webhook, Copy Webhook URL.</li></ul>
+<p class="note">Chat addresses are stored encrypted and shown only as their last 4 characters. Attendance alerts name a person: send them only to a private channel for team leads.</p>
+</section>
+
+<section id="nocode"><h2>Zapier and Make</h2>
+<p>Both connect with a workspace token. Triggers (new task, task done, time entry, timesheet approved, invoice paid, client request, meeting, leave) arrive at once through webhooks that Zapier and Make add and remove for you. Actions create a task, update a task and log time.</p>
+<p>The app definitions are in the <code>integrations</code> folder of your <span data-brand>Handlark</span> files, with steps to publish them from free Zapier and Make developer accounts. Until they are listed publicly, use the private invite link they give you, or Zapier's Webhooks and Make's HTTP modules with this API.</p>
+</section>
+
+<section id="changes"><h2>Versions</h2>
+<p>This is version 1 (<code>/api/v1</code>). Fields may be added to answers and events at any time, so ignore ones you do not know. Anything that would break existing code gets a new version, and version 1 keeps working for at least 12 months after that.</p>
+<ul><li><b>1.15.0, 16 October 2026:</b> the timer endpoints, <code>/connect</code> for the browser extension, <code>DELETE /me</code>, the <code>open</code> and <code>link</code> filters on tasks, and links on new tasks.</li><li><b>1.12.0, 16 October 2026:</b> version 1 of the API, API tokens, signed webhooks, chat alerts, Zapier and Make.</li></ul>
+</section>
+    </article>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> <span data-cfg="company">Handlark</span>. All rights reserved.</span>
+    <nav aria-label="Pages"><a href="./">Home</a><a href="api.html" aria-current="page">API</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><a href="security.html">Security</a></nav>
+  </div>
+</footer>
+<script src="app/config.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

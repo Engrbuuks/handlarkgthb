@@ -8,6 +8,19 @@
   var banner = function (t) { return el('p', { class: 'demo', text: t }); };
   var back = el('a', { href: D.page, text: 'Back to Handlark' });
   if (!D) { box.textContent = 'This page only works inside the Handlark demo.'; return; }
+  if (q.get('idp')) {   // Google's or Microsoft's own sign in page, standing in: pick an account, and the browser goes back to the app
+    var sid = q.get('session') || '', who = D.idpInfo(sid);
+    document.title = 'Demo sign in';
+    if (!who) { show([banner('Demo sign in page'), el('div', { class: 'card' }, [el('h1', { text: 'This sign in has expired' }), el('p', { class: 'muted', text: 'Go back and choose Continue with Google or Microsoft again.' }), back])]); return; }
+    var accts = who.accounts.map(function (a) {
+      var b = el('button', { type: 'button', class: 'acct', id: 'idp-' + a.email.split('@')[0].replace(/\W/g, '') }, [el('span', { text: a.name }), el('small', { text: a.email + (a.verified ? '' : '. ' + who.provider + ' has not confirmed this email') })]);
+      b.addEventListener('click', function () { var to = D.idpChoose(sid, a.email); if (to) location.href = to; });
+      return b;
+    });
+    show([banner('Demo sign in page, not the real ' + who.provider), el('div', { class: 'card' }, [el('h1', { text: 'Choose an account' }),
+      el('p', { class: 'muted', text: 'to continue to Handlark. Live, ' + who.provider + ' shows its own page here and Handlark never sees your ' + who.provider + ' password.' })].concat(accts, [el('a', { href: who.cancel, text: 'Cancel' })]))]);
+    return;
+  }
   var kind = q.get('paystack') ? 'paystack' : q.get('lemon') ? 'lemon' : q.get('card') ? 'card' : '', id = q.get(kind) || '';
 
   if (kind === 'card') {   // the payment company's page to change the card on a subscription
