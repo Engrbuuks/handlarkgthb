@@ -392,6 +392,11 @@ textarea.in{resize:vertical;min-height:70px}
 .offerbar{margin:0;background:var(--plum);color:#fff;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px}.offerbar span{font-weight:500;color:var(--blush2)}
 .parow{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:14px;padding:12px}
 .pvw{display:flex;flex-direction:column;gap:10px;background:var(--sunk);border-radius:16px;padding:12px}
+/* version 1.16.2: the exchange rate in the price editor */
+.parate{display:flex;flex-direction:column;gap:10px}.parate .frow{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end}
+@media (max-width:640px){.parate .frow{grid-template-columns:1fr}}
+.pangn{display:flex;flex-direction:column;gap:4px;min-width:0}
+.parl{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;min-height:16px}.parl small{color:var(--muted);font-size:12px;overflow-wrap:anywhere}.parl .pahand{color:var(--coral-ink,#B83A27);font-weight:600}.parl .linkb{font-size:12px}
 .pvoffer{background:var(--plum);color:#fff;border-radius:12px;padding:8px 12px;font-weight:700;font-size:13.5px;display:flex;gap:10px;flex-wrap:wrap}.pvoffer span{background:var(--coral);color:var(--plum);border-radius:999px;padding:0 9px}
 .pvcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .pvcard{background:var(--card);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}.pvcard small{color:var(--muted)}

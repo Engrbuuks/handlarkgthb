@@ -33,7 +33,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.16.1';
+var APP_VERSION='1.16.2';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -3643,9 +3643,33 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
 function openPadmin(){M={kind:'padmin',load:true,err:'',code:'',A:null,plans:null,offer:null,busy:''};$('#ov').hidden=false;renderSheet();padminLoad();}
 function padminLoad(){call('api',{action:'priceAdmin',payload:{}}).then(function(r){if(!M||M.kind!=='padmin')return;padminTake(r.priceAdmin);M.load=false;renderSheet();})
   .catch(function(e){if(lost(e))return;if(!M||M.kind!=='padmin')return;M.load=false;M.err=e.message;M.code=e.code||'';renderSheet();});}
-function padminTake(A){M.A=A;M.plans=A.plans.map(function(x){return {plan:x.plan,usd:String(x.usd),ngn:String(x.ngn),yearly:String(x.yearly),people:String(x.people)};});
+function padminTake(A){M.A=A;M.plans=A.plans.map(function(x){return {plan:x.plan,usd:String(x.usd),ngn:String(x.ngn),yearly:String(x.yearly),people:String(x.people),follow:x.follow!==false};});
+  var ra=A.rate||{};M.rate={rate:ra.rate===null||ra.rate===undefined?'':String(ra.rate),step:String(ra.step||500),percent:String(ra.percent||100)};
   var o=A.offer||{};M.offer={active:!!o.active,percent:String(o.percent||20),endsAt:o.endsAt?String(o.endsAt).slice(0,10):'',maxCustomers:String(o.maxCustomers||0)};}
-function padminSave(action){var payload=action==='savePrices'?{plans:M.plans.map(function(x){return {plan:x.plan,usd:Number(x.usd),ngn:Number(x.ngn),yearly:Number(x.yearly),people:Number(x.people)};})}
+/* the exchange rate (version 1.16.2): a plan that follows it gets its naira price from its dollar price, worked out exactly as the
+   server checks it (nairaFor in core.js): usd times rate times percent, rounded to the chosen step. A naira price typed by hand
+   sets that plan apart until "Use the rate again". Only the saved naira prices are ever charged. */
+function rateOn(){var r=M.rate,n=Number(r.rate),pc=Number(r.percent);return r.rate!==''&&isFinite(n)&&n>=1&&n<=100000&&Number.isInteger(pc)&&pc>=30&&pc<=150;}
+function rateNgn(usd){var r={rate:Number(M.rate.rate),step:Number(M.rate.step),percent:Number(M.rate.percent)};return Math.round(Number(usd)*r.rate*r.percent/100/r.step)*r.step;}
+function padminFill(){if(rateOn())M.plans.forEach(function(x){var u=Number(x.usd);if(x.follow&&x.usd!==''&&isFinite(u)&&u>0)x.ngn=String(rateNgn(u));});
+  M.plans.forEach(function(x){var i=$('#pa-'+x.plan+'-ngn');if(i&&i.value!==x.ngn)i.value=x.ngn;var l=$('#pa-'+x.plan+'-rl');if(l)l.replaceWith(rateLine(x));});
+  var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}
+function rateLine(x){var fm=function(n){return Number(n).toLocaleString('en-US',{maximumFractionDigits:2});};
+  if(!rateOn())return h('div',{class:'parl',id:'pa-'+x.plan+'-rl'});
+  if(!x.follow)return h('div',{class:'parl',id:'pa-'+x.plan+'-rl'},h('small',{class:'pahand',text:T('Set by hand')}),
+    h('button',{class:'linkb',type:'button',id:'pa-'+x.plan+'-auto',onclick:function(){x.follow=true;padminFill();}},T('Use the rate again')));
+  var pc=Number(M.rate.percent);
+  return h('div',{class:'parl',id:'pa-'+x.plan+'-rl'},h('small',{text:T('= ${usd} at ₦{rate}',{usd:fm(Number(x.usd)||0),rate:fm(M.rate.rate)})+(pc!==100?T(', {p}% of the dollar price',{p:pc}):'')}));}
+function rateBox(){var r=M.rate,set=function(k){return function(e){r[k]=e.target.value;padminFill();};};
+  return h('div',{class:'panel parate',id:'pa-rate-box'},
+    h('div',{class:'frow'},
+      h('label',{class:'f'},T('Naira per US dollar'),h('input',{class:'in',type:'number',min:'1',max:'100000',step:'0.01',id:'pa-rate',placeholder:'1357',value:r.rate,oninput:set('rate')})),
+      h('label',{class:'f'},T('Round naira to the nearest'),h('select',{class:'in',id:'pa-step',value:r.step,onchange:set('step')},[['1','1'],['100','100'],['500','500'],['1000','1,000']].map(function(o){return h('option',{value:o[0],text:'₦'+o[1]});}))),
+      h('label',{class:'f'},T('Naira price as a percent of the dollar price'),h('input',{class:'in',type:'number',min:'30',max:'150',step:'1',id:'pa-rpc',value:r.percent,oninput:set('percent')}))),
+    h('p',{class:'note',style:'margin:0'},T('Type the rate and every plan gets its naira price from its dollar price. You can still change any naira price by hand. Only the naira prices you save are charged.')),
+    h('p',{class:'note',style:'margin:0'},T('Percent from 30 to 150. Lower it to make naira prices kinder for Nigerian customers.')));}
+function padminSave(action){var payload=action==='savePrices'?{plans:M.plans.map(function(x){return {plan:x.plan,usd:Number(x.usd),ngn:Number(x.ngn),yearly:Number(x.yearly),people:Number(x.people),follow:!!x.follow};}),
+      rate:{rate:M.rate.rate===''?null:Number(M.rate.rate),step:Number(M.rate.step),percent:Number(M.rate.percent)}}
     :{offer:{active:M.offer.active,percent:Number(M.offer.percent),endsAt:M.offer.endsAt,maxCustomers:Number(M.offer.maxCustomers||0)}};
   M.busy=action;renderSheet();
   call('api',{action:action,payload:payload}).then(function(r){M.busy='';padminTake(r.priceAdmin);renderSheet();toast(r.msg||T('Saved'));refresh();})
@@ -3663,11 +3687,14 @@ function padminPreview(){var o=M.offer,on=o.active&&Number(o.percent)>0&&o.endsA
 function renderPadmin(){var A=M.A,out=[head(T('Prices and founding offer'))];
   if(M.load)return out.concat(h('p',{class:'note'},T('Loading')));
   if(M.err)return out.concat(h('p',{class:'err',role:'alert',text:M.err}),M.code==='need2fa'?h('button',{class:'btn sm',type:'button',onclick:function(){closeSheet();openTwofaSetup();}},T('Turn on two step sign in')):null);
-  var row=function(x){var f=function(k,label,step){return h('label',{class:'f'},label,h('input',{class:'in',type:'number',min:'0',step:step,id:'pa-'+x.plan+'-'+k,value:x[k],oninput:function(e){x[k]=e.target.value;var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}}));};
-    return h('div',{class:'parow'},h('strong',{text:PLNAME[x.plan]}),h('div',{class:'frow'},f('usd',T('US dollars a month'),'0.01'),f('ngn',T('Naira a month'),'1')),h('div',{class:'frow'},f('yearly',T('Months charged for a year'),'1'),f('people',T('People allowed'),'1')));};
+  var row=function(x){var f=function(k,label,step){return h('label',{class:'f'},label,h('input',{class:'in',type:'number',min:'0',step:step,id:'pa-'+x.plan+'-'+k,value:x[k],oninput:function(e){x[k]=e.target.value;
+      if(k==='usd')return padminFill();
+      if(k==='ngn'&&rateOn()&&x.follow){x.follow=false;var l=$('#pa-'+x.plan+'-rl');if(l)l.replaceWith(rateLine(x));}
+      var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}}));};
+    return h('div',{class:'parow'},h('strong',{text:PLNAME[x.plan]}),h('div',{class:'frow'},f('usd',T('US dollars a month'),'0.01'),h('div',{class:'pangn'},f('ngn',T('Naira a month'),'1'),rateLine(x))),h('div',{class:'frow'},f('yearly',T('Months charged for a year'),'1'),f('people',T('People allowed'),'1')));};
   var o=M.offer,ao=A.offer||{};
   out.push(h('p',{class:'ok-note',style:'margin:0;background:var(--blush);color:var(--ink)'},T('Changes apply to new subscribers only. Everyone already subscribed keeps the price they pay now, and founding customers keep their discount for life.')),
-    h('div',{class:'lbl'},T('Plan prices')),M.plans.map(row),
+    h('div',{class:'lbl'},T('Plan prices')),rateBox(),M.plans.map(row),
     A.paystack?h('p',{class:'note',style:'margin:0'},T('Saving makes new Paystack plans for the new naira amounts first. If Paystack refuses, nothing changes.')):h('p',{class:'note',style:'margin:0'},T('Paystack is not set up, so naira checkouts use the plans in your PAYSTACK_PLAN secrets.')),
     h('button',{class:'btn',type:'button',id:'pa-save',disabled:!!M.busy,onclick:function(){padminSave('savePrices');}},M.busy==='savePrices'?T('Saving'):T('Save prices')),
     h('div',{class:'lbl'},T('Founding offer')),
@@ -3681,10 +3708,14 @@ function renderPadmin(){var A=M.A,out=[head(T('Prices and founding offer'))];
       h('button',{class:'btn sm',type:'button',id:'pa-offer-save',style:'align-self:flex-start',disabled:!!M.busy,onclick:function(){padminSave('saveOffer');}},M.busy==='saveOffer'?T('Saving'):T('Save founding offer'))),
     h('div',{class:'lbl'},T('Preview of the sales page pricing')),padminPreview(),
     h('div',{class:'lbl'},T('History of price changes')),
-    (A.audit||[]).length?h('div',{class:'panel list',id:'pa-audit'},A.audit.map(function(a){return h('div',{class:'li'},h('div',null,h('strong',{text:a.action}),h('small',{text:a.who+' · '+stamp(new Date(a.at).getTime())+' · '+padminDiff(a)})));}))
+    (A.audit||[]).length?h('div',{class:'panel list',id:'pa-audit'},A.audit.map(function(a){return h('div',{class:'li'},h('div',null,h('strong',{text:T(a.action)}),h('small',{text:a.who+' · '+stamp(new Date(a.at).getTime())+' · '+padminDiff(a)})));}))
       :h('p',{class:'note',style:'margin:0'},T('No changes yet.')));
   return out;}
-function padminDiff(a){var o=a.old,n=a.new;if(Array.isArray(n)){var bits=[];n.forEach(function(x){var w=(o||[]).find(function(y){return y.plan===x.plan;})||{};['usd','ngn','yearly','people'].forEach(function(k){if(w[k]!==x[k])bits.push(PLNAME[x.plan]+' '+k+' '+w[k]+' to '+x[k]);});});return bits.join(', ')||T('no change');}
+function padminDiff(a){var o=a.old,n=a.new;
+  if(n&&typeof n==='object'&&!Array.isArray(n)&&n.step!==undefined){o=o||{rate:null,step:500,percent:100};var g=function(v){return v===null||v===undefined?T('none'):Number(v).toLocaleString('en-US',{maximumFractionDigits:2});},bits=[];
+    if(o.rate!==n.rate)bits.push(T('rate {a} to {b}',{a:g(o.rate),b:g(n.rate)}));if(o.step!==n.step)bits.push(T('rounding {a} to {b}',{a:g(o.step),b:g(n.step)}));if(o.percent!==n.percent)bits.push(T('percent {a} to {b}',{a:o.percent,b:n.percent}));
+    return bits.join(', ')||T('no change');}
+  if(Array.isArray(n)){var bits=[];n.forEach(function(x){var w=(o||[]).find(function(y){return y.plan===x.plan;})||{};['usd','ngn','yearly','people'].forEach(function(k){if(w[k]!==x[k])bits.push(PLNAME[x.plan]+' '+k+' '+w[k]+' to '+x[k]);});});return bits.join(', ')||T('no change');}
   if(n&&typeof n==='object')return (n.active?T('on'):T('off'))+', '+n.percent+'%'+(n.endsAt?', '+String(n.endsAt).slice(0,10):'')+(n.maxCustomers?', '+n.maxCustomers+' '+T('spots'):'');return '';}
 /* ---------- Integrations (version 1.12.0): API tokens, webhooks, chat alerts, payout details and payout files ---------- */
 var SCOPEW={'tasks:read':'Read tasks','tasks:write':'Create and change tasks','time:read':'Read time and timesheets','time:write':'Log time','clients:read':'Read clients','people:read':'Read people (names and roles only)','meetings:read':'Read meetings','invoices:read':'Read invoices','webhooks':'Manage webhooks (Zapier and Make use this)'};
