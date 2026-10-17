@@ -387,6 +387,15 @@ textarea.in{resize:vertical;min-height:70px}
 .banner.ro{background:var(--danger-soft);color:var(--danger)}
 .banner.ro button{margin-left:8px}
 .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+/* version 1.16.0: the kind of team, the founding offer and the platform admin's price editor */
+.teamq{display:flex;flex-direction:column;gap:8px}.teamq .switch{align-items:flex-start}.teamq .switch small{font-weight:400}
+.offerbar{margin:0;background:var(--plum);color:#fff;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px}.offerbar span{font-weight:500;color:var(--blush2)}
+.parow{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:14px;padding:12px}
+.pvw{display:flex;flex-direction:column;gap:10px;background:var(--sunk);border-radius:16px;padding:12px}
+.pvoffer{background:var(--plum);color:#fff;border-radius:12px;padding:8px 12px;font-weight:700;font-size:13.5px;display:flex;gap:10px;flex-wrap:wrap}.pvoffer span{background:var(--coral);color:var(--plum);border-radius:999px;padding:0 9px}
+.pvcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.pvcard{background:var(--card);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}.pvcard small{color:var(--muted)}
+.pvamt{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.pvamt strong{font:700 22px var(--fh,inherit)}.pvamt s{color:var(--muted)}.pvamt span{color:var(--muted);font-size:12px}
 .plan{border:1.5px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;background:var(--card);text-align:left}
 .plan[aria-pressed="true"]{border-color:var(--coral);box-shadow:0 0 0 3px var(--blush)}
 .plan b{font:600 15px var(--fb)}.plan small{color:var(--muted)}

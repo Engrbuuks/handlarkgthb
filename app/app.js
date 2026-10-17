@@ -3,6 +3,7 @@
 'use strict';
 /* the words people read (version 1.15.0): T('English') gives them in the person's language, from strings.js; English when a text has no translation */
 var I18N=window.HL_I18N||null,T=I18N?I18N.T:function(s,v){return v?String(s).replace(/\{(\w+)\}/g,function(m,k){return k in v?v[k]:m;}):s;},LANG=I18N?I18N.lang:'en';
+var TX=function(s,v){return T(s,v);};   // the translator, for functions where T is a local name (timeSection)
 /* ---------- tiny helpers ---------- */
 var $=function(s,r){return (r||document).querySelector(s);};
 function h(tag,attrs){var e=document.createElement(tag),val,k,v;
@@ -32,7 +33,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.15.3';
+var APP_VERSION='1.16.1';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -288,6 +289,7 @@ function lost(err){if(err&&err.signin){S=null;closeSheet();authScreen('in');retu
   if(err&&err.nomember){store.del(stKey());wsId='';store.set('hv-ws','');S=null;closeSheet();pickWorkspace();return true;}return false;}
 function accept(res){if(!sess||!res||!res.tasks)return false;   // a late reply after signing out is ignored
   if(res.workspaces)wsList=res.workspaces;if(res.workspace&&res.workspace.id&&res.workspace.id!==wsId){wsId=res.workspace.id;store.set('hv-ws',wsId);loadQ();}S=norm(res);offline=false;
+  if(I18N&&I18N.setTeam)I18N.setTeam(S.workspace&&S.workspace.teamType);   // the words for a client follow the kind of team
   saveState(res);setTimeout(checkAlerts,0);return true;}
 /* Every change is shown at once, kept in a queue on this device, and sent to the server in order.
    If the connection drops the queue simply waits, so nothing typed offline is lost. */
@@ -335,6 +337,11 @@ var toSign=function(t){return t.status==='review'&&t.createdBy===me;};
 /* roles (version 1.11.0): the server sends the role, what this person may do and whom they look after; it checks every action again */
 var ROLE=function(){return (S&&S.role)||(S&&S.owner?'owner':'member');};
 var CAN=function(k){return !!S.owner||!!(S.can&&S.can[k]);};
+/* the kind of team (version 1.16.0): internal kinds keep billing out of the menus until the owner turns on We bill clients.
+   Only presentation: nothing is deleted or switched off on the server. BILL() is billing allowed for this person and shown here. */
+var BILLS=function(){return !(S&&S.workspace&&S.workspace.bills===false);},BILL=function(){return CAN('billing')&&BILLS();};
+var TEAM=function(){return (S&&S.workspace&&S.workspace.teamType)||'service';},FIELD=function(){return TEAM()==='ngo';};
+var TEAMS=[['service','Service firm or agency','Serves clients'],['company','Company or growing team','Internal work'],['remote','Remote or outsourcing team','Serves clients'],['ngo','NGO or field team','Projects across locations']];
 var MGR=function(){return !!S.owner||ROLE()==='manager';};
 var LEADS=function(){return ROLE()!=='member';};
 var looksAfter=function(pid){return !!S.owner||(S.scope||[]).indexOf(pid)>=0;};
@@ -346,7 +353,7 @@ var canPriv=function(){var p=person(me);return !!(S.owner||(p&&p.canPrivate));};
    A private list is not a client: it is a person's own list that only they see, never billed, with no client features.
    Who may keep private lists is set per person by the owner under People ("Can keep private lists") */
 var canAddClients=function(){return !!(MGR()||(S.settings&&S.settings.membersAddClients));};
-var newClientLabel=function(){return canAddClients()?'New client':'';};
+var newClientLabel=function(){return canAddClients()?T('New client'):'';};
 var newListLabel=function(){return !S.owner&&canPriv()?'New private list':'';};   /* members only: the owner keeps private tasks */
 var isList=function(s){return !!(s&&s.privateTo);};
 var clientSubjects=function(){return liveSubjects().filter(function(s){return !s.privateTo;});};
@@ -813,15 +820,17 @@ function planCheck(){if(!S)return;var seen={};try{seen=JSON.parse(store.get('hv-
 setInterval(planCheck,30000);
 
 /* ---------- getting started: a checklist for new owners ---------- */
-var STARTER_NAMES=/^(First client|Second client|General|Internal|Operations|Programmes|Admin|Agency internal|Firm internal)$/;
+var STARTER_NAMES=/^(First client|Second client|General|Internal|Operations|Programmes|Admin|Agency internal|Firm internal|Sales|First project|Second project)$/;
 function setupSteps(){var others=S.people.filter(function(p){return p.id!==me;});
   return [
     {done:S.subjects.some(function(s){return !STARTER_NAMES.test(s.name);}),title:T('Add your first real client'),text:T('Rename a sample client or add your own.'),go:function(){openSubject(S.subjects[0]&&STARTER_NAMES.test(S.subjects[0].name)?S.subjects[0].id:null);},btn:T('New client')},
     {done:others.length>0,title:T('Invite someone'),text:T('Copy their invite link and send it on WhatsApp.'),go:function(){openPerson();},btn:T('New person')},
     {done:S.tasks.some(function(t){return t.assignee&&t.assignee!==me;}),title:T('Give someone a task'),text:T('They see it on their home screen straight away.'),go:function(){openTask(null,others[0]?{assignee:others[0].id}:{});},btn:T('New task')},
     {done:!!S.settings.digestOn,title:T('Turn on the daily summary'),text:T('A summary of the day at the hour you choose.'),go:function(){V.tab='more';render();setTimeout(function(){var e=$('#dg-on');if(e)e.scrollIntoView({behavior:'smooth',block:'center'});},60);},btn:T('Set it up')},
-    {done:S.subjects.some(function(s){return !!s.shareToken;}),title:T('Share a client page'),text:T('Your client follows progress without asking.'),go:function(){var s=liveSubjects().find(function(x){return !x.privateTo;});openSubject(s?s.id:null);},btn:T('Open a client')},
-    {done:(S.myPush||[]).length>0||alertsOn(),title:T('Get alerts on your phone'),text:T('New tasks, questions and reminders, free.'),go:function(){openMe();},btn:T('Turn on')}];}
+    // a field team (version 1.16.0) starts with its work sites, so clock in can check the place; a team that bills no clients skips the client page
+    FIELD()?{done:(S.settings.workSites||[]).length>0,title:T('Add your work sites'),text:T('Clock in checks the place against them and flags away from site.'),go:function(){V.tab='more';render();setTimeout(function(){var e=$('#sites')||$('#team-set');if(e)e.scrollIntoView({behavior:'smooth',block:'center'});},60);},btn:T('Add sites')}:null,
+    !BILLS()?null:{done:S.subjects.some(function(s){return !!s.shareToken;}),title:T('Share a client page'),text:T('Your client follows progress without asking.'),go:function(){var s=liveSubjects().find(function(x){return !x.privateTo;});openSubject(s?s.id:null);},btn:T('Open a client')},
+    {done:(S.myPush||[]).length>0||alertsOn(),title:T('Get alerts on your phone'),text:T('New tasks, questions and reminders, free.'),go:function(){openMe();},btn:T('Turn on')}].filter(Boolean);}
 function setupCard(){if(!S.owner||S.settings.setupHidden)return null;var steps=setupSteps(),done=steps.filter(function(x){return x.done;}).length;if(done===steps.length)return null;
   var next=steps.find(function(x){return !x.done;});
   return h('section',{class:'setup','aria-label':T('Getting started')},
@@ -2104,7 +2113,7 @@ function invoiceSection(){V.isub=V.isub||'list';var tabs=msub('isub',[['list','A
   return [tabs,h('div',{class:'sec'},h('h3',null,'Invoices'),h('button',{type:'button',onclick:function(){openInvoice();}},'New invoice')),
     overpaidPanel(),
     Object.keys(owed).length?h('p',{class:'note',style:'margin:-6px 0 12px',text:'Waiting to be paid: '+curTotals(owed)+(Object.keys(late).length?'. Overdue: '+curTotals(late):'')}):null,
-    h('div',{class:'acts',style:'margin:0 0 12px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill('',{});}},'Bill hours'),
+    h('div',{class:'acts',style:'margin:0 0 12px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill('',{});}},T('Bill hours')),
       (function(){var u=(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0);return u?h('small',{class:'note',text:mins(u)+' of time is not billed yet'}):null;})()),
     list.length?h('div',{class:'invl'},list.map(function(v){var st=invBadge(v),m=invM(v),part=v.status==='partial';return h('button',{class:'inv',type:'button',onclick:function(){viewInvoice(v.id);}},
       h('div',null,h('strong',{text:(v.number||'New')+' · '+v.clientName}),h('br'),h('small',{text:'Issued '+short(v.issued)+' · due '+short(v.due)+(part?' · '+fmtMoney(m.paid+m.credited,v.currency)+' in':'')})),
@@ -2300,7 +2309,7 @@ function renderSlip(){var x=M.x,s=x.slip||{},f=function(n){return fmtMoney(n,x.c
     h('div',{class:'acts'},h('button',{class:'btn ghost sm',type:'button',onclick:function(){try{window.print();}catch(e){}}},'Print or save as PDF'))];}
 
 /* ----- Settings: reminders, late fees and exchange rates (invoices and client billing) ----- */
-function moneyPanel(){if(!CAN('billing'))return null;var st=S.settings,r=st.reminders||{on:false,days:[-3,0,7,14]},lf=st.lateFee||{on:false,kind:'percent',value:2,after:7},fx=st.fx||{base:'',rates:{}};
+function moneyPanel(){if(!BILL())return null;var st=S.settings,r=st.reminders||{on:false,days:[-3,0,7,14]},lf=st.lateFee||{on:false,kind:'percent',value:2,after:7},fx=st.fx||{base:'',rates:{}};
   var F=V.fxd=V.fxd||{base:fx.base||'',rates:Object.assign({},fx.rates||{})};
   return [h('div',{class:'sec',id:'money-set'},h('h3',null,'Reminders, late fees and currencies')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
@@ -2375,7 +2384,7 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
     T.view==='proof'?null:h('div',{class:'chips',style:'padding-top:0'},RANGES.map(function(x){return h('button',{class:'chip',type:'button','aria-pressed':String(T.k===x[0]),onclick:function(){T.k=x[0];render();}},x[1]);})),
     T.view==='proof'?null:T.k==='custom'?h('div',{class:'frow',style:'margin-top:8px'},fld('From',h('input',{class:'in',id:'tm-from',type:'date',value:r.from,onchange:function(e){T.from=e.target.value;render();}})),fld('To',h('input',{class:'in',id:'tm-to',type:'date',value:r.to,onchange:function(e){T.to=e.target.value;render();}}))):null,
     tArch?h('div',{style:'margin-top:8px'},archNote(tArch)):null,
-    T.view==='est'||T.view==='proof'?null:h('div',{class:'rngrow'},h('select',{class:'in',id:'tm-sub','aria-label':'Client',value:T.sid,onchange:function(e){T.sid=e.target.value;render();}},h('option',{value:'',text:'All clients'}),S.subjects.map(function(s){return h('option',{value:s.id,text:s.name+(s.archived?' (archived)':'')});})),
+    T.view==='est'||T.view==='proof'?null:h('div',{class:'rngrow'},h('select',{class:'in',id:'tm-sub','aria-label':TX('Client'),value:T.sid,onchange:function(e){T.sid=e.target.value;render();}},h('option',{value:'',text:TX('All clients')}),S.subjects.map(function(s){return h('option',{value:s.id,text:s.name+(s.archived?' (archived)':'')});})),
       h('span',{class:'note',text:r.from?(r.from===r.to?short(r.from):short(r.from)+' to '+short(r.to)):'Since the start'})),
     T.view&&T.view!=='all'?null:h('div',{class:'tiles',style:'margin-top:12px'},
       h('div',{class:'tile dark'},h('b',{'data-run':sum.run?String(now):null,'data-base':sum.run?String(doneMs+runMs):null,'data-mult':sum.run>1?String(sum.run):null,text:mins(Math.round((doneMs+runMs)/6e4))}),h('span',{text:sum.run?'Total, '+sum.run+' running now':'Total time'})),
@@ -2386,20 +2395,20 @@ function timeSection(){var T=V.tm=V.tm||{k:'week',from:'',to:'',sid:'',open:{},a
   if(T.view==='est')return out.concat(estView(T,r));
   if(T.view==='proof')return out.concat(proofTab(T));
   out.push(queriesBlock());
-  if(CAN('billing')&&(S.budgets||[]).length)out.push(h('div',{class:'sec'},h('h3',null,'Retainers this month')),h('div',{class:'panel'},S.budgets.map(budgetRow)));
+  if(BILL()&&(S.budgets||[]).length)out.push(h('div',{class:'sec'},h('h3',null,'Retainers this month')),h('div',{class:'panel'},S.budgets.map(budgetRow)));
   var groups={},order=[];list.forEach(function(e){var k=e.subjectId||'';if(!groups[k]){groups[k]=[];order.push(k);}groups[k].push(e);});
   order.sort(function(a,b){return sumUp(groups[b]).min-sumUp(groups[a]).min;});
-  out.push(h('div',{class:'sec'},h('h3',null,'By client'),h('span',{text:order.length?'Tap a client for people and tasks':''})),
+  out.push(h('div',{class:'sec'},h('h3',null,TX('By client')),h('span',{text:order.length?TX('Tap a client for people and tasks'):''})),
     order.length?h('div',{class:'tgl'},order.map(function(k){var g=groups[k],s=sumUp(g),open=!!T.open[k]||order.length===1;
       var byP={},pOrd=[];g.forEach(function(e){if(!byP[e.personId]){byP[e.personId]=[];pOrd.push(e.personId);}byP[e.personId].push(e);});
-      return h('div',{class:'tg'},h('button',{class:'tgh',type:'button','aria-expanded':String(open),onclick:function(){T.open[k]=!open;render();}},h('i',{class:'dot',style:'background:'+sColor(k)}),h('strong',{text:k?sName(k):'No client'}),h('b',{text:mins(s.min)}),
+      return h('div',{class:'tg'},h('button',{class:'tgh',type:'button','aria-expanded':String(open),onclick:function(){T.open[k]=!open;render();}},h('i',{class:'dot',style:'background:'+sColor(k)}),h('strong',{text:k?sName(k):TX('No client')}),h('b',{text:mins(s.min)}),
           h('small',{text:mins(s.bill)+' billable'+(s.unbilled?' · '+mins(s.unbilled)+' not billed':'')+(CAN('rates')&&Object.keys(s.amt).length?' · '+amtText(s.amt):'')+(s.run?' · running now':'')})),
         open?h('div',{class:'tgb'},pOrd.map(function(pid){var pl=byP[pid],ps=sumUp(pl),byT={},tOrd=[];pl.forEach(function(e){var tk=e.taskHidden?'#private':e.taskId||'';if(!byT[tk]){byT[tk]=0;tOrd.push(tk);}byT[tk]+=eMin(e,now);});
             return [h('div',{class:'tp'},h('span',{text:pName(pid)}),h('span',{text:mins(ps.min)+(CAN('rates')&&Object.keys(ps.amt).length?' · '+amtText(ps.amt):'')})),
               tOrd.map(function(tk){var t=tk&&tk!=='#private'&&S.tasks.find(function(x){return x.id===tk;});return h('div',{class:'tt2'},h('span',{text:tk==='#private'?'Private task':t?t.title:'General work'}),h('span',{text:mins(byT[tk])}));})];}),
-          CAN('billing')&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill hours')):null):null);}))
+          BILL()&&k&&s.unbilled?h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){openBill(k,r);}},'Bill hours')):null):null);}))
       :h('div',{class:'empty'},ill('empty_time'),h('b',null,'No time in this range'),'Start a timer on a task, clock in for a client, or add time by hand.'));
-  if(CAN('billing')&&(S.timeTotals||[]).length){var tt=S.timeTotals.slice().filter(function(x){return x.minutes>0;}).sort(function(a,b){return b.minutes-a.minutes;});
+  if(BILL()&&(S.timeTotals||[]).length){var tt=S.timeTotals.slice().filter(function(x){return x.minutes>0;}).sort(function(a,b){return b.minutes-a.minutes;});
     out.push(h('div',{class:'sec'},h('h3',null,'All time by client'),h('span',null,'Hours, billable, not billed, amount')),h('div',{class:'tsheet'},h('table',null,
       h('thead',null,h('tr',null,['Client','Hours','Billable','Not billed','Amount'].map(function(c){return h('th',{scope:'col',text:c});}))),
       h('tbody',null,tt.map(function(x){return h('tr',null,h('td',{text:x.subjectId?sName(x.subjectId):'No client'}),h('td',{text:mins(x.minutes)}),h('td',{text:mins(x.billable)}),h('td',{class:x.unbilled?'':'z',text:mins(x.unbilled)}),h('td',{class:'tot',text:fmtMoney(x.amount,x.currency)}));})))));}
@@ -2481,12 +2490,12 @@ function renderEntry(){var d=M.d,e=M.id?(S.time||[]).find(function(x){return x.i
       overNeed?fld('Reason for going over the time budget',h('input',{class:'in',id:'en-why',maxlength:200,disabled:locked,value:d.overReason||'',oninput:bind(d,'overReason'),placeholder:'For example: the client added two more statements'}),true):null,
       capp&&!locked?fld('Reason for changing time the client approved',h('input',{class:'in',id:'en-reason',maxlength:200,value:d.reason||'',oninput:bind(d,'reason'),placeholder:'The client is asked to approve it again'}),true):null),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-int',disabled:locked,checked:d.noteInternal,onchange:function(ev){d.noteInternal=ev.target.checked;}}),'Keep the note inside the team. The client never sees it.'),
-    CAN('billing')&&!isList(sb)?h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-bill',disabled:locked,checked:bill,onchange:function(ev){d.billable=ev.target.checked;}}),'Billable to the client'):h('p',{class:'note',style:'margin:0',text:isList(sb)?'Time in a private list is never billed':bill?'Billable to the client':'Not billed to anyone'}),
+    BILL()&&!isList(sb)?h('label',{class:'switch'},h('input',{type:'checkbox',id:'en-bill',disabled:locked,checked:bill,onchange:function(ev){d.billable=ev.target.checked;}}),'Billable to the client'):h('p',{class:'note',style:'margin:0',text:isList(sb)?'Time in a private list is never billed':bill?'Billable to the client':'Not billed to anyone'}),
     why?h('p',{class:'note',style:'margin:0',text:why}):e&&e.unconfirmed?null:h('p',{class:'note',style:'margin:0',text:d.start&&d.end?'That is '+mins(len)+'.'+(b-a>12*36e5?' One entry can be at most 12 hours.':''):'Choose the times.'}),
     locked?null:h('button',{class:'btn wide',type:'button',onclick:function(){if(!d.start||!d.end){toast('Choose the times.');return;}
       if(len>720){toast('One entry can be at most 12 hours. Split longer work into two.');return;}if(b>Date.now()+5*6e4){toast('Time cannot end in the future.');return;}
       if(capp&&!(d.reason||'').trim()){toast('Give a reason to change time the client approved.');var f=$('#en-reason');if(f)f.focus();return;}
-      var en={id:d.id,subjectId:d.subjectId,taskId:d.taskId,start:a,end:b,note:d.note.trim(),noteInternal:d.noteInternal};if(overNeed)en.overReason=(d.overReason||'').trim();if(CAN('billing'))en.billable=bill;if(!e&&MGR())en.personId=d.personId;
+      var en={id:d.id,subjectId:d.subjectId,taskId:d.taskId,start:a,end:b,note:d.note.trim(),noteInternal:d.noteInternal};if(overNeed)en.overReason=(d.overReason||'').trim();if(BILL())en.billable=bill;if(!e&&MGR())en.personId=d.personId;
       var pl={entry:en};if(capp)pl.reason=d.reason.trim();closeSheet();send('saveTime',pl);}},e?'Save time':'Add time'),
     e&&!locked&&len>2?(M.split?h('div',{class:'addrow',style:'margin:0'},h('label',{class:'f',style:'flex:1'},'Split at',h('input',{class:'in',id:'en-split',type:'time',value:M.splitAt||'',oninput:bind(M,'splitAt')})),
         h('button',{class:'btn sm',type:'button',style:'align-self:flex-end',onclick:function(){var at=toMs(d.day,M.splitAt);if(at<a)at+=864e5;if(!(at>a&&at<b)){toast('Choose a time between the start and the end.');return;}var pl={id:e.id,newId:uid(),at:at};if(capp)pl.reason=(d.reason||'').trim()||'Split in two';closeSheet();send('splitTime',pl);}},'Split'))
@@ -2525,7 +2534,7 @@ function renderClockFor(){var d=M.d,sw=M.mode==='switch',sh=myShift(),tasks=S.ta
     h('button',{class:'btn wide',type:'button',onclick:function(){var p={subjectId:d.subjectId,taskId:d.taskId},c=proofOf(d.subjectId);closeSheet();if(c&&c.state==='agreed'&&pfCan())pfShare();if(sw)send('switchClient',p);else punch('clockIn',undefined,p);}},sw?T('Switch'):T('Clock in'))];}
 /* a small card on Home: this week's time, and what is waiting to be billed or approved */
 function timeCard(){var wk=weekStart(today()),list=(S.time||[]).filter(function(e){return weekStart(dayOf(e.start))===wk&&(LEADS()||e.personId===me);});
-  var unb=CAN('billing')?(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0):0,wait=LEADS()?(S.sheets||[]).filter(function(x){return x.status==='submitted'&&mayDecide(x.personId);}).length:0,cq=CAN('billing')?(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';}).length:0;
+  var unb=BILL()?(S.timeTotals||[]).reduce(function(a,x){return a+(x.unbilled||0);},0):0,wait=LEADS()?(S.sheets||[]).filter(function(x){return x.status==='submitted'&&mayDecide(x.personId);}).length:0,cq=CAN('billing')?(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';}).length:0;
   if(!list.length&&!unb&&!wait&&!cq)return null;var s=sumUp(list),run=list.some(function(e){return !e.end;});
   var mine=sheetOf(me,wk);
   return h('button',{class:'tw',type:'button',onclick:function(){V.tab='stats';V.ins='hours';V.tm=V.tm||null;render();window.scrollTo(0,0);}},
@@ -2880,7 +2889,7 @@ function estView(T,r){var x=T.x||cfgA().outlierX,key=r.from+'|'+r.to+'|'+x,R=V.r
         :h('p',{class:'note',style:'margin:6px 0 0'},'You finished none of these in this range.')));});
   return out;}
 /* client questions about hours: the owner replies, adjusts if needed, and sends the line back to approve */
-function queriesBlock(){if(!CAN('billing'))return null;var qs=(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';});if(!qs.length)return null;V.qa=V.qa||{};
+function queriesBlock(){if(!BILL())return null;var qs=(S.time||[]).filter(function(e){return e.clientOk&&e.clientOk.state==='queried';});if(!qs.length)return null;V.qa=V.qa||{};
   return [h('div',{class:'sec'},h('h3',null,'Client questions'),h('span',{text:qs.length+' to answer'})),h('div',{class:'shifts'},qs.map(function(e){var A2=V.qa[e.id]=V.qa[e.id]||{text:'',min:String(e.minutes)},th=e.clientThread||[],last=th[th.length-1]||{};
     return h('div',{class:'cq'},h('div',null,h('strong',{text:sName(e.subjectId)+' · '+dIn(e.start)+' · '+mins(e.minutes)}),h('br'),h('small',{text:pName(e.personId)+(taskTitle(e)?' · '+taskTitle(e):'')})),h('b',{class:'badge-s r'},e.clientOk.withdrew?'Approval withdrawn':'Queried'),
       h('p',{class:'cqq',text:'"'+(last.text||e.clientOk.note||'')+'" · '+(e.clientOk.name||'Client')}),
@@ -3132,9 +3141,9 @@ function viewTasks(){var list=S.tasks.filter(match),groups={},order=[];
       h('button',{class:'btn ghost sm',type:'button',onclick:openImport},'Import'),
       h('button',{class:'btn ghost sm',type:'button',onclick:function(){V.tab='archive';render();window.scrollTo(0,0);}},'Archive'),
       (S.trash||[]).length?h('button',{class:'btn ghost sm',type:'button',onclick:openBin},'Bin ('+S.trash.length+')'):null),
-    h('div',{class:'narrow'},h('div',{class:'search'},h('span',{html:I.search}),h('input',{id:'q',type:'search',placeholder:'Search tasks, clients, notes','aria-label':'Search tasks',value:V.q,oninput:function(e){V.q=e.target.value;render();}})),
+    h('div',{class:'narrow'},h('div',{class:'search'},h('span',{html:I.search}),h('input',{id:'q',type:'search',placeholder:T('Search tasks, clients, notes'),'aria-label':'Search tasks',value:V.q,oninput:function(e){V.q=e.target.value;render();}})),
     h('div',{class:'chips'},FILT.map(function(f){return h('button',{class:'chip o',type:'button','aria-pressed':String(V.status===f[0]),onclick:function(){V.status=f[0];render();}},f[1]);})),
-    h('div',{class:'chips',style:'padding-top:4px'},[h('button',{class:'chip',type:'button','aria-pressed':String(V.subject==='all'),onclick:function(){V.subject='all';render();}},'All clients')].concat(
+    h('div',{class:'chips',style:'padding-top:4px'},[h('button',{class:'chip',type:'button','aria-pressed':String(V.subject==='all'),onclick:function(){V.subject='all';render();}},T('All clients'))].concat(
       liveSubjects().map(function(s){return h('button',{class:'chip',type:'button','aria-pressed':String(V.subject===s.id),onclick:function(){V.subject=s.id;render();}},h('i',{class:'dot',style:'background:'+s.color}),s.name);}))),
     body)];}
 
@@ -3191,7 +3200,7 @@ function viewStats(){var td=today(),o=S.tasks.filter(open);
   var load=S.people.map(function(p){return {p:p,n:o.filter(function(t){return t.assignee===p.id;}).length};});load.push({p:{name:'Unassigned'},n:o.filter(function(t){return !person(t.assignee);}).length});
   var lm=Math.max.apply(null,load.map(function(x){return x.n;}).concat([1]));
   var stale=o.filter(function(t){return Date.now()-(t.updatedAt||t.createdAt)>5*864e5;}).sort(function(a,b){return (a.updatedAt||0)-(b.updatedAt||0);}).slice(0,5);
-  var tabs=(LEADS()?[['ovw','Overview']]:[]).concat([['work','Work'],['hours','Time'],['me','My patterns']],LEADS()?[['cap','Capacity'],['odd','Unusual time']]:[],[['exp','Expenses'],['time','Time clock'],['sched','Schedule'],['att','Attendance'],['leave','Leave and holidays']]).concat(CAN('rates')?[['pay','Payroll']]:[],CAN('billing')?[['inv','Invoices']]:[]);if(!V.ins||!tabs.some(function(x){return x[0]===V.ins;}))V.ins=LEADS()?'ovw':'work';
+  var tabs=(LEADS()?[['ovw','Overview']]:[]).concat([['work','Work'],['hours','Time'],['me','My patterns']],LEADS()?[['cap','Capacity'],['odd','Unusual time']]:[],[['exp','Expenses'],['time','Time clock'],['sched','Schedule'],['att','Attendance'],['leave','Leave and holidays']]).concat(CAN('rates')?[['pay','Payroll']]:[],BILL()?[['inv','Invoices']]:[]);if(!V.ins||!tabs.some(function(x){return x[0]===V.ins;}))V.ins=LEADS()?(FIELD()?'att':'ovw'):'work';
   var tabRow=h('div',{class:'itabs',role:'tablist'},tabs.map(function(x){return h('button',{type:'button',role:'tab','aria-selected':String(V.ins===x[0]),onclick:function(){V.ins=x[0];render();}},x[1]);}));
   if(V.ins==='me')return viewPatterns(tabRow);
   if(V.ins==='ovw'||V.ins==='cap'||V.ins==='odd')return [topbar('Insights','How the work, hours and money are moving'),tabRow,V.ins==='ovw'?overviewSection():V.ins==='cap'?capSection():oddSection()];
@@ -3303,7 +3312,7 @@ function overviewSection(){var R=V.iov=V.iov||{k:'wk',from:'',to:'',team:'',data
       kpi('Utilization',pct(T.util),'billable of '+hrs(T.availMs)+' available'),kpi('On time',A.scheduled?pct(A.onTimePct):'No shifts',A.scheduled?A.onTime+' of '+A.scheduled+' planned shifts':'planned in these dates'),
       kpi('Focus and meetings',D.teamSplit?hrs(T.focusMs)+' · '+hrs(T.meetMs):'Team only',D.teamSplit?'average '+hrs(T.avgFocusMs)+' focus a person':D.whole===false?'shown for everyone you look after, not one team':'shown for 3 or more people'),
       kpi('Unusual time',String(D.unusual.open),D.unusual.open===1?'flag to review':'flags to review'),kpi('Free, next 2 weeks',hrs(Math.max(0,C.freeMs)),C.over?C.over+' over capacity':C.under?C.under+' with room':'nobody over capacity'),
-      CAN('billing')?kpi('Billed',rev||'None','invoices sent in these dates'):kpi('Planned ahead',hrs(C.meetMs+C.plannedMs),'meetings and task budgets')),
+      BILL()?kpi('Billed',rev||'None','invoices sent in these dates'):kpi('Planned ahead',hrs(C.meetMs+C.plannedMs),'meetings and task budgets')),
     h('div',{class:'two ig'},h('div',{class:'icol'},D.teamSplit?splitChart(D.daily,T,{note:focusNote}):h('div',{class:'panel'},h('strong',null,'Focus, meetings and other time'),h('p',{class:'note',style:'margin:6px 0 0'},D.whole===false?'Shown only for everyone you look after together, never for one team: two teams\' totals side by side could give away one person\'s time. Clear the team to see it. Each person sees their own under My patterns.':'Shown as a total for everyone you look after once that is 3 or more people, rounded to the hour, so no one person\'s day can be read from it. Each person sees their own under My patterns.')),
         wellTeam(D.wellbeing)),
       h('div',{class:'icol'},capRows(D),unusualMini(D.unusual))),
@@ -3424,7 +3433,12 @@ function tzLabel(tz){var z=TZS.find(function(x){return x[1]===tz;});return z?z[0
 function tzOptions(sel,blank){var list=TZS.slice();if(myTz&&!TZS.some(function(x){return x[1]===myTz;}))list.unshift([tzLabel(myTz)+' (this device)',myTz]);
   if(sel&&!list.some(function(x){return x[1]===sel;}))list.unshift([tzLabel(sel),sel]);
   return (blank?[h('option',{value:'',text:blank})]:[]).concat(list.map(function(z){return h('option',{value:z[1],text:z[0]+' time'});}));}
-var PLANLIST=(CFG.plans||[{id:'starter',name:'Starter',people:5,usd:15,ngn:12000},{id:'team',name:'Team',people:15,usd:39,ngn:30000},{id:'agency',name:'Agency',people:50,usd:99,ngn:75000}]);
+/* the plans and prices come from the server (prices.json); this copy, written by tools/sync_prices.mjs, is only for before the first load */
+/* PRICES START */
+var PLANS0=[{id:'starter',name:'Starter',people:5,usd:15,ngn:12000,yearly:10},{id:'team',name:'Team',people:15,usd:39,ngn:30000,yearly:10},{id:'agency',name:'Agency',people:50,usd:99,ngn:75000,yearly:10}];
+/* PRICES END */
+var PLANLIST=PLANS0;
+function plansNow(){var l=S&&S.workspace&&S.workspace.plans;PLANLIST=Array.isArray(l)&&l.length?l:(CFG.plans||PLANS0);return PLANLIST;}
 var money=function(n){return Number(n).toLocaleString('en-US');};
 var longDate=function(v){var d=new Date(v);return isNaN(d)?'':d.getDate()+' '+MONL[d.getMonth()]+' '+d.getFullYear();};
 function planStatus(w){var left=w.trialEndsAt?Math.ceil((new Date(w.trialEndsAt)-Date.now())/864e5):0;
@@ -3435,7 +3449,7 @@ function planStatus(w){var left=w.trialEndsAt?Math.ceil((new Date(w.trialEndsAt)
   return 'Your plan has ended';}
 /* ---------- plan and billing: what the plan allows and uses, and the subscription itself (owner only; the billing function checks 2FA) ---------- */
 var GBtext=function(b){var g=b/1073741824;return g>=10?Math.round(g)+' GB':g>=1?(Math.round(g*10)/10)+' GB':Math.max(0,Math.round(b/1048576))+' MB';};
-function planOf(id){return PLANLIST.find(function(x){return x.id===id;})||null;}
+function planOf(id){plansNow();return PLANLIST.find(function(x){return x.id===id;})||null;}
 function tooSmall(id){var x=planOf(id);return !!x&&x.people<S.people.length;}
 function seatMsg(id){var x=planOf(id)||{},n=S.people.length,k=n-x.people;return 'You have '+n+' people, and the '+x.name+' plan allows '+x.people+'. Remove '+k+(k===1?' person':' people')+' first, or choose a larger plan.';}
 function billCall(action,extra){if(V.billBusy)return;V.billBusy=action;render();
@@ -3451,11 +3465,16 @@ function usageRows(u){var row=function(label,used,limit,text){var pct=limit?Math
     u.wa.own?h('div',null,h('div',{class:'hd'},h('strong',null,'WhatsApp this month'),h('span',{text:money(u.wa.used)+' sent'})),h('small',null,'From your own number, with no limit from '+BRAND))
       :row('WhatsApp this month',u.wa.used,u.wa.limit,money(u.wa.used)+' of '+money(u.wa.limit)),
     row('AI requests today',u.ai.used,u.ai.limit,u.ai.used+' of '+u.ai.limit));}
-function planCards(){var used=S.people.length;
-  return [h('div',{class:'plans-iv',role:'group','aria-label':'Billing period'},h('button',{type:'button','aria-pressed':String(!V.yearly),onclick:function(){V.yearly=false;render();}},'Monthly'),h('button',{type:'button','aria-pressed':String(!!V.yearly),onclick:function(){V.yearly=true;render();}},'Yearly, 2 months free')),
+/* the founding offer (version 1.16.0): a workspace with a founding discount keeps it; otherwise the live offer shows for a new subscriber */
+function offerPct(){var w=S.workspace||{};if(w.founding)return w.founding.percent;var o=w.offer;return o&&!paidLive(w)&&new Date(o.endsAt).getTime()>Date.now()?o.percent:0;}
+function offerBar(){var w=S.workspace||{},o=w.offer;if(w.founding)return paidLive(w)?null:h('p',{class:'offerbar',id:'my-founding'},T('Your founding discount: {p}% off for life',{p:w.founding.percent}));
+  if(!o||paidLive(w))return null;var left=new Date(o.endsAt).getTime()-Date.now();if(!(left>0))return null;var d=Math.ceil(left/864e5);
+  return h('p',{class:'offerbar',id:'offer-bar'},T('Founding offer: {p}% off for life',{p:o.percent}),h('span',{text:' · '+(d===1?T('ends in 1 day'):T('ends in {n} days',{n:d}))+(o.spotsLeft>0?' · '+(o.spotsLeft===1?T('1 spot left'):T('{n} spots left',{n:o.spotsLeft})):'')}));}
+function planCards(){var used=S.people.length;plansNow();var free=12-((PLANLIST[0]||{}).yearly||10),pc=offerPct(),cutP=function(v,cur){return cur==='usd'?Math.round(v*(100-pc))/100:Math.round(v*(100-pc)/100);};
+  return [offerBar(),h('div',{class:'plans-iv',role:'group','aria-label':'Billing period'},h('button',{type:'button','aria-pressed':String(!V.yearly),onclick:function(){V.yearly=false;render();}},'Monthly'),h('button',{type:'button','aria-pressed':String(!!V.yearly),onclick:function(){V.yearly=true;render();}},free>0?'Yearly, '+free+(free===1?' month':' months')+' free':'Yearly')),
     h('div',{class:'plans',role:'group','aria-label':'Plans'},PLANLIST.map(function(x){var small=x.people<used;
       return h('button',{class:'plan',type:'button','aria-pressed':String(V.plan===x.id),style:small?'opacity:.5':null,onclick:function(){V.plan=x.id;render();}},
-        h('b',{text:x.name}),h('small',{text:'Up to '+x.people+' people'+(small?', too few for your team':'')}),h('span',{class:'pr',text:V.yearly?'$'+money(x.usd*10)+' or ₦'+money(x.ngn*10)+' a year':'$'+money(x.usd)+' or ₦'+money(x.ngn)+' a month'}));})),
+        h('b',{text:x.name}),h('small',{text:'Up to '+x.people+' people'+(small?', too few for your team':'')}),h('span',{class:'pr',text:V.yearly?'$'+money(cutP(x.usd*(x.yearly||10),'usd'))+' or ₦'+money(cutP(x.ngn*(x.yearly||10),'ngn'))+' a year':'$'+money(cutP(x.usd,'usd'))+' or ₦'+money(cutP(x.ngn,'ngn'))+' a month'}));})),
     tooSmall(V.plan)?h('p',{class:'err',role:'alert',text:seatMsg(V.plan)}):null];}
 function paidLive(w){return w.status==='active'||w.status==='past_due';}
 /* a member who still pays for this workspace's plan (they owned it before): they can cancel it or change its card */
@@ -3466,7 +3485,7 @@ function payerBlock(){var y=S.workspace&&S.workspace.youPay;if(!y||S.owner)retur
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.payCancel=false;renderSheet();}},'Keep it'))
       :h('div',{class:'acts',style:'margin:0'},y.canCancel?h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.payCancel=true;renderSheet();}},'Cancel my plan'):null,
         y.canCard?h('button',{class:'btn ghost sm',type:'button',disabled:busy,onclick:function(){billCall('card');}},y.provider==='paystack'?'Manage card':'Update card'):null))];}
-function billingPanel(){var w=S.workspace||{},used=S.people.length,u=w.usage,b=w.billing||{},busy=!!V.billBusy,iv=V.yearly?'year':'month';
+function billingPanel(){plansNow();var w=S.workspace||{},used=S.people.length,u=w.usage,b=w.billing||{},busy=!!V.billBusy,iv=V.yearly?'year':'month';
   if(!V.plan){var fit=PLANLIST.find(function(x){return x.people>=used&&(w.plan===x.id||w.plan==='trial'||!w.plan);})||PLANLIST.find(function(x){return x.people>=used;});V.plan=(PLANLIST.find(function(x){return x.id===w.plan;})||fit||PLANLIST[PLANLIST.length-1]).id;}
   var manage=b.canCancel||b.canResume,cur=planOf(w.plan),pick=planOf(V.plan)||{},same=V.plan===w.plan&&iv===(w.interval||'month');
   var nextMonth=function(){var d=new Date();return '1 '+MONL[(d.getMonth()+1)%12];};
@@ -3474,6 +3493,7 @@ function billingPanel(){var w=S.workspace||{},used=S.people.length,u=w.usage,b=w
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:14px'},
       h('div',{class:'planrow'},h('div',null,w.status==='trialing'||!cur?h('b',{style:'font-size:15px',text:planStatus(w)}):[h('b',{text:cur.name+' plan'}),h('p',{text:planStatus(w).replace(/^\w+ plan, /,'').replace(/^./,function(c){return c.toUpperCase();})})]),
         manage&&b.provider?h('span',{class:'badge-s',text:(w.interval==='year'?'Yearly':'Monthly')+', '+(b.provider==='paystack'?'Paystack':'Lemon Squeezy')}):null),
+      w.founding&&paidLive(w)?h('p',{class:'offerbar',id:'my-founding'},T('Your founding discount: {p}% off for life',{p:w.founding.percent})):null,
       u&&u.seats.over?h('p',{class:'note-warn',role:'status',text:'You have '+u.seats.used+' people on a plan for '+u.seats.limit+'. Everyone keeps working, but nobody new can be added until some leave or you choose a larger plan.'}):null,
       b.payerUnknown?h('p',{class:'note-warn',role:'status',text:'We could not tell which account pays for this plan, so it cannot be changed here. Contact support from Help and support to link it to your account.'}):null,
       b.paidByOther?h('p',{class:'note-warn',role:'status',text:paidLive(w)?'This plan is paid by the previous owner, so only they can cancel it or change its card, from their account. Once they cancel it, choose your own plan here.':'The previous owner\'s plan ends on '+(w.periodEnd?longDate(w.periodEnd):'the end of its period')+'. Choose your own plan here before then so nothing stops.'}):null,
@@ -3513,6 +3533,15 @@ function videoPanel(){var st=S.settings;return [h('div',{class:'sec'},h('h3',nul
     h('p',{class:'note',style:'margin:0'},'Meetings get a free video room on meet.jit.si. The first person to arrive may be asked to sign in with Google or GitHub to open the room. If you run your own Jitsi server, type its address here. Anyone can also paste a Zoom, Google Meet or Teams link on a meeting instead.'),
     h('input',{class:'in',id:'jitsi-dom',placeholder:'meet.jit.si','aria-label':'Your own Jitsi server',value:st.jitsiDomain||''}),
     h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){send('saveSettings',{settings:{jitsiDomain:$('#jitsi-dom').value.trim()}});}},'Save')))];}
+/* the kind of team (version 1.16.0): the owner, or a manager allowed workspace settings, changes it here. Internal kinds call a
+   client a Department or a Project and keep billing out of the menus until We bill clients is on. Nothing is deleted either way. */
+function teamPanel(){var w=S.workspace||{},D=V.team=V.team&&V.team.ws===wsId?V.team:{ws:wsId,t:w.teamType||'service',b:!!w.billsClients},internal=D.t==='company'||D.t==='ngo';
+  return h('fieldset',{class:'fs',id:'team-set'},h('legend',null,T('Kind of team')),
+    h('select',{class:'in',id:'x-team','aria-label':T('What kind of team are you?'),value:D.t,onchange:function(e){D.t=e.target.value;render();}},TEAMS.map(function(k){return h('option',{value:k[0],text:T(k[1])+', '+T(k[2]).toLowerCase()});})),
+    internal&&S.owner?h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-bills',checked:D.b,onchange:function(e){D.b=e.target.checked;}}),T('We bill clients')):null,   // the owner's switch (1.16.1)
+    h('p',{class:'note',style:'margin:0',text:internal?T('Turn this on to send invoices, set rates and bill approved hours. Nothing is deleted when it is off: billing is only out of the menus.'):T('Client work, client pages, rates and invoices all show.')}),
+    h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',id:'x-team-save',onclick:function(e){var b=e.target;busy(b,true);
+      server('saveSettings',{settings:S.owner?{teamType:D.t,billsClients:internal?D.b:!!w.billsClients}:{teamType:D.t}}).then(function(r){busy(b,false);V.team=null;if(accept(r)){render();toast(T('Kind of team saved'));}}).catch(function(err){busy(b,false);if(!lost(err))toast(err.message+'.');});}},T('Save kind of team'))));}
 function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++)hours.push(i);
   var clk=zoneList(),pins=clk.filter(function(z){return offMin(z.tz)!==offMin(myTz||st.deadlineTz);}).slice(0,2);
   return [topbar('Settings',p?'Signed in as '+p.name+(sess&&sess.user?' ('+sess.user.email+')':''):''),
@@ -3521,12 +3550,13 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
         h('div',{class:'panel list'},S.people.map(function(x){var op=mgrOf(x.id)||x.id===me;return h(op?'button':'div',{class:'li',type:op?'button':null,onclick:op?function(){openPerson(x.id);}:null},h('span',{class:'who',text:initials(x.name)}),
           h('div',null,h('strong',{text:x.name}),h('small',{text:[x.role,x.email,x.id===me?'':x.joined?'Joined':x.inviteExpired?'Invite expired':'Not joined yet',x.id!==me&&localText(x)?localText(x)+' their time':'',x.workStart&&x.workEnd?'Hours '+x.workStart+' to '+x.workEnd:'',x.canPrivate&&x.id!==me?'Can keep private lists':'',x.hidden?(x.ownerSees?'Hidden, visible to you':'Hidden'):''].filter(Boolean).join(' · ')||'No details yet'})),x.id===me?h('span',{class:'tagr'},'This is you'):null);})),
         MGR()?h('p',{class:'note',text:'Add someone, then open them to copy their invite link and send it, for example on WhatsApp. They join as soon as they create an account from the link.'+(S.features.mail?' If you add their email, they also get the invitation by email.':'')}):null),
-      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,'Clients'),newClientLabel()||newListLabel()?h('div',{class:'acts',style:'margin:0;flex-wrap:wrap;justify-content:flex-end'},newClientLabel()?h('button',{type:'button',onclick:function(){openSubject();}},newClientLabel()):null,newListLabel()?h('button',{type:'button',onclick:function(){openList();}},newListLabel()):null):null),
-        CAN('settings')?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:6px;margin-bottom:10px'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-madd',checked:!!S.settings.membersAddClients,onchange:function(e){send('saveSettings',{settings:{membersAddClients:e.target.checked}});}}),'Members can add clients'),
+      h('div',null,h('div',{class:'sec',style:'margin-top:6px'},h('h3',null,T('Clients')),newClientLabel()||newListLabel()?h('div',{class:'acts',style:'margin:0;flex-wrap:wrap;justify-content:flex-end'},newClientLabel()?h('button',{type:'button',onclick:function(){openSubject();}},newClientLabel()):null,newListLabel()?h('button',{type:'button',onclick:function(){openList();}},newListLabel()):null):null),
+        CAN('settings')?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:6px;margin-bottom:10px'},h('label',{class:'switch'},h('input',{type:'checkbox',id:'x-madd',checked:!!S.settings.membersAddClients,onchange:function(e){send('saveSettings',{settings:{membersAddClients:e.target.checked}});}}),T('Members can add clients')),
           h('p',{class:'note',style:'margin:0',text:S.settings.membersAddClients?'Members can add Client and Internal clients. Rates, billing, client page links, retainers and client emails stay yours.':'Only you add clients. Members pick from your clients.'}),
           h('p',{class:'note',id:'x-madd-lists',style:'margin:0',text:'Assistants can still keep their own private lists if you allow it for that person under People. A private list is never a client: you never see it, and its time is never billed.'})):null,
         h('div',{class:'panel list'},S.subjects.map(function(s){return h('button',{class:'li',type:'button',onclick:function(){openSubject(s.id);}},h('i',{class:'dot',style:'background:'+s.color+';width:14px;height:14px'}),
           h('div',null,h('strong',{text:s.name}),h('small',{text:kindOf(s)+', '+S.tasks.filter(function(t){return t.subjectId===s.id&&open(t);}).length+' open'})),h('span',{class:'tagr',text:s.archived?'Archived':''}));})))),
+    FIELD()&&CAN('settings')?sitesPanel():null,   // a field team sees its work sites and attendance first (version 1.16.0)
     teamsPanel(),
     h('div',{class:'sec'},h('h3',null,'Templates'),h('button',{type:'button',onclick:function(){openTemplate();}},'New template')),
     h('div',{class:'panel list'},S.templates.length?S.templates.map(function(x){var n=tplItems(x,'').length;return h('button',{class:'li',type:'button',onclick:function(){openTemplate(x.id);}},h('div',null,h('strong',{text:x.name}),h('small',{text:n+(n===1?' step':' steps')})));})
@@ -3534,6 +3564,7 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
     CAN('settings')?[h('div',{class:'sec'},h('h3',null,'Workspace')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
       fld('Workspace name',h('input',{class:'in',id:'ws-name',maxlength:80,value:S.workspace.name})),
+      teamPanel(),
       h('fieldset',{class:'fs'},h('legend',null,'Header clocks'),
         h('label',{class:'switch'},h('input',{type:'radio',name:'ck-mode',id:'ck-auto',value:'auto',checked:st.clockMode!=='fixed',onchange:function(){st.clockMode='auto';render();}}),'Just me plus the team pill'),
         h('label',{class:'switch'},h('input',{type:'radio',name:'ck-mode',id:'ck-fixed',value:'fixed',checked:st.clockMode==='fixed',onchange:function(){st.clockMode='fixed';render();}}),'Pin up to 2 places, such as a key client'),
@@ -3554,7 +3585,10 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){exportZip('exportData','everything',V.exShots?{withShots:true}:{});}},'Export everything'),h('button',{class:'btn ghost sm',type:'button',onclick:openHistory},'History of changes'),
         st.setupHidden?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveSettings',{settings:{setupHidden:false}});V.tab='home';}},'Show the getting started list'):null),
       st.proofUsed?h('label',{class:'switch'},h('input',{id:'x-exshots',type:'checkbox',checked:!!V.exShots,onchange:function(e){V.exShots=e.target.checked;}}),'Include proof screenshots in Export everything, in a proof_screenshots folder. Without this, the export has their details only'):null),
-    sitesPanel(),assurePanel(),S.owner?insightsPanel():null,attendancePanel(),leavePanel(),S.owner?[billingPanel(),referPanel(),payPanel(),securityPanel()]:null,videoPanel(),
+    FIELD()?attendancePanel():null,FIELD()?null:sitesPanel(),assurePanel(),S.owner?insightsPanel():null,FIELD()?null:attendancePanel(),leavePanel(),S.owner?[billingPanel(),referPanel(),payPanel(),securityPanel()]:null,videoPanel(),
+    S.platformAdmin?[h('div',{class:'sec'},h('h3',null,T('Prices and founding offer'))),h('div',{class:'panel',style:'display:flex;gap:12px;align-items:center;flex-wrap:wrap'},
+      h('p',{style:'margin:0;flex:1;min-width:200px'},T('The price of each plan for every customer, and the founding offer. Only the people who run {brand} see this.',{brand:BRAND})),
+      h('button',{class:'btn sm',type:'button',id:'open-padmin',onclick:openPadmin},T('Open the price editor')))]:null,
     S.admin?[h('div',{class:'sec'},h('h3',null,'Running '+BRAND)),h('div',{class:'panel',style:'display:flex;gap:12px;align-items:center;flex-wrap:wrap'},h('p',{style:'margin:0;flex:1;min-width:200px'},'Every customer workspace, sign ups, trials, paying plans and monthly income. Only you see this.'),h('button',{class:'btn sm',type:'button',onclick:function(){V.tab='admin';V.adm=null;render();window.scrollTo(0,0);}},'Open business dashboard'))]:null,
     h('div',{class:'sec',id:'hol-set'},h('h3',null,'WhatsApp, AI, holidays and invoices')),
     h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:12px'},
@@ -3567,14 +3601,14 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
       h('div',{class:'acts hcs',style:'margin:0'},Object.keys(HOLIDAY_COUNTRIES).map(function(c){var on=String(st.holidayRegions===undefined?'NG,US':st.holidayRegions).split(',').indexOf(c)>=0;
         return h('label',{class:'switch'},h('input',{type:'checkbox',class:'x-reg',value:c,checked:on}),HOLIDAY_COUNTRIES[c]);})),
       fld('Your own holidays, one per line as date and name',h('textarea',{class:'in',id:'x-ch',rows:2,placeholder:'2026-12-31|Office closed',value:String(st.customHolidays||'').split(', ').join('\n')})),
-      CAN('billing')?[h('div',{class:'frow'},fld('Invoice numbers start with',h('input',{class:'in',id:'x-pre',maxlength:8,value:st.invoicePrefix||'INV'})),
+      BILL()?[h('div',{class:'frow'},fld('Invoice numbers start with',h('input',{class:'in',id:'x-pre',maxlength:8,value:st.invoicePrefix||'INV'})),
         fld('Main currency',h('select',{class:'in',id:'x-cur',value:st.currency||'USD'},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});})))),
       h('label',{class:'switch'},h('input',{id:'x-appr',type:'checkbox',checked:!!st.billApprovedOnly}),'Only approved timesheets can be billed'),
       fld('Your business name and address, for invoices',h('textarea',{class:'in',id:'x-from',rows:2,maxlength:400,value:st.invoiceFrom||''})),
       fld('How clients pay you, shown on invoices',h('textarea',{class:'in',id:'x-note',rows:2,maxlength:600,placeholder:'Bank, account name and number, or a payment link',value:st.invoiceNote||''}))]:null,
       h('div',{class:'acts'},h('button',{class:'btn sm',type:'button',onclick:function(){var regs=[].map.call(document.querySelectorAll('.x-reg'),function(c){return c.checked?c.value:'';}).filter(Boolean).join(',');
         var ss={waOn:$('#x-wa').checked,digestWa:$('#x-dwa').checked,aiDigest:$('#x-ai').checked,holidayRegions:regs,customHolidays:$('#x-ch').value};
-        if(CAN('billing'))Object.assign(ss,{invoicePrefix:$('#x-pre').value,currency:$('#x-cur').value,invoiceFrom:$('#x-from').value,invoiceNote:$('#x-note').value,billApprovedOnly:$('#x-appr').checked});
+        if(BILL())Object.assign(ss,{invoicePrefix:$('#x-pre').value,currency:$('#x-cur').value,invoiceFrom:$('#x-from').value,invoiceNote:$('#x-note').value,billApprovedOnly:$('#x-appr').checked});
         send('saveSettings',{settings:ss});}},'Save'))),
     moneyPanel(),
     st.waOn?waBlock():null,S.owner?waOwnPanel():null,
@@ -3603,6 +3637,55 @@ function viewMore(){var p=person(me),st=S.settings,hours=[];for(var i=0;i<24;i++
         :h('button',{class:'btn ghost sm',type:'button',onclick:function(){V.allOut=true;render();}},'Sign out everywhere'),installBtn(),alertBtn()),
     h('p',{class:'note',style:'margin:8px 0 0',text:V.allOut?'Every phone and computer signed in to your account, this one too, must sign in again. Phone alerts stop until you switch them back on.':BRAND+' version '+APP_VERSION})];}
 
+/* ---------- the platform admin's price editor (version 1.16.0) ----------
+   Only for the people in the PLATFORM_ADMINS secret, with two step sign in on; the server checks both on every call and keeps a
+   history of every change. Prices apply to new subscribers; everyone already subscribed keeps the price they pay. */
+function openPadmin(){M={kind:'padmin',load:true,err:'',code:'',A:null,plans:null,offer:null,busy:''};$('#ov').hidden=false;renderSheet();padminLoad();}
+function padminLoad(){call('api',{action:'priceAdmin',payload:{}}).then(function(r){if(!M||M.kind!=='padmin')return;padminTake(r.priceAdmin);M.load=false;renderSheet();})
+  .catch(function(e){if(lost(e))return;if(!M||M.kind!=='padmin')return;M.load=false;M.err=e.message;M.code=e.code||'';renderSheet();});}
+function padminTake(A){M.A=A;M.plans=A.plans.map(function(x){return {plan:x.plan,usd:String(x.usd),ngn:String(x.ngn),yearly:String(x.yearly),people:String(x.people)};});
+  var o=A.offer||{};M.offer={active:!!o.active,percent:String(o.percent||20),endsAt:o.endsAt?String(o.endsAt).slice(0,10):'',maxCustomers:String(o.maxCustomers||0)};}
+function padminSave(action){var payload=action==='savePrices'?{plans:M.plans.map(function(x){return {plan:x.plan,usd:Number(x.usd),ngn:Number(x.ngn),yearly:Number(x.yearly),people:Number(x.people)};})}
+    :{offer:{active:M.offer.active,percent:Number(M.offer.percent),endsAt:M.offer.endsAt,maxCustomers:Number(M.offer.maxCustomers||0)}};
+  M.busy=action;renderSheet();
+  call('api',{action:action,payload:payload}).then(function(r){M.busy='';padminTake(r.priceAdmin);renderSheet();toast(r.msg||T('Saved'));refresh();})
+    .catch(function(e){if(lost(e))return;M.busy='';renderSheet();toast(e.message+'.');});}
+var PLNAME={starter:'Starter',team:'Team',agency:'Agency'};
+/* the sales page pricing as it will look with the numbers typed here, before saving */
+function padminPreview(){var o=M.offer,on=o.active&&Number(o.percent)>0&&o.endsAt&&new Date(o.endsAt+'T23:59:59Z').getTime()>Date.now(),pc=on?Number(o.percent):0;
+  var cut=function(v,cur){return cur==='usd'?Math.round(v*(100-pc))/100:Math.round(v*(100-pc)/100);},fm=function(n){return Number(n).toLocaleString('en-US',{maximumFractionDigits:2});};
+  return h('div',{class:'pvw',id:'pa-preview'},on?h('div',{class:'pvoffer'},T('Founding offer: {p}% off for life',{p:pc}),Number(o.maxCustomers)>0?h('span',{text:T('{n} spots',{n:o.maxCustomers})}):null):null,
+    h('div',{class:'pvcards'},M.plans.map(function(x){var u=Number(x.usd)||0,n=Number(x.ngn)||0,y=Number(x.yearly)||10;
+      return h('div',{class:'pvcard'},h('b',{text:PLNAME[x.plan]}),h('small',{text:T('Up to {n} people',{n:x.people})}),
+        h('div',{class:'pvamt'},pc?h('s',{text:'$'+fm(u)}):null,h('strong',{text:'$'+fm(cut(u,'usd'))}),h('span',{text:T(' / month')})),
+        h('small',{text:(pc?'₦'+fm(cut(n,'ngn')):'₦'+fm(n))+T(' a month')+' · $'+fm(cut(u*y,'usd'))+' '+T('or')+' ₦'+fm(cut(n*y,'ngn'))+T(' a year')}));})),
+    h('p',{class:'note',style:'margin:0',text:T('A year costs {n} months. The sales page, the pages for each kind of team and the plan picker show these numbers within a few minutes of saving.',{n:(M.plans[1]||{}).yearly||10})}));}
+function renderPadmin(){var A=M.A,out=[head(T('Prices and founding offer'))];
+  if(M.load)return out.concat(h('p',{class:'note'},T('Loading')));
+  if(M.err)return out.concat(h('p',{class:'err',role:'alert',text:M.err}),M.code==='need2fa'?h('button',{class:'btn sm',type:'button',onclick:function(){closeSheet();openTwofaSetup();}},T('Turn on two step sign in')):null);
+  var row=function(x){var f=function(k,label,step){return h('label',{class:'f'},label,h('input',{class:'in',type:'number',min:'0',step:step,id:'pa-'+x.plan+'-'+k,value:x[k],oninput:function(e){x[k]=e.target.value;var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}}));};
+    return h('div',{class:'parow'},h('strong',{text:PLNAME[x.plan]}),h('div',{class:'frow'},f('usd',T('US dollars a month'),'0.01'),f('ngn',T('Naira a month'),'1')),h('div',{class:'frow'},f('yearly',T('Months charged for a year'),'1'),f('people',T('People allowed'),'1')));};
+  var o=M.offer,ao=A.offer||{};
+  out.push(h('p',{class:'ok-note',style:'margin:0;background:var(--blush);color:var(--ink)'},T('Changes apply to new subscribers only. Everyone already subscribed keeps the price they pay now, and founding customers keep their discount for life.')),
+    h('div',{class:'lbl'},T('Plan prices')),M.plans.map(row),
+    A.paystack?h('p',{class:'note',style:'margin:0'},T('Saving makes new Paystack plans for the new naira amounts first. If Paystack refuses, nothing changes.')):h('p',{class:'note',style:'margin:0'},T('Paystack is not set up, so naira checkouts use the plans in your PAYSTACK_PLAN secrets.')),
+    h('button',{class:'btn',type:'button',id:'pa-save',disabled:!!M.busy,onclick:function(){padminSave('savePrices');}},M.busy==='savePrices'?T('Saving'):T('Save prices')),
+    h('div',{class:'lbl'},T('Founding offer')),
+    h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},
+      h('label',{class:'switch'},h('input',{type:'checkbox',id:'pa-on',checked:o.active,onchange:function(e){o.active=e.target.checked;renderSheet();}}),T('Founding offer is on')),
+      h('div',{class:'frow'},h('label',{class:'f'},T('Percent off, 1 to 90'),h('input',{class:'in',type:'number',min:'1',max:'90',step:'1',id:'pa-pc',value:o.percent,oninput:function(e){o.percent=e.target.value;var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}})),
+        h('label',{class:'f'},T('Ends on'),h('input',{class:'in',type:'date',id:'pa-end',value:o.endsAt,oninput:function(e){o.endsAt=e.target.value;var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}})),
+        h('label',{class:'f'},T('Founding customers, 0 for no limit'),h('input',{class:'in',type:'number',min:'0',step:'1',id:'pa-max',value:o.maxCustomers,oninput:function(e){o.maxCustomers=e.target.value;var pv=$('#pa-preview');if(pv)pv.replaceWith(padminPreview());}}))),
+      h('p',{class:'note',id:'pa-claimed',style:'margin:0',text:T('Claimed so far: {n}',{n:ao.claimed||0})+(ao.spotsLeft!==null&&ao.spotsLeft!==undefined?T(', {n} left',{n:ao.spotsLeft}):'')+(ao.active?(ao.live?T('. Live now.'):T('. On, but not live: past its end date or no spots left.')):T('. Off.'))}),
+      h('p',{class:'note',style:'margin:0'},T('A spot is held for 2 hours while a customer is at checkout, and given back if they do not pay. Founding customers keep their discount for life, also after the offer ends.')),
+      h('button',{class:'btn sm',type:'button',id:'pa-offer-save',style:'align-self:flex-start',disabled:!!M.busy,onclick:function(){padminSave('saveOffer');}},M.busy==='saveOffer'?T('Saving'):T('Save founding offer'))),
+    h('div',{class:'lbl'},T('Preview of the sales page pricing')),padminPreview(),
+    h('div',{class:'lbl'},T('History of price changes')),
+    (A.audit||[]).length?h('div',{class:'panel list',id:'pa-audit'},A.audit.map(function(a){return h('div',{class:'li'},h('div',null,h('strong',{text:a.action}),h('small',{text:a.who+' · '+stamp(new Date(a.at).getTime())+' · '+padminDiff(a)})));}))
+      :h('p',{class:'note',style:'margin:0'},T('No changes yet.')));
+  return out;}
+function padminDiff(a){var o=a.old,n=a.new;if(Array.isArray(n)){var bits=[];n.forEach(function(x){var w=(o||[]).find(function(y){return y.plan===x.plan;})||{};['usd','ngn','yearly','people'].forEach(function(k){if(w[k]!==x[k])bits.push(PLNAME[x.plan]+' '+k+' '+w[k]+' to '+x[k]);});});return bits.join(', ')||T('no change');}
+  if(n&&typeof n==='object')return (n.active?T('on'):T('off'))+', '+n.percent+'%'+(n.endsAt?', '+String(n.endsAt).slice(0,10):'')+(n.maxCustomers?', '+n.maxCustomers+' '+T('spots'):'');return '';}
 /* ---------- Integrations (version 1.12.0): API tokens, webhooks, chat alerts, payout details and payout files ---------- */
 var SCOPEW={'tasks:read':'Read tasks','tasks:write':'Create and change tasks','time:read':'Read time and timesheets','time:write':'Log time','clients:read':'Read clients','people:read':'Read people (names and roles only)','meetings:read':'Read meetings','invoices:read':'Read invoices','webhooks':'Manage webhooks (Zapier and Make use this)'};
 var EVW={'task.created':'Task created','task.updated':'Task updated','task.done':'Task done','time_entry.created':'Time entry created','time_entry.approved':'Time entry approved','timesheet.approved':'Timesheet approved',
@@ -4026,12 +4109,12 @@ function renderSubject(){var d=M.d;
   if(M.id&&!MGR()&&!d.privateTo)return [head(d.name),h('p',{class:'note',style:'margin:0',text:kindOf(d)+(d.archived?', archived':'')+'. '+S.tasks.filter(function(t){return t.subjectId===d.id&&open(t);}).length+' open tasks.'}),
     h('p',{class:'panel',style:'margin:0'},'Only the owner can rename, recolour or archive a shared client. You can still add tasks to it'+(canPriv()?' and keep your own private lists.':'.')),
     h('button',{class:'btn wide',type:'button',onclick:function(){var id=d.id;closeSheet();goTasks('open',id);}},'See its tasks')];
-  return [head(M.id?'Client':newClientLabel()||'New client'),
-  h('input',{class:'title-in',id:'s-name',maxlength:80,placeholder:'Client name, or an internal area','aria-label':'Client name',value:d.name,oninput:bind(d,'name')}),
+  return [head(M.id?T('Client'):newClientLabel()||T('New client')),
+  h('input',{class:'title-in',id:'s-name',maxlength:80,placeholder:T('Client name, or an internal area'),'aria-label':T('Client name'),value:d.name,oninput:bind(d,'name')}),
   fld('Type',h('select',{class:'in',id:'s-kind',value:kindOf(d),onchange:bind(d,'kind')},[['Client','Client, an outside customer'],['Internal','Internal, your own company\'s work']].map(function(k){return h('option',{value:k[0],text:k[1]});}))),
   h('div',{class:'lbl'},'Colour'),h('div',{class:'sw'},COLORS.map(function(c){return h('button',{type:'button',style:'background:'+c,'aria-label':'Colour '+c,'aria-pressed':String(d.color===c),onclick:function(){d.color=c;renderSheet();}});})),
   M.id?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-arch',checked:d.archived,onchange:function(e){d.archived=e.target.checked;}}),'Archive this client. Its tasks are kept.'):null,
-  S.owner?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Billing'),
+  S.owner&&BILLS()?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Billing'),
     h('div',{class:'frow'},fld('Hourly rate',h('input',{class:'in',id:'s-rate',type:'number',min:'0',step:'0.01',value:d.rate||'',oninput:function(e){d.rate=Number(e.target.value)||0;}})),
       fld('Currency',h('select',{class:'in',id:'s-cur',value:d.currency||S.settings.currency||'USD',onchange:bind(d,'currency')},CURS.map(function(c){return h('option',{value:c[0],text:c[1]});})))),
     h('div',{class:'frow'},fld('Rounding, per entry',h('select',{class:'in',id:'s-round',value:String(d.rounding||0),onchange:function(e){d.rounding=+e.target.value;}},ROUNDS.map(function(r){return h('option',{value:String(r[0]),text:r[1]});}))),
@@ -4059,15 +4142,15 @@ function renderSubject(){var d=M.d;
   S.owner&&M.id&&!d.privateTo?h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Client page'),
     h('p',{class:'note',style:'margin:0'},'A private link where this client sees progress on their work, comments, approves finished tasks and views invoices. No login needed. Private tasks never show.'),
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-pts',checked:!!d.portalTimesheet,onchange:function(e){d.portalTimesheet=e.target.checked;}}),'Show a detailed timesheet on the page: date, first name, task and hours. Team only notes stay hidden'),
-    h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-capp',checked:!!d.clientApproves,onchange:function(e){d.clientApproves=e.target.checked;renderSheet();}}),'Client approves hours before billing'),
-    d.clientApproves?h('p',{class:'note',style:'margin:0'},'The page lists each line of time to approve or query. Bill hours then takes only approved lines; the rest waits. Approved time is locked: you can still change it with a reason, and the client is asked again.'):null,
+    BILLS()?h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-capp',checked:!!d.clientApproves,onchange:function(e){d.clientApproves=e.target.checked;renderSheet();}}),'Client approves hours before billing'):null,
+    d.clientApproves&&BILLS()?h('p',{class:'note',style:'margin:0'},'The page lists each line of time to approve or query. Bill hours then takes only approved lines; the rest waits. Approved time is locked: you can still change it with a reason, and the client is asked again.'):null,
     h('label',{class:'switch'},h('input',{type:'checkbox',id:'s-pbud',checked:!!d.portalBudget,onchange:function(e){d.portalBudget=e.target.checked;}}),'Show time budget against time used on the page'),
     d.shareToken?[h('input',{class:'in',id:'s-link',readonly:true,value:portalLink(d.shareToken),onclick:function(e){e.target.select();}}),
       h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',onclick:function(){var v=portalLink(d.shareToken);(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){toast('Link copied');},function(){var f=$('#s-link');f.select();toast('Selected. Copy it from here.');});}},'Copy link'),
         h('a',{class:'btn ghost sm',href:portalLink(d.shareToken),target:'_blank',rel:'noopener noreferrer'},'Open'),
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){var id=M.id;closeSheet();send('shareSubject',{id:id,revoke:true});}},'Turn off link'))]
       :h('button',{class:'btn ghost sm',type:'button',style:'align-self:flex-start',onclick:function(){var id=M.id;server('shareSubject',{id:id}).then(function(r){accept(r);render();var sb=subj(id);if(M&&M.kind==='subject'&&sb){M.d.shareToken=sb.shareToken;renderSheet();}toast('Client link ready');}).catch(function(e){if(!lost(e))toast(e.message+'.');});}},'Create client link')):null,
-  h('button',{class:'btn wide',type:'button',onclick:function(){d.name=d.name.trim();if(!d.name){toast('Give the client a name.');return;}var s=Object.assign({},d);delete s.shareToken;closeSheet();send('saveSubject',{subject:s},true);toast('Client saved');}},'Save client')];}
+  h('button',{class:'btn wide',type:'button',onclick:function(){d.name=d.name.trim();if(!d.name){toast('Give the client a name.');return;}var s=Object.assign({},d);delete s.shareToken;closeSheet();send('saveSubject',{subject:s},true);toast('Client saved');}},T('Save client'))];}
 /* a private list: a person's own list that only they see. Not a client: no type, rates, billing, client page or client email */
 function openList(id){var s=id?subj(id):null;if(s&&!isList(s)){openSubject(id);return;}if(!s&&!canPriv()){toast('The owner has not let you keep private lists.');return;}
   M={kind:'list',id:id||null,d:s?Object.assign({},s):{id:uid(),name:'',color:COLORS[S.subjects.length%COLORS.length],archived:false}};$('#ov').hidden=false;renderSheet();var f=$('#l-name');if(f&&!id)f.focus();}
@@ -4227,7 +4310,7 @@ function renderMe(){var p=person(me);return [head(p?T('Signed in as ')+p.name:T(
       h('button',{class:'linkb',type:'button',style:'color:var(--danger)',onclick:openDeleteMe},T('Delete my account'))),
   h('p',{class:'note',style:'margin:0;text-align:center',text:BRAND+' version '+APP_VERSION})];}
 
-function renderSheet(){if(!M)return;document.body.style.overflow='hidden';keep(function(){var k=M.kind,kids=k==='task'?renderTask():k==='subject'?renderSubject():k==='list'?renderList():k==='person'?renderPerson():k==='me'?renderMe():k==='shift'?renderShift():k==='leave'?renderLeave():k==='bal'?renderBalance():k==='sched'?renderSched():k==='occ'?renderOcc():k==='swap'?renderSwap():k==='reason'?renderReason():k==='teamed'?renderTeamEd():k==='invoice'?renderInvoice():k==='invview'?renderInvView():k==='ai'?renderAi():k==='handoff'?renderHandoff():k==='pinv'?renderPinv():k==='stuck'?renderStuck():k==='guide'?renderGuide():k==='import'?renderImport():k==='expense'?renderExpense():k==='history'?renderHistory():k==='twofa'?renderTwofa():k==='meet'?renderMeet():k==='entry'?renderEntry():k==='bill'?renderBill():k==='clockfor'?renderClockFor():k==='sendback'?renderSendBack():k==='delws'?renderDelWs():k==='delme'?renderDelMe():k==='help'?renderHelp():k==='bin'?renderBin():k==='sites'?renderSites():k==='proof'?renderProof():k==='timerask'?renderTimerAsk():k==='team'?renderTeamTime():k==='pconsent'?renderPConsent():k==='ptray'?renderPTray():k==='pshot'?renderPShot():k==='pday'?renderPDay():k==='tokens'?renderTokens():k==='ext'?renderExt():k==='dpa'?renderDpa():k==='hooks'?renderHooks():k==='payout'?renderPayout():k==='payx'?renderPayx():k==='uweek'?renderUweek():k==='paymt'?renderPaymt():k==='credit'?renderCredit():k==='cnview'?renderCnView():k==='recur'?renderRecur():k==='paysend'?renderPaySend():k==='payrec'?renderPayRec():k==='slip'?renderSlip():renderTemplate();
+function renderSheet(){if(!M)return;document.body.style.overflow='hidden';keep(function(){var k=M.kind,kids=k==='padmin'?renderPadmin():k==='task'?renderTask():k==='subject'?renderSubject():k==='list'?renderList():k==='person'?renderPerson():k==='me'?renderMe():k==='shift'?renderShift():k==='leave'?renderLeave():k==='bal'?renderBalance():k==='sched'?renderSched():k==='occ'?renderOcc():k==='swap'?renderSwap():k==='reason'?renderReason():k==='teamed'?renderTeamEd():k==='invoice'?renderInvoice():k==='invview'?renderInvView():k==='ai'?renderAi():k==='handoff'?renderHandoff():k==='pinv'?renderPinv():k==='stuck'?renderStuck():k==='guide'?renderGuide():k==='import'?renderImport():k==='expense'?renderExpense():k==='history'?renderHistory():k==='twofa'?renderTwofa():k==='meet'?renderMeet():k==='entry'?renderEntry():k==='bill'?renderBill():k==='clockfor'?renderClockFor():k==='sendback'?renderSendBack():k==='delws'?renderDelWs():k==='delme'?renderDelMe():k==='help'?renderHelp():k==='bin'?renderBin():k==='sites'?renderSites():k==='proof'?renderProof():k==='timerask'?renderTimerAsk():k==='team'?renderTeamTime():k==='pconsent'?renderPConsent():k==='ptray'?renderPTray():k==='pshot'?renderPShot():k==='pday'?renderPDay():k==='tokens'?renderTokens():k==='ext'?renderExt():k==='dpa'?renderDpa():k==='hooks'?renderHooks():k==='payout'?renderPayout():k==='payx'?renderPayx():k==='uweek'?renderUweek():k==='paymt'?renderPaymt():k==='credit'?renderCredit():k==='cnview'?renderCnView():k==='recur'?renderRecur():k==='paysend'?renderPaySend():k==='payrec'?renderPayRec():k==='slip'?renderSlip():renderTemplate();
   if(M){var sh=$('#sh'),flat=[];(function f(a){a.forEach(function(k){if(Array.isArray(k))f(k);else if(k)flat.push(k);});})(kids);sh.replaceChildren.apply(sh,flat);tick();}});}
 
 /* ---------- Client page: opened from a private link, no login ---------- */
@@ -4422,15 +4505,18 @@ function pickWorkspace(){screen([loader()]);
 /* first run: name the workspace and pick time zones; subjects and templates are seeded to suit */
 function createScreen(first){var u=sess&&sess.user||{},meta=(A0.name||'').trim();
   var nm=h('input',{class:'in',id:'w-name',maxlength:80,placeholder:'Acme Assistants'}),
-      kd=h('select',{class:'in',id:'w-kind'},[['agency','A virtual assistant or staffing agency'],['firm','A firm with remote staff'],['organisation','An organisation or NGO'],['team','A small team or personal use']].map(function(k){return h('option',{value:k[0],text:k[1]});})),
+      tq=store.get('hv-team'),TT0={v:TEAMS.some(function(x){return x[0]===tq;})?tq:''},
+      kd=h('fieldset',{class:'fs teamq',id:'w-team'},h('legend',null,T('What kind of team are you?')),TEAMS.map(function(k){return h('label',{class:'switch'},h('input',{type:'radio',name:'w-team',value:k[0],checked:TT0.v===k[0],onchange:function(){TT0.v=k[0];}}),
+        h('span',null,T(k[1]),h('small',{class:'note',style:'display:block;margin:0',text:T(k[2])})));}),h('p',{class:'note',style:'margin:0',text:T('Companies see departments and NGOs see projects instead of clients, and billing stays out of the way until you turn it on. You can change this later in Settings.')})),
       yn=h('input',{class:'in',id:'w-you',maxlength:60,value:meta,autocomplete:'name'}),
       t1=h('select',{class:'in',id:'w-tz1',value:myTz||'Africa/Lagos'},tzOptions(myTz||'Africa/Lagos')),
       t2=h('select',{class:'in',id:'w-tz2',value:''},tzOptions('','No second clock')),
       go=h('button',{class:'btn wide',type:'submit'},'Create workspace'),err=h('p',{class:'err',role:'alert',hidden:true});
-  var submit=function(ev){ev.preventDefault();var name=nm.value.trim();if(!name){err.textContent='Give the workspace a name.';err.hidden=false;nm.focus();return;}busy(go,true);err.hidden=true;
+  var submit=function(ev){ev.preventDefault();var name=nm.value.trim();if(!name){err.textContent='Give the workspace a name.';err.hidden=false;nm.focus();return;}
+    if(!TT0.v){err.textContent=T('Choose what kind of team you are.');err.hidden=false;var r0=document.querySelector('input[name="w-team"]');if(r0)r0.focus();return;}busy(go,true);err.hidden=true;
     var zs=[t1.value,t2.value].filter(function(v,i,a){return v&&a.indexOf(v)===i;});
-    call('api',{action:'createWorkspace',payload:{_app:appUrl(),ref:store.get('hv-ref')||'',name:name,kind:kd.value,yourName:yn.value.trim(),deadlineTz:t1.value,clocks:zs.map(function(z){return tzLabel(z)+'|'+z;}).join(', ')}})
-      .then(function(res){wsId=res.workspace.id;store.set('hv-ws',wsId);loadQ();accept(res);pickMe();V.tab='home';FULL=false;render();toast('Your workspace is ready. Add your people under Settings.');})
+    call('api',{action:'createWorkspace',payload:{_app:appUrl(),ref:store.get('hv-ref')||'',name:name,teamType:TT0.v,yourName:yn.value.trim(),deadlineTz:t1.value,clocks:zs.map(function(z){return tzLabel(z)+'|'+z;}).join(', ')}})
+      .then(function(res){store.del('hv-team');wsId=res.workspace.id;store.set('hv-ws',wsId);loadQ();accept(res);pickMe();V.tab='home';FULL=false;render();toast('Your workspace is ready. Add your people under Settings.');})
       .catch(function(e){busy(go,false);if(lost(e))return;err.textContent=e.message+'.';err.hidden=false;});};
   var unverified=sess&&sess.user&&sess.user.verified===false;
   screen([unverified&&first?h('div',{class:'connect',style:'margin-top:4vh;margin-bottom:-4vh'},h('div',{class:'ok-note',style:'background:var(--blush);color:var(--ink);display:flex;flex-direction:column;gap:8px;text-align:left'},
@@ -4439,7 +4525,7 @@ function createScreen(first){var u=sess&&sess.user||{},meta=(A0.name||'').trim()
         h('button',{class:'btn ghost sm',type:'button',onclick:function(){sendVerify().then(function(){toast('Link sent again');}).catch(function(e){toast(e.message);});}},'Send the link again')))):null,
     shell(first?'Set up your workspace':'New workspace',first?'Your workspace is your company account. It holds your clients, people and tasks. You can rename it later.':'Each workspace has its own people, clients, tasks and plan.',
     [h('form',{class:'panel',style:'display:flex;flex-direction:column;gap:12px;text-align:left',onsubmit:submit,novalidate:true},
-      fld('Workspace name, such as your company',nm),fld('What best describes you',kd),fld('Your name, as your team will see it',yn),
+      fld('Workspace name, such as your company',nm),kd,fld('Your name, as your team will see it',yn),
       h('div',{class:'frow'},fld('Your time zone, used for deadlines',t1),fld('Second clock, such as your clients',t2)),err,go),
      h('div',{class:'alt'},wsList.length?h('button',{class:'linkb',type:'button',onclick:function(){if(wsId)boot();else pickWorkspace();}},'Back to my workspaces'):h('span'),h('button',{class:'linkb',type:'button',onclick:signOut},'Sign out'))])].filter(Boolean));
   setTimeout(function(){try{if(!unverified)nm.focus();}catch(e){}},30);}
@@ -4485,6 +4571,7 @@ var OPEN_MEET='',OPEN_TASK='',OPEN_EXT=false;
   if(q.get('ins')){V.tab='stats';V.ins=q.get('ins')==='me'?'me':'ovw';history.replaceState(null,'',location.pathname);}
   if(q.get('sched')||q.get('att')){var aq=q.get('att')||'';V.tab='stats';V.ins=aq&&aq!=='hours'?'att':aq==='hours'?'time':'sched';history.replaceState(null,'',location.pathname);}
   if(/^[A-Za-z2-9]{7}$/.test(q.get('ref')||''))store.set('hv-ref',q.get('ref').toUpperCase());
+  if(/^(service|company|remote|ngo)$/.test(q.get('team')||''))store.set('hv-team',q.get('team'));   // from a page for a kind of team
   if(/^[0-9a-f]{24}$/.test(q.get('client')||'')){portalScreen(q.get('client'),q.get('invoice'),q.get('reference')||'');return;}
   if(q.get('paid')){history.replaceState(null,'',location.pathname);setTimeout(function(){toast('Thank you. Your plan updates as soon as the payment is confirmed.');},800);[5000,15000,40000].forEach(function(ms){setTimeout(refresh,ms);});}
   if(/^[A-Za-z0-9_-]{1,40}$/.test(q.get('task')||'')){OPEN_TASK=q.get('task');history.replaceState(null,'',location.pathname);}

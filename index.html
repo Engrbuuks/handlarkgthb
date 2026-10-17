@@ -1,11 +1,11 @@
 <title>Handlark: hand it over, see it done</title>
-<meta name="description" content="Hand off tasks to your remote team client by client, see progress without chasing, and get a daily summary email. Built for virtual assistant agencies, firms with remote staff and teams in Nigeria.">
+<meta name="description" content="Less chasing, more done. Handlark gives owners, managers, staff and clients one clear view of the work: tasks, attendance, shifts, time, client pages, invoices and payroll, wherever your team sits.">
 <meta name="theme-color" content="#2E1C47">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="app/icon.svg" type="image/svg+xml">
 <link rel="icon" href="app/favicon_32.png" sizes="32x32" type="image/png">
 <meta property="og:title" content="Handlark: hand it over, see it done">
-<meta property="og:description" content="Hand off tasks to your remote team and see them get done, without chasing.">
+<meta property="og:description" content="Less chasing. More done. One clear view of the work for owners, managers, staff and clients.">
 <meta property="og:image" content="app/social.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="apple-touch-icon" href="app/apple_touch_icon.png">
@@ -615,32 +615,134 @@ footer a:hover{color:var(--coral)}
 .notice .mail{background:var(--ink)}
 .rail span{letter-spacing:.02em;text-transform:none;font-size:12px}
 .ctab .phone .hello{color:var(--muted);margin:14px 0 10px;max-width:none;font-size:11.5px}.ctab .phone .tl p{color:var(--ink);margin:0;font-size:10.5px}
+/* ---------- version 1.16.0: broad positioning ---------- */
+.hero .brandline{display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--body);color:var(--blush2);margin-bottom:18px}
+.hero .brandline:before{content:"";width:22px;height:3px;border-radius:2px;background:var(--coral)}
+.hero h1.big{font-size:clamp(44px,6.4vw,82px);line-height:1;font-weight:600;letter-spacing:-.04em}
+.hero h1.big span{display:block}
+.hero h1.big span+span{color:var(--blush2)}
+.hero .lead{max-width:50ch;font-size:16.5px}
+.chip.c3{left:4%;bottom:30%;animation:float 6.5s ease-in-out .5s infinite}
+/* the three pillars */
+.pillars{padding:110px 0 90px;background:linear-gradient(180deg,var(--page),var(--mist) 40%)}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:44px}
+.pillar{background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:28px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pillar .n{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--plum);color:#fff;font:700 18px var(--display)}
+.pillar:nth-child(2) .n{background:var(--coral);color:var(--on-coral)}
+.pillar:nth-child(3) .n{background:var(--blush);color:var(--coral-ink)}
+.pillar h3{font-size:21px;line-height:1.25}
+.pillar p{color:var(--muted);font-size:14.5px}
+.pillar ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:8px;font-size:14px}
+.pillar li{display:flex;gap:9px;align-items:flex-start}
+.pillar li:before{content:"";width:16px;height:16px;flex:none;margin-top:3px;border-radius:50%;background:var(--blush) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2L11.5 5.6' fill='none' stroke='%23E85A44' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.pillar .mini{margin-top:auto;background:var(--mist);border-radius:16px;padding:12px;display:grid;gap:6px;font-size:12px}
+.pillar .mini div{background:var(--paper);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pillar .mini b{font-weight:600;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pillar .mini em{font-style:normal;color:var(--muted);flex:none}
+.pillar .mini .ok{color:var(--ok);font-weight:700}
+/* WhatsApp */
+.wa{padding:100px 0;background:var(--ink);color:#D6CCE3;overflow:hidden}
+.wa .in{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.wa h2{color:#fff;margin:14px 0 16px}
+.wa .lead{color:#C2B7D3}
+.wa .eyebrow{color:#FFD5CB}
+.walist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 26px;margin-top:30px}
+.walist h3{color:#fff;font-size:16.5px;margin-bottom:4px;display:flex;gap:10px;align-items:center}
+.walist h3:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none}
+.walist p{font-size:13.5px;color:#C2B7D3}
+.chat{background:#EFE9F4;border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:10px;max-width:420px;justify-self:end;width:100%;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.chat .top{display:flex;align-items:center;gap:10px;color:var(--ink);font:600 14px var(--display);padding:2px 4px 8px;border-bottom:1px solid #DDD3E6}
+.chat .top img{width:30px;height:30px}
+.chat .top small{display:block;font:400 11.5px var(--body);color:var(--muted)}
+.bub{max-width:86%;border-radius:16px;padding:9px 12px;font-size:13.5px;line-height:1.45;color:var(--ink2);white-space:pre-line}
+.bub.them{background:#fff;align-self:flex-start;border-top-left-radius:6px}
+.bub.me{background:#DDF3E6;align-self:flex-end;border-top-right-radius:6px}
+.bub small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+/* stakeholders */
+.who{padding:100px 0;background:var(--paper)}
+.sgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
+.scard{grid-column:span 2;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--mist)}
+.scard:nth-child(4),.scard:nth-child(5){grid-column:span 3}
+.scard:nth-child(1){background:var(--blush)}
+.scard:nth-child(3){background:#ECE6F7}
+.scard:nth-child(5){background:var(--plum);color:#E6DDF2}
+.scard:nth-child(5) h3,.scard:nth-child(5) .role{color:#fff}
+.scard:nth-child(5) p{color:#D6CCE3}
+.scard .role{font:700 13px/1 var(--body);color:var(--coral-ink)}
+.scard:nth-child(5) .role{color:var(--blush2)}
+.scard h3{font-size:20px;line-height:1.25}
+.scard p{font-size:14.5px;color:var(--ink2)}
+/* kind by design */
+.kind{padding:100px 0;background:var(--mist)}
+.kind .in{display:grid;grid-template-columns:.95fr 1.05fr;gap:50px;align-items:start}
+.kind h2{margin:14px 0 16px}
+.klist{display:grid;gap:14px}
+.kitem{background:var(--paper);border-radius:20px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line)}
+.kitem .ic{width:40px;height:40px;border-radius:12px;background:var(--blush);color:var(--coral-ink);display:grid;place-items:center;flex:none}
+.kitem .ic svg{width:19px;height:19px}
+.kitem h3{font-size:16.5px;margin-bottom:3px}
+.kitem p{color:var(--muted);font-size:14px}
+.kind .never{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+.kind .never span{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink2)}
+.kind .never span:before{content:"No ";color:var(--coral-ink);font-weight:700}
+/* built for your kind of team */
+.teams{padding:100px 0;background:var(--paper)}
+.tgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.tcard{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:22px;padding:22px;background:var(--page);transition:transform .2s,border-color .2s;min-width:0}
+.tcard:hover{transform:translateY(-3px);border-color:var(--coral)}
+.tcard .tag{font:700 12px/1 var(--body);color:var(--coral-ink)}
+.tcard h3{font-size:17.5px;line-height:1.3}
+.tcard p{color:var(--muted);font-size:13.5px}
+.tcard .go{margin-top:auto;font:700 13.5px var(--body);color:var(--plum)}
+/* the founding offer */
+.offer{display:flex;align-items:center;justify-content:center;gap:10px 18px;flex-wrap:wrap;background:var(--plum);color:#fff;border-radius:20px;padding:14px 20px;margin-top:28px;text-align:center}
+.offer[hidden]{display:none}
+.offer b{color:var(--blush2);font:700 16px var(--display)}
+.offer .cd{font-variant-numeric:tabular-nums;font-weight:700}
+.offer .left{background:var(--coral);color:var(--on-coral);border-radius:999px;padding:4px 12px;font-weight:700;font-size:13px}
+.amt s{font:500 18px var(--body);color:var(--muted);margin-right:6px;text-decoration-thickness:2px}.amt small{white-space:nowrap}
+.plan.pop .amt s{color:#CFC5DD}
+.amt .off{display:block;font:700 12px var(--body);color:var(--coral-ink);margin-top:6px;letter-spacing:0}
+.plan.pop .amt .off{color:var(--blush2)}
+.stat b span{font:inherit;color:inherit}
+.plan li{display:block;position:relative;padding-left:28px}.plan li:before{position:absolute;left:0;top:2px}
+@media (max-width:1100px){.tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:900px){
+  .pgrid{grid-template-columns:1fr}
+  .wa .in,.kind .in{grid-template-columns:1fr}
+  .chat{justify-self:stretch;max-width:none}
+  .sgrid{grid-template-columns:1fr 1fr}.scard,.scard:nth-child(4),.scard:nth-child(5){grid-column:span 1}.scard:nth-child(5){grid-column:1/-1}
+  .tgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:620px){
+  .pillars,.wa,.who,.kind,.teams{padding:70px 0}
+  .walist{grid-template-columns:1fr}
+  .sgrid,.tgrid{grid-template-columns:1fr}.scard:nth-child(5){grid-column:auto}
+  .chip.c3{display:none}
+}
 </style>
-<body data-home>
+<body data-home data-prices>
 
 <div class="stage">
 <div class="frame">
   <header class="nav">
     <a class="logo" href="#top" aria-label="Handlark home"><img class="wm" src="app/logo_white.svg" alt="Handlark" width="150" height="40"></a>
     <nav class="links" aria-label="Main">
-      <a href="#product">Product</a><a href="#features">Features</a><a href="#who">Solutions</a><a href="#how">How it works</a><a href="#pricing">Pricing</a>
+      <a href="#product">Product</a><a href="#who">Who it is for</a><a href="#teams">Your kind of team</a><a href="#kind">Kind by design</a><a href="#pricing">Pricing</a>
     </nav>
     <div class="acts"><a class="btn ghost" href="app/">Sign in</a><a class="btn line" href="app/?signup">Get started</a></div>
     <button class="menu" type="button" id="menu" aria-expanded="false" aria-controls="drawer" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </header>
   <nav class="drawer" id="drawer" aria-label="Mobile">
-    <a href="#product">Product</a><a href="#features">Features</a><a href="#who">Solutions</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="app/">Sign in</a>
+    <a href="#product">Product</a><a href="#who">Who it is for</a><a href="#teams">Your kind of team</a><a href="#kind">Kind by design</a><a href="#pricing">Pricing</a><a href="app/">Sign in</a>
     <a class="btn dark sm" href="app/?signup">Get started</a>
   </nav>
 
   <div class="hero" id="top">
     <div class="copy">
-      <div class="plus" aria-hidden="true"></div>
-      <h1>
-        <span class="row"><span class="squig" aria-hidden="true"><svg viewBox="0 0 100 40" fill="none" stroke="#1E1230" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 30c6 0 6-14 12-14s6 14 12 14 6-14 12-14 6 14 12 14 6-12 12-16 10-10 16-14"/><path d="M74 1l11 1-2 11"/></svg></span>Hand off</span>
-        your <b>tasks</b><br>effortlessly
-      </h1>
-      <p class="lead">With <span data-brand>Handlark</span> you drop the day's work for your remote team client by client. They post progress as they go, and you see where everything stands without a single "any update?" message.</p>
+      <span class="brandline">Hand it over, see it done.</span>
+      <h1 class="big"><span>Less chasing.</span><span>More done.</span></h1>
+      <p class="lead"><span data-brand>Handlark</span> gives owners, managers, staff and clients one clear view of the work: what's assigned, what's done and what's next, wherever your team sits.</p>
       <div class="ctas">
         <a class="btn dark" href="app/?signup">Start free trial <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn ghost" href="app/">Open the live demo</a>
@@ -657,9 +759,9 @@ footer a:hover{color:var(--coral)}
       <span class="dot o" style="left:7%;top:57%"></span>
       <span class="dot o" style="right:14%;top:12%;width:7px;height:7px"></span>
       <svg class="star" style="right:9%;top:2%;width:44px;height:44px" viewBox="0 0 40 40" fill="#1E1230"><g transform="translate(20 20)"><rect x="-2.6" y="-18" width="5.2" height="36" rx="2.6"/><rect x="-2.6" y="-18" width="5.2" height="36" rx="2.6" transform="rotate(60)"/><rect x="-2.6" y="-18" width="5.2" height="36" rx="2.6" transform="rotate(120)"/></g></svg>
-      <svg class="star" style="left:24%;top:62%;width:24px;height:24px" viewBox="0 0 24 24" fill="#A79DB5"><path d="M12 0c.8 6.4 4.8 10.6 12 12-7.2 1.4-11.2 5.6-12 12-.8-6.4-4.8-10.6-12-12C7.2 10.6 11.2 6.4 12 0z"/></svg>
-      <div class="chip c1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>13:02 Lagos</b><small>07:02 Chicago</small></span></div>
-      <div class="chip c2"><span class="ic" style="background:#E2F3EA;color:#1B7450"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Invoice sent</b><small>Signed off by Ada</small></span></div>
+      <div class="chip c1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>Clocked in, on time</b><small>Kemi, Lekki office</small></span></div>
+      <div class="chip c2"><span class="ic" style="background:#E2F3EA;color:#1B7450"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Monthly report done</b><small>Signed off by Ada</small></span></div>
+      <div class="chip c3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-13.4 7.9L3 21l1.2-4.4A9 9 0 1121 12z"/></svg></span><span><b>DONE 2</b><small>Updated from WhatsApp</small></span></div>
     </div>
   </div>
 
@@ -671,10 +773,10 @@ footer a:hover{color:var(--coral)}
     <div class="in">
       <div class="stat"><b>14 days</b><span>Free trial, no card</span></div>
       <div class="stat"><b>₦ and $</b><span>Pay the way you prefer</span></div>
-      <div class="stat"><b>50 people</b><span>In one workspace</span></div>
+      <div class="stat"><b><span data-p="agency.people">50</span> people</b><span>In one workspace</span></div>
       <form class="join" data-mail>
         <div class="faces" aria-hidden="true"><i style="background:#FFE7E1">AN</i><i style="background:#FFB8A8">KB</i><i style="background:#CDBCE6">TA</i><i style="background:#E2F3EA">DB</i><i class="more">You</i></div>
-        <span class="live">Owners, assistants and clients in one place</span>
+        <span class="live">Owners, managers, staff and clients in one place</span>
         <label class="mail"><span class="sr" hidden>Work email</span><input type="email" id="hero-email" name="email" placeholder="Start with your work email" autocomplete="email" required><button type="submit" aria-label="Start free trial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></label>
       </form>
     </div>
@@ -684,195 +786,136 @@ footer a:hover{color:var(--coral)}
 </div>
 
 <main>
-<!-- 2. product overview -->
-<section class="ov" id="product">
-  <div class="wrap grid">
-    <div class="rail" aria-hidden="true">
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12l3 3 5-6"/></svg>Tasks</span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Clocks</span>
-      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Insights</span>
-    </div>
-    <div>
-      <span class="eyebrow">The product</span>
-      <h2 style="margin-top:14px">See every task you hand off <em>at a glance</em></h2>
-      <p class="lead">Your morning in Lagos is their dawn in Chicago. <span data-brand>Handlark</span> keeps both sides on the same list, with the same deadlines, so the work moves while one of you sleeps.</p>
-      <a class="btn coral" href="app/">Explore the demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-    <div class="mock">
-      <div class="phone">
-        <div class="screen">
-          <div class="top"><span style="display:flex;align-items:center;gap:6px"><img src="app/icon.svg" alt="">Handlark</span><span class="burger"><i></i><i></i><i></i></span></div>
-          <p class="hello">Good morning,<b>Ada Nwosu</b></p>
-          <div class="focus"><span class="tg">● Brooks Dental</span><b>Reconcile September bank statements</b><div class="row"><span class="go">Start</span><small>14:00 to 16:00</small></div></div>
-          <div class="tl">
-            <div><i class="ok"></i><p>Weekly client report<small>Brooks Dental</small></p><em>Done</em></div>
-            <div><i></i><p>Send October invoice<small>Hard Shoulder Group</small></p><em>17:00</em></div>
-            <div><i></i><p>Post this week's menu<small>Aunty Mimi's Kitchen</small></p><em>Tomorrow</em></div>
-          </div>
-          <div class="tabbar"><i></i><i></i><i class="fab"></i><i></i><i></i></div>
-        </div>
-      </div>
-      <div class="card k3"><span class="cur">₦/$</span><span><b>Two currencies</b><small>Paystack or card in dollars</small></span></div>
-      <div class="card k1"><h4>Client overview</h4><p>Every client gets its own colour, tasks, files and history, so nothing from one leaks into another.</p></div>
-      <div class="card k2"><div class="hd"><h4>Task list</h4><a href="app/" tabindex="-1">+ Add task</a></div>
-        <div class="checks"><span><i class="on"></i>Chase account reconciled</span><span><i></i>First Bank account</span><span><i></i>Send flagged list to Daniel</span></div></div>
-    </div>
-  </div>
-  <div class="slab">
-    <div class="wrap in">
-      <div class="feat-w"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h6l2 3h10v9H3z"/></svg></div><h3>Client by client</h3><p>Group work by client, project or area, with its own colour and timeline.</p></div>
-      <div class="feat-w"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></div><h3>Many workspaces</h3><p>Run a separate workspace per client or team, and switch in one tap.</p></div>
-      <div class="dl"><div class="faces" aria-hidden="true"><i style="background:#FFE7E1">AN</i><i style="background:#FFB8A8">KB</i><i style="background:#fff">+</i></div><p>Works on any phone and installs like an app.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- 3. stats with task list -->
-<section class="trio">
-  <div class="wrap in">
-    <div class="pad" aria-hidden="true">
-      <div class="diamond"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></div>
-      <div class="card"><div class="hd"><h4>Today, Kemi</h4><a href="app/" tabindex="-1">+ Add task</a></div>
-        <div class="checks"><span><i class="on"></i>Weekly client report, Brooks Dental</span><span><i class="on"></i>Reply to catering enquiries</span><span><i></i>Update payroll tracker for new hires</span><span><i></i>Book patient reminder calls</span></div></div>
-      <div class="bars"><i style="height:40%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:90%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:100%"></i></div>
-      <div class="faces"><i style="background:#fff">AN</i><i style="background:#FFB8A8">KB</i><i style="background:#CDBCE6">TA</i></div>
-    </div>
-    <div class="nums">
-      <div><b>1 tap</b><span>To see every teammate's local time and the best time to meet</span></div>
-      <div><b>10 MB</b><span>Per file, kept in private storage</span></div>
-    </div>
-    <div class="flist">
-      <div><h3>Works on weak internet</h3><p>Changes save on the device and send themselves when the connection is back. Nothing typed is lost.</p></div>
-      <div><h3>File attachments</h3><p>Receipts, statements and drafts live on the task, opened through short lived private links.</p></div>
-      <div><h3>Team collaboration</h3><p>Updates and @mentions sit on the task, so the whole story is in one place for whoever picks it up.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- 4. feature set -->
-<section class="fs" id="features">
-  <div class="wrap in">
-    <div>
-      <span class="eyebrow">Features</span>
-      <h2>Comprehensive <span class="o">feature set</span> for remote teams</h2>
-      <div class="fitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><h3>Sign off before done</h3><p>Mark a task as needing approval. Finished work comes back to you to check before it counts.</p></div></div>
-      <div class="fitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>One deadline, two time zones</h3><p>Deadlines are set in one agreed zone, and every countdown points at the same moment for everyone.</p></div></div>
-      <div class="fitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></span><div><h3>Daily summary email</h3><p>Done, in progress, waiting and overdue, sent at the hour you choose, plus reminders before things slip.</p></div></div>
-      <div class="fitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span><div><h3>Time tracking</h3><p>Start a timer on any task and see hours by client and by person. Ready for client billing.</p></div></div>
-    </div>
-    <div class="cluster" aria-hidden="true">
-      <div class="vline"></div>
-      <div class="card cl1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span><b>Create task</b><small>Due Thu 15 Oct, 10:00</small></span><span class="tag">Brooks Dental</span></div>
-      <div class="card cl2"><h4>Client overview</h4><p>Open work this week</p>
-        <div class="line"><i style="--w:72%"></i><small>72%</small></div>
-        <div class="line"><i style="--w:45%"></i><small>45%</small></div>
-        <div class="line"><i style="--w:88%"></i><small>88%</small></div></div>
-      <div class="card cl3"><p>Total tracked this week</p><div class="t">06:55:00 <span>Live</span></div></div>
-    </div>
-  </div>
-</section>
-
-<section class="all" aria-label="Everything included">
+<!-- the three pillars -->
+<section class="pillars" id="product">
   <div class="wrap">
-    <div class="fgrid">
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3"/></svg></span><h3>Meetings with free video</h3><p>Set up a call with a free video room, or your Zoom or Meet link. Times show in everyone's own zone, with reminders.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h9"/></svg></span><h3>Meeting notes become tasks</h3><p>Write notes together during the call. Each action item becomes an assigned, dated task, and everyone gets the follow up.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><h3>Several tasks at once</h3><p>Paste a whole list, one task per line, already assigned and dated.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span><h3>Templates</h3><p>Turn month end close or client onboarding into dated tasks in one tap.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span><h3>Repeating tasks</h3><p>Daily, weekdays, weekly or monthly. The next one appears when this one is done.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span><h3>Private when needed</h3><p>Keep personal tasks private, hide people from each other, and choose who may do the same.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></span><h3>Deadline alerts</h3><p>Phone and desktop alerts for new work, mentions, sign offs and deadlines.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><h3>Kind insights</h3><p>One Overview with hours, billable time, utilization, focus against meetings, attendance, unusual time, capacity for the next two weeks and money billed. Export it or print it. Built from the work itself: no app tracking, no activity scores, never a ranking.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9-9.2C1.6 8.4 4 5 7.4 5c2 0 3.5 1.1 4.6 2.6C13.1 6.1 14.6 5 16.6 5 20 5 22.4 8.4 21 11.8 19 16.6 12 21 12 21z"/></svg></span><h3>Wellbeing, shown to the person first</h3><p>Long days, late nights in a row, weekend work, no breaks and no leave in 90 days, with a kind suggestion only that person sees. Leads get a team count, never names, unless someone chooses to share.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6" rx="1"/><rect x="12" y="7" width="3" height="10" rx="1"/><rect x="17" y="13" width="3" height="4" rx="1"/></svg></span><h3>Capacity planning</h3><p>Who has room in the next weeks, from planned shifts or working hours, leave, holidays, meetings and the time budgets of work due. Over capacity and has room, listed by name.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span><h3>Time clock with location</h3><p>Clock in and out from any phone, with breaks and an optional location check.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span><h3>Invite links</h3><p>Add someone and send their private link on WhatsApp or by email. They join the moment they sign up.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span><h3>Export any time</h3><p>Download every task as a spreadsheet. Your data is always yours.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-13.4 7.9L3 21l1.2-4.4A9 9 0 1121 12z"/><path d="M8.5 10.5c.5 2 2 3.5 4 4l1.2-1.2 2 .8-.4 1.6c-3.5.3-7-3.2-6.7-6.7l1.6-.4.8 2z"/></svg></span><h3>WhatsApp updates</h3><p>New tasks, reminders and approvals arrive on WhatsApp. Reply DONE 2 or IN to update without opening the app.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span><h3>AI daily summary</h3><p>One tap writes a short, honest summary of the day for your boss or client, from what the team actually posted.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v4M8 21h8"/></svg></span><h3>Tasks from voice or chat</h3><p>Record or upload a voice note, or paste a WhatsApp message or meeting notes. It is transcribed and turned into tasks with people and dates, ready to add.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></span><h3>Client pages</h3><p>A private link for each client to follow progress, comment, approve finished work and see invoices. No login.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h5"/></svg></span><h3>Invoices from tracked hours</h3><p>Turn a client's tracked time into an invoice in dollars or naira, email it, and mark it paid.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><h3>Time you can trust</h3><p>Time budgets with alerts, budget vs actual by type of work, a note on long entries, review flags on odd time, a kind &ldquo;still working?&rdquo; check while a timer runs, and clients who approve hours before you bill. Optional Proof mode per client takes screenshots in the browser, only with each person&rsquo;s consent, and they see every one first. No keystroke logging, no webcam, and everyone sees what is measured about them.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 15h3"/></svg></span><h3>Payroll, leave and holidays</h3><p>Monthly hours and gross pay per person. Leave types with balances that build up each month, carry over and come off on approval. Public holidays for 12 countries, each person by their own country.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 14h3M8 17h6"/></svg></span><h3>Planned shifts and attendance</h3><p>Weekly or one off shifts in each person's own time zone, with swaps. Late, missed and left early go to the person first; their team lead hears only if nothing is explained. An attendance report per person and team.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><h3>Managers and team leads</h3><p>Teams with their own leads, who approve timesheets, leave and claims for their people. Managers run people and reports; money and settings stay yours unless you share them.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></span><h3>Hour limits and overtime</h3><p>A weekly hour limit that warns the person at 90 percent and their lead past it. Overtime past a set number of hours a day or a week, at the rate you choose, straight into payroll.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></span><h3>Free phone alerts</h3><p>New tasks, questions and reminders arrive on phones and computers, even with the app closed. No SMS costs.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-6.2-8.6"/><path d="M21 4l-9 9-3-3"/></svg></span><h3>Client requests</h3><p>Clients ask for new work from their page. You accept it, assign it, or decline with a note.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h4"/></svg></span><h3>Weekly client reports</h3><p>Every Friday each client gets a short, designed email: what was done, what is moving and the billable hours.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v9h14v-9M8 6l4-3 4 3"/></svg></span><h3>Paid online</h3><p>Clients pay invoices by card, transfer or USSD into your own Paystack account, and the invoice marks itself paid.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 012-2h12v18H6a2 2 0 01-2-2z"/><path d="M8 7h6M8 11h6"/></svg></span><h3>Guides</h3><p>Write down how each job is done, client by client, and link it to tasks so anyone can pick the work up.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Expenses</h3><p>Receipts in, approvals out. Billable costs go straight onto the client invoice, and payroll shows what to repay.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span><h3>Your calendar</h3><p>Due tasks, planned starts and leave go into Google, Apple or Outlook calendar through a private feed. The feed updates by itself, and Google or Outlook check it every few hours.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Two step sign in</h3><p>A code from an authenticator app on new devices, a history of every change, and the option to require it for everyone.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 14l3-3 3 3 5-6"/></svg></span><h3>Bring your old list</h3><p>Import tasks from Excel, CSV or Trello in one go. New clients are created for you.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12"/></svg></span><h3>Connect your tools</h3><p>Slack, Microsoft Teams and Discord alerts, Zapier and Make, signed webhooks and an open API with tokens you control. Private work stays private everywhere.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Pay your team from your Paystack</h3><p>Approve a month, check each account with Paystack, and send pay in naira, cedis, shillings or rand from your own balance, with a code from your authenticator app. Everyone gets a payslip. Wise, PayPal, Payoneer, Deel and Gusto files too. We never hold the money.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Invoices that chase themselves</h3><p>Recurring invoices from hours or a retainer, friendly reminders with a pay link that stop once paid, an optional late fee, part payments, credit notes and an ageing report per currency.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span><h3>Google and Microsoft sign in</h3><p>One tap sign in with a Google or Microsoft account, next to email and password. Accounts are only joined when the email is verified.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/><path d="M10 13l2 2 3-4"/></svg></span><h3>Browser extension</h3><p>Start your timer from the toolbar, or from GitHub, Jira, Trello, Asana, Google Docs and Gmail. Free for Chrome, Edge and Firefox. It never captures your screen. <a href="help/browser_extension.html">How it works</a></p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 6 8M11 5c0 3-2 6-6 8"/><path d="M13 21l4-9 4 9M14.5 18h5"/></svg></span><h3>English and French</h3><p>Each person picks their language, emails follow it, and clients see their page in their own. More languages are on the way.</p></div>
-      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Trust pack, ready</h3><p>A data processing agreement you accept in the app, the sub processors, a retention table and an accessibility statement. <a href="trust/">Trust centre</a></p></div>
+    <div class="head"><div><span class="eyebrow">The product</span><h2 style="margin-top:14px">One clear view of the work, <em>for everyone who touches it</em></h2></div>
+      <p class="lead">Your office, your field staff, your remote people and your clients look at the same list, so nobody has to ask "any update?".</p></div>
+    <div class="pgrid">
+      <article class="pillar"><span class="n">1</span><h3>Everyone knows what to do</h3><p>Tasks with owners, due dates and priorities for every team and every client.</p>
+        <ul><li>Templates, repeating work and pasted lists</li><li>Sign off before work counts as done</li><li>Voice notes and chats turned into tasks you check</li></ul>
+        <div class="mini" aria-hidden="true"><div><b>Stock count, Ikeja branch</b><em>Today 17:00</em></div><div><b>Field visit report, Kano</b><em>Tomorrow</em></div><div><b>Close the September books</b><em class="ok">Done</em></div></div></article>
+      <article class="pillar"><span class="n">2</span><h3>See progress without hovering</h3><p>Attendance, shifts, focus time and daily summaries, with each person seeing their own data first.</p>
+        <ul><li>Clock in with an optional location check at your work sites</li><li>Late, missed and left early go to the person before their lead</li><li>A daily summary email at the hour you choose</li></ul>
+        <div class="mini" aria-hidden="true"><div><b>On time this week</b><em>Team view</em></div><div><b>Planned shifts and swaps</b><em>Schedule</em></div><div><b>My patterns</b><em>Private to you</em></div></div></article>
+      <article class="pillar"><span class="n">3</span><h3>Work turns into results</h3><p>Clients see progress, approved hours become invoices, staff get paid on time.</p>
+        <ul><li>A private client page with no login</li><li>Bill hours turns approved time into a draft invoice</li><li>Approve payroll, then pay through your own Paystack with payslips</li></ul>
+        <div class="mini" aria-hidden="true"><div><b>Hours approved by the client</b><em class="ok">Approved</em></div><div><b>Invoice INV0042</b><em>Sent</em></div><div><b>October payroll</b><em>Approved</em></div></div></article>
     </div>
   </div>
 </section>
 
-<!-- 4b. beating procrastination -->
-<section class="root" id="unstuck">
+<!-- WhatsApp -->
+<section class="wa" id="whatsapp">
   <div class="wrap in">
     <div>
-      <span class="eyebrow">Beat procrastination</span>
-      <h2>Stop putting things off, <em>at the root</em></h2>
-      <p class="lead">Putting work off is rarely laziness. It is how people avoid a bad feeling: a task that is unclear, too big, dull or a little scary. <span data-brand>Handlark</span> deals with the feeling, so starting gets easy.</p>
-      <div class="rlist">
-        <div><h3>Why am I stuck?</h3><p>Pick what is in the way, from unclear to tired, and get the fix that matches it in one tap.</p></div>
-        <div><h3>Start here</h3><p>Home shows the one task to start now and its tiny first step, so there is no deciding.</p></div>
-        <div><h3>Focus sessions</h3><p>10, 25 or 50 minutes, full screen, one task. The time counts on the task by itself.</p></div>
-        <div><h3>Questions that unblock</h3><p>Unclear tasks send a question straight to whoever gave them, right on their home screen.</p></div>
-        <div><h3>Plans that stick</h3><p>Say when and where you will start, get nudged at that time, and get a start by date for big work.</p></div>
-        <div><h3>Private patterns</h3><p>See your best hours, what usually stops you and how long tasks really take against your guess.</p></div>
+      <span class="eyebrow">WhatsApp</span>
+      <h2>Keep WhatsApp. <em>Lose the chaos.</em></h2>
+      <p class="lead">Your team already lives on WhatsApp. <span data-brand>Handlark</span> keeps it for what it is good at, quick messages, and keeps the work itself in one list instead of a hundred chats.</p>
+      <div class="walist">
+        <div><h3>Alerts where people are</h3><p>New tasks, reminders and approvals arrive on WhatsApp for each person who turns it on.</p></div>
+        <div><h3>Reply to update</h3><p>Reply TASKS, DONE 2, UPDATE 2 with a note, IN or OUT to work without opening the app.</p></div>
+        <div><h3>Voice notes become tasks</h3><p>A voice note comes back as a proposed task, added only when you reply YES.</p></div>
+        <div><h3>Your own number, if you like</h3><p>Use the shared <span data-brand>Handlark</span> number, or connect your own WhatsApp Business number once.</p></div>
       </div>
-      <p class="rnote"><b>Kind by design.</b> Managers see which tasks might be stuck, who is in focus right now, and time against the budgets they set. Never anyone's reasons, moods, own estimates or patterns. Those stay private to each person.</p>
     </div>
-    <div class="rmock" aria-hidden="true">
-      <div class="card"><h4>What is getting in the way?</h4><p>Only you can see your answer.</p>
-        <div class="rchips"><span>I'm not sure what to do</span><span class="on">It feels too big</span><span>It's boring</span><span>I want it to be perfect</span><span>I'm tired or anxious</span><span>I keep getting distracted</span><span>I don't see why it matters</span><span>I'm waiting on someone</span></div></div>
-      <div class="rfocus"><small>Focus · 10 minutes</small><b>09:42</b><p>First step: open the September statement. Nothing else yet.</p></div>
+    <div class="chat" aria-hidden="true">
+      <div class="top"><img src="app/icon.svg" alt=""><span>Handlark<small>Business number</small></span></div>
+      <div class="bub them">New task from Ada: Count stock at the Ikeja branch, due today 17:00. Reply DONE 1 when it is finished.<small>09:02</small></div>
+      <div class="bub me">IN<small>09:05</small></div>
+      <div class="bub them">You are clocked in at Ikeja branch. Have a good day, Kemi.<small>09:05</small></div>
+      <div class="bub me">DONE 1 counted, two cartons short<small>16:41</small></div>
+      <div class="bub them">Marked done with your note. Ada will see it in the daily summary.<small>16:41</small></div>
     </div>
   </div>
 </section>
 
-<!-- 5. who -->
+<!-- stakeholders -->
 <section class="who" id="who">
   <div class="wrap">
-    <div class="head"><div><span class="eyebrow">Solutions</span><h2 style="margin-top:14px">Made for teams that work <em>across borders</em></h2></div>
-      <p class="lead">If the people doing the work and the people waiting on it are not in the same room, this is for you.</p></div>
-    <div class="wgrid">
-      <div class="wcard"><img src="app/ill_card_planning.webp" alt="" width="150" height="150"><h3>Virtual assistant and staffing agencies</h3><p>Show every client proof of the work your assistants do.</p>
-        <ul><li>A client page for each client</li><li>Clients follow the work and approve hours</li><li>Hours by client for invoicing</li></ul></div>
-      <div class="wcard"><img src="app/ill_card_meeting.webp" alt="" width="150" height="150"><h3>Firms with remote staff</h3><p>Accounting, legal and consulting firms handing work to assistants and analysts abroad.</p>
-        <ul><li>Sign off before work counts as done</li><li>Templates for recurring closes</li><li>Files kept with each task</li></ul></div>
-      <div class="wcard"><img src="app/ill_sign_off.webp" alt="" width="150" height="150"><h3>Teams and organisations in Nigeria</h3><p>Stop running the office from WhatsApp groups and voice notes.</p>
-        <ul><li>Pay in naira with Paystack</li><li>Works on weak connections</li><li>Installs on any phone</li></ul></div>
+    <div class="head"><div><span class="eyebrow">Who it is for</span><h2 style="margin-top:14px">Something clear for <em>everyone involved</em></h2></div>
+      <p class="lead">Each person sees what they need, and nothing they should not. Roles decide who approves, who sees money and who sees whom.</p></div>
+    <div class="sgrid">
+      <article class="scard"><span class="role">Owner</span><h3>Know where everything stands in seconds.</h3><p>Home shows today's work, who is in and what is waiting for you. The daily summary email lands at the hour you choose, and Insights puts hours, attendance and money billed in one Overview. Money and settings stay yours unless you share them.</p></article>
+      <article class="scard"><span class="role">Manager or team lead</span><h3>Lead your team, not a WhatsApp group.</h3><p>Approve timesheets, leave and claims for the people you look after, plan their shifts and see which tasks might be stuck, all in one place instead of a group chat.</p></article>
+      <article class="scard"><span class="role">Staff</span><h3>Do great work and get seen for it.</h3><p>Your day in one list, with the one task to start now and its first step. Proof of work sits on each task, focus sessions count on the task, and your own patterns and wellbeing signals are yours first.</p></article>
+      <article class="scard"><span class="role">Client</span><h3>See progress without asking.</h3><p>A private client page with no login: work in progress and finished, comments, approvals of work and hours, invoices to pay online, and a button to ask for new work or a meeting.</p></article>
+      <article class="scard"><span class="role">Finance and HR</span><h3>Payday without the arguments.</h3><p>Approved hours, overtime rules, leave balances and expenses flow into payroll. Approve the month, then send pay through your own Paystack or make files for Wise, PayPal, Payoneer, Deel and Gusto, with a payslip for everyone.</p></article>
     </div>
   </div>
 </section>
 
-<!-- 6. how -->
+<!-- kind by design -->
+<section class="kind" id="kind">
+  <div class="wrap in">
+    <div>
+      <span class="eyebrow">Kind by design</span>
+      <h2>Accountability <em>without spying</em></h2>
+      <p class="lead">People do their best work when they are trusted and can see what is measured about them. <span data-brand>Handlark</span> is built from the work itself, never from watching people.</p>
+      <div class="never"><span>keystroke logging</span><span>webcam</span><span>app or website tracking</span><span>activity scores</span><span>rankings</span></div>
+    </div>
+    <div class="klist">
+      <div class="kitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span><div><h3>Your own data first</h3><p>Each person sees their own patterns, review flags and attendance before anyone else. Leads see focus and meeting time only as one total for everyone they look after, when that is 3 or more people.</p></div></div>
+      <div class="kitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9-9.2C1.6 8.4 4 5 7.4 5c2 0 3.5 1.1 4.6 2.6C13.1 6.1 14.6 5 16.6 5 20 5 22.4 8.4 21 11.8 19 16.6 12 21 12 21z"/></svg></span><div><h3>Wellbeing that stays private</h3><p>Long days, late nights and no leave in 90 days show to the person with a kind suggestion. A lead sees only a count, never names, unless someone chooses to share.</p></div></div>
+      <div class="kitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><div><h3>Proof mode, only with consent</h3><p>Off by default and set per client. Each person reads what it does and agrees first, and nobody can agree for them. Screenshots are taken in their own browser only while they share their screen and time runs, they see each one first and can delete it within 10 minutes, and they can pause or withdraw at any time.</p></div></div>
+      <div class="kitem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span><div><h3>A gentle still working check</h3><p>While a timer runs with no activity, it asks the person first: keep going, pause, or say when they stopped. Time is never cut without them.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- everything included -->
+<section class="all" id="features" aria-label="Everything included" style="padding-top:100px">
+  <div class="wrap">
+    <div class="head"><div><span class="eyebrow">Everything included</span><h2 style="margin-top:14px">Every plan has <em>every feature</em></h2></div><p class="lead">No add ons. What you see here is what every workspace gets, on the trial too.</p></div>
+    <div class="fgrid">
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3>Sign off before done</h3><p>Mark a task as needing approval. Finished work comes back to you to check before it counts.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></span><h3>Daily summary email</h3><p>Done, in progress, waiting and overdue, sent at the hour you choose, plus reminders before things slip.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></span><h3>Time clock with location</h3><p>Clock in and out from any phone, with breaks, work sites and an optional location check.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 14h3M8 17h6"/></svg></span><h3>Planned shifts and attendance</h3><p>Weekly or one off shifts in each person's own time zone, with swaps, and an attendance report per person and team.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><h3>Managers and team leads</h3><p>Teams with their own leads, who approve timesheets, leave and claims for their people.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><h3>Time you can trust</h3><p>Timers, time budgets, budget vs actual by type of work, review flags on odd time and clients who approve hours before you bill.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 15h3"/></svg></span><h3>Payroll, leave and holidays</h3><p>Monthly hours and gross pay, leave balances that build up and carry over, and public holidays for 12 countries.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><h3>Kind insights</h3><p>Hours, utilization, focus against meetings, attendance, capacity for the next two weeks and money billed. Never a ranking.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></span><h3>Client pages</h3><p>A private link for each client to follow progress, comment, approve work and hours, and pay. No login.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h7M9 17h5"/></svg></span><h3>Invoices that chase themselves</h3><p>Invoices from approved hours, recurring invoices, friendly reminders, part payments and credit notes.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3"/></svg></span><h3>Meetings and notes</h3><p>A free video room or your own link, notes written together, and action items that become dated tasks.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><h3>AI summary and tasks</h3><p>A short, honest summary of the day from what the team posted, and voice notes or chats turned into tasks you check first.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></span><h3>Works on any phone</h3><p>Installs like an app, free phone alerts, and changes saved on the device when the connection is weak.</p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12"/></svg></span><h3>Browser extension and integrations</h3><p>Start timers from the toolbar or from GitHub, Jira, Trello, Asana, Google Docs and Gmail. Slack, Microsoft Teams and Discord alerts, Zapier, Make, webhooks and an open API. <a href="help/browser_extension.html">How the extension works</a></p></div>
+      <div class="fbox"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Safe and yours</h3><p>Two step sign in, a history of every change, English and French, export at any time and a <a href="trust/">trust centre</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- built for your kind of team -->
+<section class="teams" id="teams">
+  <div class="wrap">
+    <div class="head"><div><span class="eyebrow">Built for your kind of team</span><h2 style="margin-top:14px">However your team works, <em>it fits</em></h2></div>
+      <p class="lead">When you create a workspace you say what kind of team you are, and the words and screens follow. A company sees departments, an NGO sees projects, and billing stays out of the way until you need it.</p></div>
+    <div class="tgrid">
+      <a class="tcard" href="for/service_firms.html"><span class="tag">Service firms</span><h3>Every client handled. Every hour counted.</h3><p>Accounting, law, consulting and creative agencies.</p><span class="go">See how</span></a>
+      <a class="tcard" href="for/growing_teams.html"><span class="tag">Growing teams</span><h3>Your team on time and on track.</h3><p>Office, hybrid and field staff in logistics, retail, schools and real estate.</p><span class="go">See how</span></a>
+      <a class="tcard" href="for/remote_teams.html"><span class="tag">Remote teams</span><h3>Run your remote team like they're in the room.</h3><p>Virtual assistant agencies and offshore teams serving clients abroad.</p><span class="go">See how</span></a>
+      <a class="tcard" href="for/field_teams.html"><span class="tag">NGOs and field teams</span><h3>Field teams you can count on.</h3><p>Projects with staff across states.</p><span class="go">See how</span></a>
+      <a class="tcard" href="for/run_from_anywhere.html"><span class="tag">Owners abroad</span><h3>Run your Nigerian team from anywhere.</h3><p>Owners living abroad with staff at home.</p><span class="go">See how</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- how -->
 <section class="how" id="how">
   <div class="wrap">
     <div class="head"><div><span class="eyebrow">How it works</span><h2 style="margin-top:14px">Up and running <em>in five minutes</em></h2></div><p class="lead">No training and no setup call. Four steps, in this order.</p></div>
     <div class="steps">
-      <div class="step"><span class="n">1</span><div class="box"><h3>Create your workspace</h3><p>Name it and pick your time zones. Sample clients and templates are ready to edit.</p></div></div>
-      <div class="step"><span class="n">2</span><div class="box"><h3>Invite your people</h3><p>Add each person by email. They get an invitation and are in as soon as they sign up.</p></div></div>
-      <div class="step"><span class="n">3</span><div class="box"><h3>Drop in the day's tasks</h3><p>One at a time, a pasted list or a template, assigned and dated.</p></div></div>
-      <div class="step"><span class="n">4</span><div class="box"><h3>Watch it move</h3><p>Progress, files and sign offs show up live, and the daily summary email sums up the day.</p></div></div>
+      <div class="step"><span class="n">1</span><div class="box"><h3>Create your workspace</h3><p>Name it, say what kind of team you are and pick your time zone. Sample work and templates are ready to edit.</p></div></div>
+      <div class="step"><span class="n">2</span><div class="box"><h3>Invite your people</h3><p>Add each person by email, or send their invite link on WhatsApp. They are in as soon as they sign up.</p></div></div>
+      <div class="step"><span class="n">3</span><div class="box"><h3>Hand over the work</h3><p>One task at a time, a pasted list, a template or a voice note, assigned and dated.</p></div></div>
+      <div class="step"><span class="n">4</span><div class="box"><h3>See it done</h3><p>Progress, files and sign offs show up live, and the daily summary email sums up the day.</p></div></div>
     </div>
   </div>
 </section>
 
-<!-- 7. cta -->
+<!-- cta -->
 <section class="cta">
   <div class="wrap">
     <div class="ctab">
@@ -880,31 +923,32 @@ footer a:hover{color:var(--coral)}
         <div class="phone"><div class="screen">
           <div class="top"><span style="display:flex;align-items:center;gap:6px"><img src="app/icon.svg" alt="">Handlark</span><span class="burger"><i></i><i></i><i></i></span></div>
           <p class="hello">Ready for sign off<b>2 tasks</b></p>
-          <div class="tl"><div><i class="ok"></i><p>Update payroll tracker<small>Kemi Bello</small></p><em>Review</em></div><div><i class="ok"></i><p>October invoice<small>Kemi Bello</small></p><em>Review</em></div><div><i></i><p>Q3 profit and loss<small>Tunde Afolabi</small></p><em>Fri</em></div></div>
+          <div class="tl"><div><i class="ok"></i><p>Update payroll tracker<small>Kemi Bello</small></p><em>Review</em></div><div><i class="ok"></i><p>Branch stock count<small>Kemi Bello</small></p><em>Review</em></div><div><i></i><p>Q3 project report<small>Tunde Afolabi</small></p><em>Fri</em></div></div>
         </div></div>
       </div>
       <div>
-        <h2>Ready? Let's start with <span class="o" data-brand>Handlark</span> and get <em>every update without chasing</em></h2>
-        <p>Create your workspace in minutes, invite your team by email, and see the day's work move from your phone. Free for 14 days.</p>
+        <h2>Hand it over. <em>See it done.</em></h2>
+        <p>Create your workspace in minutes, invite your team, and see the day's work move from your phone. Free for 14 days, no card needed.</p>
         <div class="row"><a class="btn white" href="app/?signup">Start free trial</a><a class="plain" href="app/">or open the live demo</a></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 8. pricing -->
+<!-- pricing -->
 <section class="price" id="pricing">
   <div class="wrap">
-    <div class="head"><div><span class="eyebrow">Pricing</span><h2 style="margin-top:14px">Simple pricing, <em>per workspace</em></h2><p class="lead" style="margin-top:12px">Every plan has every feature. Start with 14 days free for up to 15 people.</p></div>
-      <div class="toggles"><div class="toggle" role="group" aria-label="Billing period"><button type="button" data-per="month" aria-pressed="true">Monthly</button><button type="button" data-per="year" aria-pressed="false">Yearly <span class="save">2 months free</span></button></div>
+    <div class="head"><div><span class="eyebrow">Pricing</span><h2 style="margin-top:14px">Simple pricing, <em>per workspace</em></h2><p class="lead" style="margin-top:12px">Every plan has every feature. Start with 14 days free for up to <span data-p="trial.people">15</span> people.</p></div>
+      <div class="toggles"><div class="toggle" role="group" aria-label="Billing period"><button type="button" data-per="month" aria-pressed="true">Monthly</button><button type="button" data-per="year" aria-pressed="false">Yearly <span class="save"><span data-p="team.free">2 months</span> free</span></button></div>
       <div class="toggle" role="group" aria-label="Currency"><button type="button" data-cur="usd" aria-pressed="true">US dollars</button><button type="button" data-cur="ngn" aria-pressed="false">Naira</button></div></div></div>
+    <div class="offer" id="offer" role="status" hidden><b>Founding offer: <span data-offer="percent">20</span>% off for life</b><span>for new subscribers, ends in <span class="cd" data-offer="countdown"></span></span><span class="left" data-offer="spots" hidden></span></div>
     <div class="plans">
-      <div class="plan"><h3>Starter</h3><p class="sub">For a founder and a small team</p><div class="amt" data-usd="15" data-ngn="12000"></div>
-        <ul><li>Up to 5 people</li><li>Unlimited clients and tasks</li><li>5 GB of files, up to 10 MB each</li><li>300 WhatsApp messages a month</li><li>Daily summary email and reminders</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
-      <div class="plan pop"><span class="badge">Most popular</span><h3>Team</h3><p class="sub">For growing teams and small agencies</p><div class="amt" data-usd="39" data-ngn="30000"></div>
-        <ul><li>Up to 15 people</li><li>25 GB of files, up to 10 MB each</li><li>1,500 WhatsApp messages a month</li><li>Everything in Starter</li><li>Sign off, private work and time tracking for everyone</li><li>Clients can follow their own work</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
-      <div class="plan"><h3>Agency</h3><p class="sub">For agencies serving many clients</p><div class="amt" data-usd="99" data-ngn="75000"></div>
-        <ul><li>Up to 50 people</li><li>100 GB of files, up to 10 MB each</li><li>5,000 WhatsApp messages a month</li><li>Everything in Team</li><li>Room for assistants across all your clients</li><li>Hours by client for billing</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+      <div class="plan"><h3>Starter</h3><p class="sub">For a small team getting organised</p><div class="amt" data-plan="starter" data-usd="15" data-ngn="12000" data-yearly="10"></div>
+        <ul><li>Up to <span data-p="starter.people">5</span> people</li><li>Unlimited tasks, clients and projects</li><li><span data-p="starter.storageGb">5</span> GB of files, up to 10 MB each</li><li><span data-p="starter.waMonth">300</span> WhatsApp messages a month</li><li>Daily summary email and reminders</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+      <div class="plan pop"><span class="badge">Most popular</span><h3>Team</h3><p class="sub">For growing teams and firms</p><div class="amt" data-plan="team" data-usd="39" data-ngn="30000" data-yearly="10"></div>
+        <ul><li>Up to <span data-p="team.people">15</span> people</li><li><span data-p="team.storageGb">25</span> GB of files, up to 10 MB each</li><li><span data-p="team.waMonth">1,500</span> WhatsApp messages a month</li><li>Everything in Starter</li><li>Shifts, attendance, time tracking and payroll for everyone</li><li>Clients can follow their own work</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
+      <div class="plan"><h3>Agency</h3><p class="sub">For larger teams, agencies and NGOs</p><div class="amt" data-plan="agency" data-usd="99" data-ngn="75000" data-yearly="10"></div>
+        <ul><li>Up to <span data-p="agency.people">50</span> people</li><li><span data-p="agency.storageGb">100</span> GB of files, up to 10 MB each</li><li><span data-p="agency.waMonth">5,000</span> WhatsApp messages a month</li><li>Everything in Team</li><li>Room for many teams, clients and projects</li><li>Hours by client or project for billing and reports</li></ul><a class="btn line" href="app/?signup">Start free</a></div>
     </div>
     <div class="payline">
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Naira by card, transfer or USSD with Paystack</span>
@@ -912,17 +956,17 @@ footer a:hover{color:var(--coral)}
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg><a href="terms.html#cancel">Cancel any time</a></span>
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.8L3 8"/><path d="M3 3v5h5"/></svg><a href="refunds.html">Refund policy</a></span>
     </div>
-    <p class="limits">Every plan: unlimited clients and tasks, files up to 10 MB each, 60 AI requests a day per workspace, and up to 5 workspaces per owner, each on its own plan. Cancel from Settings, Plan and billing; it takes effect at the end of the period you paid for. See the <a href="refunds.html">refund policy</a> and <a href="terms.html">terms</a>.</p>
+    <p class="limits">Every plan: unlimited tasks, clients and projects, files up to 10 MB each, <span data-p="team.aiDay">60</span> AI requests a day per workspace, and up to 5 workspaces per owner, each on its own plan. Cancel from Settings, Plan and billing; it takes effect at the end of the period you paid for. See the <a href="refunds.html">refund policy</a> and <a href="terms.html">terms</a>.</p>
     <div class="compare">
       <table>
         <thead><tr><th scope="col">What you get</th><th scope="col">Starter</th><th scope="col">Team</th><th scope="col">Agency</th></tr></thead>
         <tbody>
-          <tr><td>People in the workspace</td><td>5</td><td>15</td><td>50</td></tr>
-          <tr><td>Clients, tasks and templates</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
-          <tr><td>File storage per workspace</td><td>5 GB</td><td>25 GB</td><td>100 GB</td></tr>
+          <tr><td>People in the workspace</td><td><span data-p="starter.people">5</span></td><td><span data-p="team.people">15</span></td><td><span data-p="agency.people">50</span></td></tr>
+          <tr><td>Tasks, clients, projects and templates</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+          <tr><td>File storage per workspace</td><td><span data-p="starter.storageGb">5</span> GB</td><td><span data-p="team.storageGb">25</span> GB</td><td><span data-p="agency.storageGb">100</span> GB</td></tr>
           <tr><td>Largest file</td><td>10 MB</td><td>10 MB</td><td>10 MB</td></tr>
-          <tr><td>WhatsApp messages a month</td><td>300</td><td>1,500</td><td>5,000</td></tr>
-          <tr><td>AI requests a day per workspace</td><td>60</td><td>60</td><td>60</td></tr>
+          <tr><td>WhatsApp messages a month</td><td><span data-p="starter.waMonth">300</span></td><td><span data-p="team.waMonth">1,500</span></td><td><span data-p="agency.waMonth">5,000</span></td></tr>
+          <tr><td>AI requests a day per workspace</td><td><span data-p="starter.aiDay">60</span></td><td><span data-p="team.aiDay">60</span></td><td><span data-p="agency.aiDay">60</span></td></tr>
           <tr><td>Workspaces per owner</td><td>Up to 5</td><td>Up to 5</td><td>Up to 5</td></tr>
           <tr><td>Sign off, private work, hidden people</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Time tracking and kind insights: focus and meetings, utilization, capacity, wellbeing, unusual time</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
@@ -930,29 +974,25 @@ footer a:hover{color:var(--coral)}
           <tr><td>Daily summary email and reminders</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Managers, team leads and teams</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Planned shifts, attendance, leave balances and overtime rules</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Time clock, payroll, leave and holidays</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Time clock with work sites, payroll, leave and holidays</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>WhatsApp alerts and replies</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>AI summary and tasks from voice or chat</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Client pages and invoices</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Free phone alerts and a calendar feed</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Clients pay invoices online, to your own Paystack</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Client requests and weekly client reports</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Guides, expenses and spreadsheet import</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>API, webhooks, Zapier and Make</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Slack, Microsoft Teams and Discord alerts</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Pay your team through your own Paystack, payslips and amounts owed</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Recurring invoices, reminders, part payments, credit notes and ageing</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Pay your team through your own Paystack, payslips and amounts owed</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Payout files for Wise, PayPal, Payoneer, Deel and Gusto</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Two step sign in and history of changes</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Meetings, video rooms and notes that become tasks</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Spreadsheet export</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>API, webhooks, Zapier, Make, Slack, Microsoft Teams and Discord</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Free phone alerts, a calendar feed and the browser extension</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Two step sign in, history of changes and spreadsheet export</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 9. story -->
+<!-- story -->
 <section class="story">
   <div class="wrap in">
     <div class="pic" aria-hidden="true">
@@ -962,33 +1002,17 @@ footer a:hover{color:var(--coral)}
       <div class="stack"><span class="st"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6 5.7 21l1.5-7L2 9.3l7-.8z"/></svg></span><i></i><i></i><i></i><i></i></div>
     </div>
     <div>
-      <svg class="mark" viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="M8 34c0-9 4-17 12-21l2 4c-5 3-7 7-7 11h7v12H8zm20 0c0-9 4-17 12-21l2 4c-5 3-7 7-7 11h7v12H28z"/></svg>
       <h2>Built from a real <em>working day</em></h2>
       <div class="body">
-        <p><span data-brand>Handlark</span> began as a tool an executive assistant in Nigeria built to keep a CEO in the United States up to date, without a daily check in call and without a hundred WhatsApp messages.</p>
-        <p>Every feature came from that working day: tasks dropped per client, progress the boss can see at a glance, deadlines that mean the same moment in Lagos and Chicago, and an email at the end of the day that says what got done.</p>
+        <p><span data-brand>Handlark</span> began as a tool an executive assistant in Nigeria built to keep a busy boss up to date, without a daily check in call and without a hundred WhatsApp messages.</p>
+        <p>Every feature came from that working day: work handed over with a clear owner and date, progress the boss can see at a glance, deadlines that mean the same moment wherever people sit, and an email at the end of the day that says what got done.</p>
       </div>
-      <div class="who2"><span class="av"><img src="app/icon.svg" alt=""></span><span><b>The <span data-brand>Handlark</span> team</b><small>Lagos and Chicago time, every day</small></span></div>
+      <div class="who2"><span class="av"><img src="app/icon.svg" alt=""></span><span><b>The <span data-brand>Handlark</span> team</b><small>Made in Nigeria for teams everywhere</small></span></div>
     </div>
   </div>
 </section>
 
-<!-- 10. guides -->
-<section class="guides" id="guides">
-  <div class="wrap">
-    <div class="head"><div><span class="eyebrow">Guides</span><h2 style="margin-top:14px">Get the most out of <em data-brand>Handlark</em></h2></div><a class="btn line" href="app/">Try it in the demo</a></div>
-    <div class="ggrid">
-      <a class="gcard g1" href="#how"><div class="gimg"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New workspace</span></div>
-        <div class="gbody"><span class="gtag"><b>Setup</b>4 steps</span><h3>Set up your first workspace and invite your team</h3><p>Name it, choose your time zones, add clients and send invitations by email.</p></div></a>
-      <a class="gcard g2" href="#features"><div class="gimg"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>13:02 · 07:02</span></div>
-        <div class="gbody"><span class="gtag"><b>Remote work</b>Deadlines</span><h3>Running one team across two time zones</h3><p>Pick the deadline zone, pin a client's clock, check Team time for the best overlap and let the countdowns do the rest.</p></div></a>
-      <a class="gcard g3" href="#pricing"><div class="gimg"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>₦ or $</span></div>
-        <div class="gbody"><span class="gtag"><b>Billing</b>Plans</span><h3>Choosing a plan and paying in naira or dollars</h3><p>How plans, people limits and the read only mode after a trial work.</p></div></a>
-    </div>
-  </div>
-</section>
-
-<!-- 11. faq -->
+<!-- faq -->
 <section class="faq" id="faq">
   <div class="wrap in">
     <div class="side">
@@ -998,21 +1022,21 @@ footer a:hover{color:var(--coral)}
     </div>
     <div>
       <details open><summary>Do I need a card for the free trial?</summary><p>No. Create an account and use everything for 14 days. Choose a plan in Settings when you are ready.</p></details>
+      <details><summary>We do not bill clients. Is it still for us?</summary><p>Yes. When you create a workspace, choose Company or growing team, or NGO or field team. Clients are then called departments or projects, and invoices, rates and billing stay out of the menus until you turn on We bill clients in Settings. You can change the kind of team later.</p></details>
+      <details><summary>Does it work for staff in the office, in the field and at home?</summary><p>Yes. Everyone uses the same app on a phone or computer. Clock in can check the location against your work sites, planned shifts follow each person's own time zone, and deadlines mean the same moment for everyone.</p></details>
       <details><summary>What happens when the trial ends?</summary><p>Nothing is deleted. The workspace becomes read only until you choose a plan. The owner can still see and export everything, and each person on the team can still see and export everything they can see: their tasks, their time and the meetings they attend.</p></details>
-      <details><summary>Is it cheaper to pay yearly?</summary><p>Yes. A yearly plan costs the same as 10 months, so you get 2 months free. If a customer you refer starts paying, you also get a free month.</p></details>
+      <details><summary>Is it cheaper to pay yearly?</summary><p>Yes. A yearly plan costs the same as <span data-p="team.yearly">10</span> months, so you get <span data-p="team.free">2 months</span> free. If a customer you refer starts paying, you also get a free month.</p></details>
+      <details><summary>What is the founding offer?</summary><p>While it runs, a new subscriber gets the percent off shown above for as long as they keep their subscription. It ends on the date shown, or sooner when the founding spots are taken. Customers who subscribe later pay the normal price, and nobody's price changes because of it.</p></details>
+      <details><summary>Will my team feel watched?</summary><p>No. Nobody is watched by default: no screenshots, no keystroke logging, no webcam. You see which tasks might be stuck and who is in a focus session right now. Why someone felt stuck, how they felt, their own estimates and their personal patterns are private to them. If a client needs proof of hours, you can turn on optional Proof mode for that client only. Each person reads what it does and agrees first (you can never agree for them), screenshots are taken in their own browser only while they share their screen and their timer runs, they see every shot first and can delete any within 10 minutes, and they can pause or withdraw. Keystrokes, apps and websites are never tracked. The budget vs actual report compares time with the budget you set, never with anyone's own guess, and each person sees the flags and checks about their own time.</p></details>
+      <details><summary>What do the insights show, and to whom?</summary><p>Each person sees their own first, under My patterns: focus time, meetings, other time, utilization, their next two weeks and gentle wellbeing signals with a private suggestion. You, your managers and team leads see hours, billable time, utilization and capacity per person for the people you look after, and focus and meeting time only as one total for everyone they look after, when that is 3 or more people, rounded to the hour, never for one team picked out. Wellbeing reaches a lead only as a count shared by 2 or more people among everyone they look after, never names, unless someone chooses to share theirs. Nobody is ever ranked.</p></details>
+      <details><summary>How does Proof mode work, and what does it cost?</summary><p>It is off until you switch it on for a client. Then, while someone times work for that client on a computer and shares their screen in Chrome, Edge or Firefox, the app takes 1 to 3 screenshots at random in each 10 minutes, blurred unless you choose sharp. Each one waits 10 minutes in the person&rsquo;s Proof tray, where they can delete it, before you see it. Time with no screenshots is flagged no proof, never stopped or deleted. Screenshots are kept 30 days by default (7, 14, 30 or 60, your choice) and count toward your file storage. No extra app, no extra price.</p></details>
+      <details><summary>Can my clients see their work?</summary><p>Yes, if you work for clients. Each client gets a private link to their own page, with progress, comments, approvals and invoices, and no login. Private tasks never show there.</p></details>
       <details><summary>When my clients pay an invoice online, who holds the money?</summary><p>You do. Clients pay into your own Paystack account using your key. The money never passes through us, and the invoice is marked paid as soon as Paystack confirms it.</p></details>
-      <details><summary>Will my team feel watched?</summary><p>No. The procrastination tools are there to help each person, not to grade them. You see which tasks might be stuck and who is in a focus session right now. Why someone felt stuck, how they felt, their own estimates and their personal patterns are private to them. Nobody is watched by default: no screenshots, no keystroke logging, no webcam. If a client needs proof of hours, you can turn on optional Proof mode for that client only. Each person reads what it does and agrees first (you can never agree for them), screenshots are taken in their own browser only while they share their screen and their timer runs, they see every shot first and can delete any within 10 minutes, and they can pause or withdraw. Keystrokes, apps and websites are never tracked. The budget vs actual report compares time with the budget you set, never with anyone's own guess, and each person sees the flags and checks about their own time.</p></details>
-      <details><summary>What do the insights show, and to whom?</summary><p>Each person sees their own first, under My patterns: focus time (their focus sessions and long stretches on one task), meetings, other time, utilization, their next two weeks and gentle wellbeing signals with a private suggestion. You, your managers and team leads see hours, billable time, utilization and capacity per person for the people you look after, and focus and meeting time only as one total for everyone they look after, when that is 3 or more people, rounded to the hour, never for one team picked out. You can share those totals per person with leads; each person shows only after they have seen their own. Wellbeing reaches a lead only as a count shared by 2 or more people among everyone they look after, never names, unless someone chooses to share theirs. Nobody is ever ranked. An optional idle check can ask &ldquo;Still working?&rdquo; sooner when a timer runs and the <span data-brand>Handlark</span> tab has had no input; it uses only the time of the last input in that tab, each person reads it first, and anyone who often works in other apps can say so.</p></details>
-      <details><summary>How does Proof mode work, and what does it cost?</summary><p>It is off until you switch it on for a client. Then, while someone times work for that client on a computer and shares their screen in Chrome, Edge or Firefox, the app takes 1 to 3 screenshots at random in each 10 minutes, blurred unless you choose sharp. Each one waits 10 minutes in the person&rsquo;s Proof tray, where they can delete it, before you see it. Time with no screenshots is flagged no proof, never stopped or deleted. Phones cannot share a screen, so phone time for that client is flagged unless you allow it. Screenshots are kept 30 days by default (7, 14, 30 or 60, your choice) and count toward your file storage. No extra app, no extra price.</p></details>
-      <details><summary>Can my clients see their tasks?</summary><p>Yes. Each client gets a private link to their own page, with progress, comments, approvals and invoices, and no login. Private tasks never show there.</p></details>
       <details><summary>How does WhatsApp work?</summary><p>It works out of the box through the shared <span data-brand>Handlark</span> number. An owner who wants messages to come from their own business can connect their own WhatsApp Business number once instead. Each person turns alerts on for themselves, then gets new tasks, reminders and approvals on WhatsApp and can reply TASKS, DONE 2, UPDATE 2 or IN to work without opening the app.</p></details>
       <details><summary>What does the AI do, and does it see private work?</summary><p>It writes the daily summary from the updates your team posted, and turns pasted messages or voice notes into tasks you check before adding. Private tasks are never sent to it, and nothing is added without your tap. A voice note sent on WhatsApp comes back as a proposed task, added only when you reply YES.</p></details>
-      <details><summary><span>Can we hold meetings in <span data-brand>Handlark</span>?</span></summary><p>Yes. Set up a meeting with a free video room, or paste your own Zoom, Google Meet or Teams link. Everyone gets an invitation in their own time zone, a reminder the day before and a nudge just before it starts. During the call you tick the agenda and write notes together, then each action item becomes a task and the follow up email goes to everyone. Clients can join from their page and ask for a meeting there too.</p></details>
-      <details><summary>Does it work on phones?</summary><p>Yes. It runs in any browser and installs on the home screen of iPhone and Android phones like an app, with deadline alerts.</p></details>
-      <details><summary>Will it work on a weak connection?</summary><p>Yes. Changes are kept on the device and sent when the connection returns, and the app opens offline with the last saved view.</p></details>
-      <details><summary>Where is my data kept?</summary><p>In a secure database and private file storage. Each workspace is locked to its own members, files open through short lived links, and you can export all tasks as a spreadsheet at any time. The <a href="privacy.html">privacy policy</a> has the details.</p></details>
-      <details><summary>Is there a browser extension?</summary><p>Yes, free for Chrome, Edge and Firefox: your timer in the toolbar, quick tasks, today's list, and a Start timer button on GitHub, Jira, Trello, Asana, Google Docs and Gmail pages. It uses your own token and never captures your screen. <a href="help/browser_extension.html">Read how it works</a>.</p></details>
-      <details><summary>Does it work in French?</summary><p>Yes. Each person picks English or French, and their emails follow. Clients see their page in their browser's language. The main screens are translated now, and the rest follow.</p></details>
+      <details><summary>Will it work on a weak connection?</summary><p>Yes. Changes are kept on the device and sent when the connection returns, and the app opens offline with the last saved view. It installs on iPhone and Android phones like an app.</p></details>
+      <details><summary>Where is my data kept?</summary><p>In a secure database and private file storage. Each workspace is locked to its own members, files open through short lived links, and you can export everything as spreadsheets at any time. The <a href="privacy.html">privacy policy</a> has the details.</p></details>
+      <details><summary>Does it work in French?</summary><p>Yes. Each person picks English or French, and their emails follow. Clients see their page in their browser's language.</p></details>
       <details><summary>Where do I get help?</summary><p>The <a href="help/">help centre</a> has a guide for every feature, for owners, managers, team leads, members and clients. You can also email us, and chat with us when chat is on.</p></details>
       <details><summary>Can I pay in naira?</summary><p>Yes. Paystack takes cards, bank transfer and USSD in naira. Teams abroad can pay in US dollars by card.</p></details>
     </div>
@@ -1023,12 +1047,13 @@ footer a:hover{color:var(--coral)}
 <footer>
   <div class="wrap">
     <div class="fgrid2">
-      <div><a class="logo" href="#top"><img class="wm" src="app/logo_white.svg" alt="Handlark" width="150" height="40"></a><p style="font-size:14px;max-width:34ch">Hand off tasks to your remote team and see them get done, from Lagos to Chicago.</p></div>
-      <div><h4>Product</h4><ul><li><a href="#product">Overview</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="app/">Live demo</a></li><li><a href="api.html">API and integrations</a></li><li><a href="help/browser_extension.html">Browser extension</a></li><li><a href="#who">Solutions</a></li></ul></div>
-      <div><h4>Help and trust</h4><ul><li><a href="help/">Help centre</a></li><li><a href="trust/">Trust centre</a></li><li><a href="trust/status.html" data-cfg="status">Service status</a></li><li><a href="#guides">Guides</a></li><li><a href="#faq">Questions</a></li><li><a href="app/">Sign in</a></li><li><a href="#" data-cfg="chat" hidden target="_blank" rel="noopener noreferrer">Chat with us</a></li></ul></div>
-      <form class="notice" data-mail><h4 style="margin:0">Quick start</h4><p>Enter your email and we will take you straight to your free trial.</p>
-        <label class="mail"><span hidden>Email</span><input type="email" id="foot-email" name="email" placeholder="Your email" autocomplete="email" required><button type="submit" aria-label="Start free trial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></label></form>
+      <div><a class="logo" href="#top"><img class="wm" src="app/logo_white.svg" alt="Handlark" width="150" height="40"></a><p style="font-size:14px;max-width:34ch">Hand it over, see it done. One clear view of the work for owners, managers, staff and clients.</p></div>
+      <div><h4>Product</h4><ul><li><a href="#product">Overview</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="app/">Live demo</a></li><li><a href="api.html">API and integrations</a></li><li><a href="help/browser_extension.html">Browser extension</a></li></ul></div>
+      <div><h4>For your team</h4><ul><li><a href="for/service_firms.html">Service firms</a></li><li><a href="for/growing_teams.html">Growing teams</a></li><li><a href="for/remote_teams.html">Remote teams</a></li><li><a href="for/field_teams.html">NGOs and field teams</a></li><li><a href="for/run_from_anywhere.html">Owners abroad</a></li></ul></div>
+      <div><h4>Help and trust</h4><ul><li><a href="help/">Help centre</a></li><li><a href="trust/">Trust centre</a></li><li><a href="trust/status.html" data-cfg="status">Service status</a></li><li><a href="#faq">Questions</a></li><li><a href="app/">Sign in</a></li><li><a href="#" data-cfg="chat" hidden target="_blank" rel="noopener noreferrer">Chat with us</a></li></ul></div>
     </div>
+    <form class="notice" data-mail style="margin-top:36px;max-width:520px"><h4 style="margin:0">Quick start</h4><p>Enter your email and we will take you straight to your free trial.</p>
+      <label class="mail"><span hidden>Email</span><input type="email" id="foot-email" name="email" placeholder="Your email" autocomplete="email" required><button type="submit" aria-label="Start free trial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></label></form>
     <div class="legal"><span>© <span id="yr">2026</span> <span data-brand>Handlark</span>. All rights reserved.</span><nav class="legal-links" aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><a href="security.html">Security</a></nav><span>Made in Nigeria for teams everywhere</span></div>
   </div>
 </footer>

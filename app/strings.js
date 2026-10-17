@@ -1022,7 +1022,82 @@
     "Français": "Français",
     "Chrome": "Chrome",
     "Edge": "Edge",
-    "Firefox": "Firefox"
+    "Firefox": "Firefox",
+    // version 1.16.0: the kind of team, the founding offer and the price editor
+    "Add your work sites": "Ajoutez vos sites de travail",
+    "Clock in checks the place against them and flags away from site.": "Le pointage vérifie le lieu et signale quand on est hors site.",
+    "Add sites": "Ajouter des sites",
+    "Bill hours": "Facturer les heures",
+    "All clients": "Tous les clients",
+    "By client": "Par client",
+    "Tap a client for people and tasks": "Touchez un client pour voir les personnes et les tâches",
+    "Search tasks, clients, notes": "Rechercher tâches, clients, notes",
+    "Your founding discount: {p}% off for life": "Votre remise fondateur : {p} % de réduction à vie",
+    "Founding offer: {p}% off for life": "Offre fondateur : {p} % de réduction à vie",
+    "ends in 1 day": "se termine dans 1 jour",
+    "ends in {n} days": "se termine dans {n} jours",
+    "1 spot left": "1 place restante",
+    "{n} spots left": "{n} places restantes",
+    "Kind of team": "Type d’équipe",
+    "What kind of team are you?": "Quel type d’équipe êtes vous ?",
+    "We bill clients": "Nous facturons des clients",
+    "Turn this on to send invoices, set rates and bill approved hours. Nothing is deleted when it is off: billing is only out of the menus.": "Activez ceci pour envoyer des factures, fixer des tarifs et facturer les heures approuvées. Rien n’est supprimé quand c’est désactivé : la facturation est seulement retirée des menus.",
+    "Client work, client pages, rates and invoices all show.": "Le travail client, les pages client, les tarifs et les factures restent visibles.",
+    "Kind of team saved": "Type d’équipe enregistré",
+    "Save kind of team": "Enregistrer le type d’équipe",
+    "Members can add clients": "Les membres peuvent ajouter des clients",
+    "Prices and founding offer": "Prix et offre fondateur",
+    "The price of each plan for every customer, and the founding offer. Only the people who run {brand} see this.": "Le prix de chaque formule pour tous les clients, et l’offre fondateur. Seules les personnes qui gèrent {brand} voient ceci.",
+    "Open the price editor": "Ouvrir l’éditeur de prix",
+    "{n} spots": "{n} places",
+    "Up to {n} people": "Jusqu’à {n} personnes",
+    " / month": " / mois",
+    " a month": " par mois",
+    "or": "ou",
+    " a year": " par an",
+    "A year costs {n} months. The sales page, the pages for each kind of team and the plan picker show these numbers within a few minutes of saving.": "Une année coûte {n} mois. La page de vente, les pages par type d’équipe et le choix de formule affichent ces chiffres quelques minutes après l’enregistrement.",
+    "Turn on two step sign in": "Activer la connexion en deux étapes",
+    "US dollars a month": "Dollars US par mois",
+    "Naira a month": "Nairas par mois",
+    "Months charged for a year": "Mois facturés pour une année",
+    "People allowed": "Personnes autorisées",
+    "Changes apply to new subscribers only. Everyone already subscribed keeps the price they pay now, and founding customers keep their discount for life.": "Les changements ne s’appliquent qu’aux nouveaux abonnés. Les abonnés actuels gardent leur prix, et les clients fondateurs gardent leur remise à vie.",
+    "Plan prices": "Prix des formules",
+    "Saving makes new Paystack plans for the new naira amounts first. If Paystack refuses, nothing changes.": "L’enregistrement crée d’abord de nouvelles formules Paystack pour les nouveaux montants en nairas. Si Paystack refuse, rien ne change.",
+    "Paystack is not set up, so naira checkouts use the plans in your PAYSTACK_PLAN secrets.": "Paystack n’est pas configuré : les paiements en nairas utilisent les formules de vos secrets PAYSTACK_PLAN.",
+    "Saving": "Enregistrement",
+    "Save prices": "Enregistrer les prix",
+    "Founding offer": "Offre fondateur",
+    "Founding offer is on": "L’offre fondateur est active",
+    "Percent off, 1 to 90": "Réduction en pourcentage, de 1 à 90",
+    "Ends on": "Se termine le",
+    "Founding customers, 0 for no limit": "Clients fondateurs, 0 pour aucune limite",
+    "Claimed so far: {n}": "Places prises : {n}",
+    ", {n} left": ", {n} restantes",
+    ". Live now.": ". En cours.",
+    ". On, but not live: past its end date or no spots left.": ". Activée mais pas en cours : date de fin passée ou plus de places.",
+    ". Off.": ". Désactivée.",
+    "A spot is held for 2 hours while a customer is at checkout, and given back if they do not pay. Founding customers keep their discount for life, also after the offer ends.": "Une place est réservée 2 heures pendant le paiement, puis rendue si le client ne paie pas. Les clients fondateurs gardent leur remise à vie, même après la fin de l’offre.",
+    "Save founding offer": "Enregistrer l’offre fondateur",
+    "Preview of the sales page pricing": "Aperçu des prix sur la page de vente",
+    "History of price changes": "Historique des changements de prix",
+    "No changes yet.": "Aucun changement pour l’instant.",
+    "no change": "aucun changement",
+    "on": "activée",
+    "off": "désactivée",
+    "spots": "places",
+    "Client name, or an internal area": "Nom du client, ou un domaine interne",
+    "Client name": "Nom du client",
+    "Save client": "Enregistrer le client",
+    "Companies see departments and NGOs see projects instead of clients, and billing stays out of the way until you turn it on. You can change this later in Settings.": "Les entreprises voient des départements et les ONG des projets au lieu de clients, et la facturation reste discrète jusqu’à ce que vous l’activiez. Vous pourrez changer cela plus tard dans Réglages.",
+    "Choose what kind of team you are.": "Choisissez votre type d’équipe.",
+    "Service firm or agency": "Cabinet ou agence de services",
+    "Company or growing team": "Entreprise ou équipe en croissance",
+    "Remote or outsourcing team": "Équipe à distance ou en sous traitance",
+    "NGO or field team": "ONG ou équipe de terrain",
+    "Serves clients": "Sert des clients",
+    "Internal work": "Travail interne",
+    "Projects across locations": "Projets sur plusieurs sites"
   };
   var TABLES = { fr: FR };
   function browserLang() {
@@ -1037,13 +1112,44 @@
     try { saved = localStorage.getItem('hv-lang') || ''; } catch (e) {}
     return Object.prototype.hasOwnProperty.call(LANGS, saved) ? saved : browserLang();
   }
+  /* The words for a client, by the kind of team (version 1.16.0). A service firm and a remote team keep Client; a company calls
+     it a Department and an NGO or field team a Project, in English and French. One mapping per kind, applied to every text T()
+     gives, before values are filled in, so a client's or person's own name is never changed. Texts in KEEP are about real
+     outside clients whatever the kind of team (the We bill clients setting, tips about clients), so they keep their words.
+     Both words are masculine in French (un client, un département, un projet), so the sentences around them stay right. */
+  var TERMS = {
+    en: { company: { Clients: 'Departments', clients: 'departments', Client: 'Department', client: 'department' },
+          ngo: { Clients: 'Projects', clients: 'projects', Client: 'Project', client: 'project' } },
+    fr: { company: { Clients: 'D\u00e9partements', clients: 'd\u00e9partements', Client: 'D\u00e9partement', client: 'd\u00e9partement' },
+          ngo: { Clients: 'Projets', clients: 'projets', Client: 'Projet', client: 'projet' } }
+  };
+  var KEEP = { 'We bill clients': 1, 'Companies see departments and NGOs see projects instead of clients, and billing stays out of the way until you turn it on. You can change this later in Settings.': 1, 'Turn this on to send invoices, set rates and bill approved hours. Nothing is deleted when it is off: billing is only out of the menus.': 1,
+    'Service firm or agency': 1, 'Remote or outsourcing team': 1, 'Serves clients': 1,
+    'Many businesses need a signed data processing agreement with every service that holds their staff and client data. Accept ours here; a record is kept with your name, the time and the version.': 1,
+    'A short update keeps clients calm.': 1, 'Ask the client what success looks like.': 1, 'Clients trust what they can see.': 1, 'Friday afternoon. Wrap up and send clients their updates.': 1,
+    'Pick the task that moves a client forward.': 1, 'Repeat back what the client asked for.': 1, 'Share good news with clients the same day.': 1, 'Tell the client before they need to ask.': 1,
+    'A client request is waiting for you.': 1 };
+  var team = 'service', terms = null;
+  /** The words of this workspace's kind of team: service, remote, company or ngo. */
+  function setTeam(kind) {
+    var has = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); }, L = has(TERMS, lang) ? TERMS[lang] : TERMS.en;
+    team = typeof kind === 'string' && has(TERMS.en, kind) ? kind : (kind === 'remote' ? 'remote' : 'service');
+    terms = has(L, team) ? L[team] : null;
+  }
+  function termed(english, out) {
+    if (!terms || KEEP[english]) return out;
+    return String(out).replace(/(^|[^A-Za-z\u00C0-\u017F])(Clients|clients|Client|client)(?![A-Za-z\u00C0-\u017F])/g, function (m, pre, w) { return pre + terms[w]; });
+  }
   var lang = pick(), table = TABLES[lang] || null;
   /** T('English text') in this page's language; T('Hello {name}', { name: 'Ada' }) fills in values. */
   function T(s, v) {
     var out = table && typeof s === 'string' && Object.prototype.hasOwnProperty.call(table, s) ? table[s] : s;
+    if (typeof s === 'string') out = termed(s, out);
     if (v) out = String(out).replace(/\{(\w+)\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(v, k) ? v[k] : m; });
     return out;
   }
+  /** The word for a client in this workspace, as typed: term('Client'), term('clients'). */
+  function term(w) { return terms && terms[w] ? terms[w] : (table && table[w]) || w; }
   try { document.documentElement.lang = lang; } catch (e) {}
-  root.HL_I18N = { lang: lang, browser: browserLang(), langs: LANGS, T: T, tables: TABLES };
+  root.HL_I18N = { lang: lang, browser: browserLang(), langs: LANGS, T: T, tables: TABLES, terms: TERMS, setTeam: setTeam, term: term, team: function () { return team; } };
 })(typeof window !== 'undefined' ? window : globalThis);
