@@ -33,7 +33,7 @@ var PHONE=function(){try{return matchMedia('(max-width:899px)').matches;}catch(e
 function schedCols(cards){if(PHONE()&&cards.length&&cards[0].classList.contains('sc'))return h('div',{class:'sched list'},cards);if(cards.length<2||!cards[0].classList.contains('sc'))return h('div',{class:'sched one'},cards);
   return h('div',{class:'sched mas'},h('div',{class:'col'},cards.filter(function(c,i){return i%2===0;})),h('div',{class:'col'},cards.filter(function(c,i){return i%2===1;})));}
 var ill=function(n,c){return h('img',{class:'ill '+(c||''),src:'ill_'+n+'.webp',alt:'',loading:'lazy',decoding:'async',width:'560',height:'560'});};
-var APP_VERSION='1.16.2';
+var APP_VERSION='1.17.1';
 var pad=function(n){return String(n).padStart(2,'0');};
 var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
 var parse=function(s){var p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
@@ -2997,6 +2997,71 @@ function recStart(){if(!navigator.mediaDevices||!navigator.mediaDevices.getUserM
     rec.start(1000);renderSheet();})
   .catch(function(){toast('The microphone is blocked. Allow it in your browser settings, or upload a voice note instead.');});}
 function recStop(cancel){if(!VREC)return;VREC.cancel=!!cancel;try{VREC.rec.stop();}catch(e){VREC=null;}if(cancel)renderSheet();}
+/* ---------- tasks from text, a voice note or a WhatsApp chat (the chat: version 1.17.0) ---------- */
+function aiArea(){var mode=M.aiMode||'text';
+  return [h('div',{class:'seg segs',id:'ai-mode'},[[T('Write or paste'),'text'],[T('From a WhatsApp chat'),'chat']].map(function(o){return h('button',{type:'button','aria-pressed':String(mode===o[1]),onclick:function(){M.aiMode=o[1];renderSheet();}},o[0]);})),
+    !S.features.ai?aiOff():mode==='chat'?chatBlock():aiBlock()];}
+/* without the AI key: what it needs, and for the owner how to turn it on, instead of a button that fails */
+function aiOff(){return h('div',{class:'panel',id:'ai-off',style:'display:flex;flex-direction:column;gap:6px'},h('strong',null,T('This needs AI')),
+  h('p',{class:'note',style:'margin:0'},T('Finding tasks in text or in a WhatsApp chat uses AI, and AI is not turned on for this app yet.')),
+  h('p',{class:'note',style:'margin:0'},S.owner?T('To turn it on, add the ANTHROPIC_API_KEY secret in Supabase and deploy the functions again. The setup guide explains it in section B3.'):T('Ask the owner of the workspace to turn AI on.')));}
+/* a chat exported with WhatsApp's Export chat, read in this browser (chat_import.js): only messages from the chosen period, with
+   phone numbers and emails taken out, go to the AI; nothing from the chat is stored, only the tasks kept */
+function chatErr(e){var k=String(e&&e.message||'');return k==='toolarge'?T('That file is too big. Export the chat without media, or choose a shorter chat.'):T('That file does not look like a WhatsApp chat export. Export the chat in WhatsApp and choose the .txt or .zip file.');}
+function chatLoad(text,name,sample){var C=M.chat,r;C.raw=text;C.name=name;C.sample=!!sample;r=window.HL_CHAT.parse(text,{order:C.order});
+  if(sample&&r.messages.length){var last=new Date(r.messages[r.messages.length-1].at),t=new Date(),shift=Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(last.getFullYear(),last.getMonth(),last.getDate()))/864e5)*864e5;
+    r.messages.forEach(function(m){m.at+=shift;});}   // the sample chat ends today, so its last week is this week
+  if(!r.messages.length){C.err=T('No messages found in that file. Is it a chat exported from WhatsApp?');C.step='pick';renderSheet();return;}
+  C.msgs=r.messages;C.order=r.order;C.ambiguous=r.ambiguous||C.ambiguous;C.total=r.messages.length;C.people=r.senders;C.err='';C.step='ready';renderSheet();}
+function chatPeriod(){var C=M.chat;return C.period==='since'?{since:C.since||''}:{days:Number(C.period||7)};}
+function chatBlock(){var C=M.chat=M.chat||{step:'pick',period:'7',since:'',order:''},HC=window.HL_CHAT;
+  if(!HC)return h('p',{class:'err',text:T('The chat reader did not load. Reload the page and try again.')});
+  if(C.step==='done')return h('div',{class:'panel',id:'chat-done',style:'display:flex;flex-direction:column;gap:8px'},h('strong',{text:T(C.added===1?'Added 1 task':'Added {n} tasks',{n:C.added})}),
+    h('p',{class:'note',style:'margin:0'},T('Nothing from the chat was kept. The history says how many tasks came from a WhatsApp chat.')),
+    h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',id:'chat-see',onclick:function(){closeSheet();V.tab='tasks';render();window.scrollTo(0,0);}},T('See them')),
+      h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.chat={step:'pick',period:'7',since:'',order:''};renderSheet();}},T('Another chat'))));
+  if(C.step==='pick'){var demo=!!window.HANDLARK_DEMO;
+    return h('div',{class:'chatpick',style:'display:flex;flex-direction:column;gap:10px'},
+      h('p',{class:'note',style:'margin:0'},T('Export the chat in WhatsApp first: open the group, tap its name, then Export chat, Without media. Then choose the .txt or .zip file here. It is read on this device.')),
+      C.err?h('p',{class:'err',role:'alert',text:C.err}):null,
+      h('div',{class:'acts',style:'margin:0'},h('label',{class:'btn sm filebtn',style:'margin:0'},T('Choose the exported chat'),h('input',{type:'file',id:'chat-file',hidden:true,accept:'.txt,.zip,text/plain,application/zip',onchange:function(e){var f=e.target.files[0];e.target.value='';if(!f)return;
+          HC.readFile(f).then(function(t){chatLoad(t,f.name);}).catch(function(err){C.err=chatErr(err);renderSheet();});}})),
+        demo?h('button',{class:'linkb',type:'button',id:'chat-sample',onclick:function(){fetch('sample_whatsapp_chat.txt').then(function(r){return r.text();}).then(function(t){chatLoad(t,'sample_whatsapp_chat.txt',true);}).catch(function(){toast(T('The sample chat did not load.'));});}},T('Try with a sample chat')):null));}
+  if(C.step==='ready'||C.step==='busy'){var pk=HC.pack(C.msgs,chatPeriod()),busy=C.step==='busy';C.pk=pk;
+    return h('div',{class:'chatready',style:'display:flex;flex-direction:column;gap:10px'},
+      h('p',{class:'note',style:'margin:0',text:T('{file}: {n} messages from {p} people.',{file:C.name,n:C.total,p:C.people})}),
+      C.ambiguous?fld(T('Dates in this chat'),h('select',{class:'in',id:'chat-order',value:C.order,onchange:function(e){C.order=e.target.value;chatLoad(C.raw,C.name,C.sample);}},
+        h('option',{value:'dmy',text:T('Day first, as 31/12')}),h('option',{value:'mdy',text:T('Month first, as 12/31')}))):null,
+      h('div',{class:'frow'},fld(T('Messages from'),h('select',{class:'in',id:'chat-period',value:C.period,onchange:function(e){C.period=e.target.value;renderSheet();}},
+          [['1',T('The last day')],['7',T('The last 7 days')],['30',T('The last 30 days')],['since',T('Since a date')]].map(function(o){return h('option',{value:o[0],text:o[1]});}))),
+        C.period==='since'?fld(T('Since'),h('input',{class:'in',type:'date',id:'chat-since',value:C.since,onchange:function(e){C.since=e.target.value;renderSheet();}})):null),
+      h('div',{class:'panel chatsend',id:'chat-send'},h('strong',null,T('What will be sent')),
+        h('p',{class:'note',style:'margin:0',text:pk.count?T(pk.count===1?'1 message from {s} people goes to the AI to find tasks.':'{n} messages from {s} people go to the AI to find tasks.',{n:pk.count,s:pk.senders}):T('No messages in this period. Choose a longer one.')}),
+        h('p',{class:'note',style:'margin:0'},T('Phone numbers and emails are removed first. A sender saved only as a number shows as Contact 1, Contact 2 and so on.')),
+        pk.cut?h('p',{class:'note warnt',style:'margin:0',text:T('That is more than one import reads, so only the most recent {n} messages are sent. Choose a shorter period to read older ones.',{n:pk.count})}):null,
+        h('p',{class:'note',style:'margin:0'},T('Nothing from the chat is stored. Only the tasks you keep are saved.'))),
+      h('div',{class:'acts',style:'margin:0'},h('button',{class:'btn sm',type:'button',id:'chat-find',disabled:busy||!pk.count,onclick:function(){C.step='busy';renderSheet();
+          server('aiChat',{text:pk.text}).then(function(r){var can={};(r.assignable||[]).forEach(function(id){can[id]=1;});C.can=can;
+            C.list=(r.chatTasks||[]).map(function(t){return Object.assign({on:true,id:uid()},t);});C.step=C.list.length?'review':'ready';if(!C.list.length)toast(T('No tasks found in those messages.'));renderSheet();})
+            .catch(function(e){C.step='ready';if(!lost(e)){toast(e.message+'.');renderSheet();}});}},busy?T('Reading…'):T('Find tasks')),
+        h('button',{class:'btn ghost sm',type:'button',onclick:function(){M.chat={step:'pick',period:C.period,since:C.since,order:''};renderSheet();}},T('Choose another file'))));}
+  var list=C.list||[],can=C.can||{},on=list.filter(function(t){return t.on;}).length,mine=S.people.filter(function(p){return can[p.id];});
+  var subName=function(id){var sb=S.subjects.find(function(x){return x.id===id;});return sb?sb.name:'';};
+  return h('div',{class:'chatrev',id:'chat-review',style:'display:flex;flex-direction:column;gap:10px'},
+    h('div',{class:'lblrow'},h('div',{class:'lbl',style:'margin:0'},T('Tasks found in the chat')),h('div',{class:'acts',style:'margin:0'},
+      h('button',{class:'linkb',type:'button',id:'chat-all',onclick:function(){list.forEach(function(t){t.on=true;});renderSheet();}},T('Select all')),
+      h('button',{class:'linkb',type:'button',id:'chat-none',onclick:function(){list.forEach(function(t){t.on=false;});renderSheet();}},T('Select none')))),
+    h('div',{class:'aip'},list.map(function(t,i){var sub=subName(t.subjectId),mp=t.matched?person(t.matched):null;
+      return h('div',{class:'ai chi','data-i':String(i)},h('input',{type:'checkbox',checked:t.on,'aria-label':T('Keep this task'),onchange:function(e){t.on=e.target.checked;var b=$('#chat-add');if(b)b.textContent=T('Add {n} tasks',{n:list.filter(function(x){return x.on;}).length});}}),
+        h('input',{class:'in','aria-label':T('Task title'),maxlength:200,value:t.title,oninput:function(e){t.title=e.target.value;}}),
+        h('div',{class:'row2'},h('select',{class:'in','aria-label':T('Assigned to'),value:t.assignee,onchange:function(e){t.assignee=e.target.value;}},h('option',{value:'',text:T('Nobody yet')}),mine.map(function(p){return h('option',{value:p.id,text:p.name});})),
+          h('input',{class:'in',type:'date','aria-label':T('Due date'),value:t.due,onchange:function(e){t.due=e.target.value;}})),
+        h('small',{class:'chimeta',text:[t.name?(mp&&t.assignee?(mp.name.toLowerCase()===t.name.toLowerCase()?'':T('{chat} in the chat is {name}',{chat:t.name,name:mp.name})):T('For {chat} in the chat',{chat:t.name})):'',t.why?T('Not assigned: {why}',{why:t.why}):'',sub?T('Client: {name}',{name:sub}):''].filter(Boolean).join(' · ')}),
+        t.quote?h('q',{class:'chiq',text:t.quote.length>110?t.quote.slice(0,108)+'…':t.quote}):null);})),
+    h('button',{class:'btn wide',type:'button',id:'chat-add',disabled:C.adding,onclick:function(){var items=list.filter(function(t){return t.on&&t.title.trim();}).map(function(t){return {id:t.id,title:t.title.trim(),assignee:t.assignee||'',due:t.due||'',subjectId:t.subjectId||''};});
+        if(!items.length){toast(T('Tick at least one task.'));return;}C.adding=true;renderSheet();
+        direct('chatAdd',{items:items}).then(function(){C.adding=false;C.added=items.length;C.step='done';C.msgs=null;C.raw='';C.pk=null;renderSheet();},function(){C.adding=false;renderSheet();});}},T('Add {n} tasks',{n:on})),
+    h('p',{class:'note',style:'margin:0'},T('Check each task: who it is for, the date and the title. Only the ticked ones are added.')));}
 function aiBlock(){var list=M.aiList||null,canV=!!S.features.transcribe,canLive=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
   var voice=VREC?h('div',{class:'recbar',role:'status'},h('i',{class:'recdot','aria-hidden':'true'}),h('b',{'data-rec':String(VREC.start)},'0:00'),h('small',null,'of 3:00'),
       h('button',{class:'btn sm',type:'button',onclick:function(){recStop(false);}},'Stop'),h('button',{class:'btn ghost sm',type:'button',onclick:function(){recStop(true);}},'Cancel'))
@@ -3035,7 +3100,7 @@ function waBlock(){if(!S.features.wa)return null;var p=person(me)||{},d=M&&M.wa?
           h('button',{class:'linkb',type:'button',onclick:function(){send('saveMyProfile',{phone:'',waOn:false});d.phone='';}},'Use another number')))
     :p.waOn?h('button',{class:'btn ghost sm',type:'button',onclick:function(){send('saveMyProfile',{waOn:false});}},'Turn off WhatsApp alerts')
       :h('button',{class:'btn sm',type:'button',onclick:function(){send('saveMyProfile',{phone:d.phone,waOn:true});}},'Turn on WhatsApp alerts'),
-    h('div',{class:'cmd'},'Reply to the business number with: TASKS, MEETINGS, DONE 2 (add what you did after it), UPDATE 2 your note, NOTE what you did, ADD a new task, IN, IN and a client name, OUT (add what you did after it), BREAK, BACK, TODAY, HELP, or STOP to turn alerts off.'+(S.features.transcribe?' A voice note becomes a task too.':'')));}
+    h('div',{class:'cmd'},'Reply to the business number with: TASKS, MEETINGS, DONE 2 (add what you did after it), UPDATE 2 your note, NOTE what you did, ADD a new task, IN, IN and a client name, OUT (add what you did after it), BREAK, BACK, TODAY, HELP, or STOP to turn alerts off. Send or forward any other message, even one from a group, and it comes back as a suggested task: reply YES to add it, or NO.'+(S.features.transcribe?' A voice note becomes a task too.':'')));}
 /* reminder, daily summary, report and meeting emails: each person switches them for themselves */
 function emailBlock(){if(!S.features.mail)return null;var off=!!S.settings.mailOff;
   return h('div',{class:'panel',style:'display:flex;flex-direction:column;gap:10px'},h('strong',null,'Emails'),
@@ -4007,8 +4072,8 @@ function renderTask(){var d=M.d,t=M.id?S.tasks.find(function(x){return x.id===M.
         h('div',{class:'acts',style:'margin-top:10px'},h('button',{class:'btn sm',type:'button',onclick:function(){d.status='done';send('saveTask',{task:{id:t.id,status:'done'}},true);toast(T('Signed off'));}},T('Sign off')),
           h('button',{class:'btn ghost sm',type:'button',onclick:function(){var v=M.back.trim();M.back='';d.status='in_progress';send('sendBack',{id:t.id,text:v},true);toast(T('Sent back to ')+pName(t.assignee));}},T('Send back')))]
       :h('p',{class:'note',style:'margin:2px 0 0'},T('It counts as done once it is signed off.'))));}
-  if(isNew)out.push(h('div',{class:'seg'},[[T('One task'),'one'],[T('Several'),'many'],[T('Template'),'tpl']].concat(S.features.ai?[[T('From text'),'ai']]:[]).map(function(o){var cur=M.ai?'ai':M.tpl?'tpl':M.multi?'many':'one';return h('button',{type:'button','aria-pressed':String(cur===o[1]),onclick:function(){M.ai=o[1]==='ai';M.multi=o[1]!=='one'&&!M.ai;M.tpl=o[1]==='tpl';renderSheet();}},o[0]);})));
-  if(isNew&&M.ai){out.push(aiBlock());return out;}
+  if(isNew)out.push(h('div',{class:'seg'},[[T('One task'),'one'],[T('Several'),'many'],[T('Template'),'tpl'],[T('From text'),'ai']].map(function(o){var cur=M.ai?'ai':M.tpl?'tpl':M.multi?'many':'one';return h('button',{type:'button','aria-pressed':String(cur===o[1]),onclick:function(){M.ai=o[1]==='ai';M.multi=o[1]!=='one'&&!M.ai;M.tpl=o[1]==='tpl';renderSheet();}},o[0]);})));
+  if(isNew&&M.ai){out.push(aiArea());return out;}
   if(M.tpl){var tp=S.templates.find(function(x){return x.id===M.tplId;})||S.templates[0];
     out.push(S.templates.length?[fld(T('Template'),h('select',{class:'in',id:'t-tpl',value:tp.id,onchange:function(e){M.tplId=e.target.value;renderSheet();}},S.templates.map(function(x){return h('option',{value:x.id,text:x.name});}))),
       h('div',{class:'panel'},h('strong',null,T('This will add')),tplItems(tp,d.due).map(function(it){return h('div',{class:'cl'},h('span',{text:it.title}),h('small',{class:'note',text:(it.due?short(it.due):T('No date'))+(it.budgetMin?T(' · {time} budget',{time:mins(it.budgetMin)}):'')}));}),

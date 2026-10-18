@@ -18,6 +18,7 @@
 <script src="config.js"></script>
 <script src="demo.js"></script>
 <script src="importers.js"></script>
+<script src="chat_import.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Manrope:wght@400..800&display=swap">
 <style>
@@ -392,6 +393,11 @@ textarea.in{resize:vertical;min-height:70px}
 .offerbar{margin:0;background:var(--plum);color:#fff;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px}.offerbar span{font-weight:500;color:var(--blush2)}
 .parow{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:14px;padding:12px}
 .pvw{display:flex;flex-direction:column;gap:10px;background:var(--sunk);border-radius:16px;padding:12px}
+/* version 1.17.0: tasks from a WhatsApp chat */
+.seg.segs{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:2px}.lblrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.chi{grid-template-columns:auto 1fr}.chi .chimeta{grid-column:2;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.chi .chiq{grid-column:2;display:block;font-size:12.5px;color:var(--muted);border-left:3px solid var(--blush2,#FFD3C9);padding-left:8px;quotes:'\201C' '\201D';overflow-wrap:anywhere}
+.chatsend{display:flex;flex-direction:column;gap:6px}
 /* version 1.16.2: the exchange rate in the price editor */
 .parate{display:flex;flex-direction:column;gap:10px}.parate .frow{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end}
 @media (max-width:640px){.parate .frow{grid-template-columns:1fr}}
@@ -1293,6 +1299,7 @@ h1,h2,h3,h4,.top h1,.connect h1,.sec h3,.shh h2,.hero h2,#fx h2,.portal .ph h1,.
 .dp-chat{display:flex;flex-direction:column;gap:6px;background:#EFE9F4;border-radius:12px;padding:10px;max-height:34vh;overflow-y:auto}
 .dp-bub{max-width:85%;border-radius:12px;padding:7px 10px;display:flex;flex-direction:column;gap:2px;white-space:pre-wrap;word-break:break-word}
 .dp-bub.them{background:#fff;align-self:flex-start}.dp-bub.me{background:#DDF3E6;align-self:flex-end}
+.dp-fwd{font-size:11.5px;color:#5E5270;font-style:italic}
 .dp-chips{display:flex;flex-wrap:wrap;gap:6px}
 .dp-send{display:flex;gap:8px}.dp-send .dp-in{flex:1}
 .dp-code{font:800 34px/1.1 Manrope,system-ui,sans-serif;letter-spacing:2px;color:#2E1C47}

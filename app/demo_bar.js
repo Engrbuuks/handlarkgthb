@@ -33,6 +33,13 @@
     if (v === 'owner' || v === 'member' || v === 'amara' || v === 'tunde') { D.signInAs(v); location.href = D.page; }
   });
 
+  /* Back to the sales page: the page may be served from another address than the app (some hosts do this), where it cannot read
+     this browser's saved demo, so the prices and founding offer set in the demo's price editor travel with the link (version 1.16.3) */
+  var home = document.getElementById('demo-home');
+  if (home) home.addEventListener('click', function (e) {
+    try { var px = localStorage.getItem('hv-demo-prices'); if (px) { e.preventDefault(); location.href = home.getAttribute('href') + '#demo-prices=' + encodeURIComponent(px); } } catch (err) {}
+  });
+
   /* ---------- the panel ---------- */
   var kind = '', timer = null;
   function open(k, title, kids) {
@@ -115,15 +122,18 @@
     if (!waPhone || !phones.some(function (p) { return p.phone === waPhone; })) waPhone = D.myPhone() || (phones[0] || {}).phone || '';
     var pick = phones.length > 1 ? el('select', { id: 'dp-waphone', 'aria-label': 'Phone', class: 'dp-in', onchange: function (e) { waPhone = e.target.value; wa(); } }, phones.map(function (p) { var o = el('option', { value: p.phone, text: (p.name ? p.name + ', ' : '') + p.phone }); if (p.phone === waPhone) o.selected = true; return o; })) : null;
     var msgs = D.wa(waPhone), box = el('div', { class: 'dp-chat', 'aria-label': 'Messages' }, msgs.length ? msgs.map(function (m) {
-      return el('div', { class: 'dp-bub ' + (m.dir === 'out' ? 'me' : 'them') }, [el('span', { text: m.voice ? 'Voice note' : m.text }), el('small', { text: (m.dir === 'out' ? 'Sent ' : 'Handlark, ') + when(m.at) })]); }) : [el('p', { class: 'dp-note', text: 'No messages yet.' })]);
-    var input = el('input', { id: 'dp-watext', class: 'dp-in', autocomplete: 'off', placeholder: 'Type a reply, such as TODAY', 'aria-label': 'Message' });
-    var send = function (text, voice) { if (!waPhone || (!voice && !String(text).trim())) return; D.sendWa(waPhone, String(text).trim(), voice).then(function () { refreshApp(); if (kind === 'wa') wa(); }); };
+      return el('div', { class: 'dp-bub ' + (m.dir === 'out' ? 'me' : 'them') }, [m.forwarded ? el('i', { class: 'dp-fwd', text: 'Forwarded' }) : null, el('span', { text: m.voice ? 'Voice note' : m.text }), el('small', { text: (m.dir === 'out' ? 'Sent ' : 'Handlark, ') + when(m.at) })]); }) : [el('p', { class: 'dp-note', text: 'No messages yet.' })]);
+    var input = el('input', { id: 'dp-watext', class: 'dp-in', autocomplete: 'off', placeholder: 'Type a reply such as TODAY, or any task in a sentence', 'aria-label': 'Message' });
+    var send = function (text, voice, fwd) { if (!waPhone || (!voice && !String(text).trim())) return; D.sendWa(waPhone, String(text).trim(), voice, fwd).then(function () { refreshApp(); if (kind === 'wa') wa(); }); };
+    // version 1.17.0: a message forwarded from the team's WhatsApp group, as WhatsApp marks it; the reply suggests a task
+    var GROUP = 'Kemi please send Brooks Dental the October report by Friday, they asked again this morning';
     var form = el('form', { class: 'dp-send', onsubmit: function (e) { e.preventDefault(); send(input.value); } }, [input, el('button', { type: 'submit', class: 'dp-btn', text: 'Send' })]);
     open('wa', 'WhatsApp', [note('A phone confirmed for WhatsApp in the app. Alerts arrive here; replies go to the server as they would from WhatsApp, and its answer comes back.'),
       phones.length ? pick : el('p', { text: 'No phone is confirmed yet. In the app open your account, add your WhatsApp number and confirm the code that arrives here.' }),
       waPhone ? box : null,
       waPhone ? el('div', { class: 'dp-chips' }, ['TODAY', 'TASKS', 'IN Brooks', 'OUT Finished the reconciliation', 'MEETINGS', 'HELP'].map(function (t) { return el('button', { type: 'button', class: 'dp-chip', text: t, onclick: function () { send(t); } }); })
-        .concat([el('button', { type: 'button', class: 'dp-chip', text: 'Send a voice note', onclick: function () { send('', true); } })])) : null,
+        .concat([el('button', { type: 'button', class: 'dp-chip', text: 'Send a voice note', onclick: function () { send('', true); } }),
+          el('button', { type: 'button', class: 'dp-chip', id: 'dp-wafwd', text: 'Forward a group message', onclick: function () { send(GROUP, false, true); } }), el('button', { type: 'button', class: 'dp-chip', text: 'YES', onclick: function () { send('YES'); } })])) : null,
       waPhone ? form : null]);
     box.scrollTop = box.scrollHeight;
   }

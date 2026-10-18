@@ -724,6 +724,30 @@ footer a:hover{color:var(--coral)}
   .sgrid,.tgrid{grid-template-columns:1fr}.scard:nth-child(5){grid-column:auto}
   .chip.c3{display:none}
 }
+/* hero illustration (version 1.16.3): the whole figure shows, standing clear of the wave, on a soft blush disc so the coral sweater
+   reads against it; the chips sit around her, never over her face or the checklist */
+.orbit{min-height:640px}
+.disc{width:380px;height:380px;top:34%;background:radial-gradient(circle at 38% 32%,#FFF3EF,#FFE1D9 58%,#FFCABD);box-shadow:0 30px 60px -24px rgba(0,0,0,.45),inset 0 -18px 36px rgba(255,112,89,.18)}
+.disc:after{opacity:.12}
+.orbit .ring{top:34%}
+.person{width:400px;bottom:236px;left:50%;transform:translateX(-50%);z-index:1;filter:drop-shadow(0 22px 26px rgba(20,10,34,.35))}
+.chip.c1{left:-10%;top:1%}
+.chip.c2{right:-3%;top:auto;bottom:38%}
+.chip.c3{left:-5%;bottom:44%}
+@media (max-width:980px){
+  .orbit{min-height:540px}
+  .disc{width:300px;height:300px;top:35%}
+  .orbit .ring{top:35%}
+  .person{width:320px;bottom:160px}
+  .chip.c1{left:0;top:2%}.chip.c2{right:0;bottom:26%}.chip.c3{left:0;bottom:34%}
+}
+@media (max-width:620px){
+  .orbit{min-height:470px}
+  .disc{width:250px;height:250px;top:34%}
+  .orbit .ring{top:34%}
+  .person{width:280px;bottom:150px}
+  .chip.c2{display:none}
+}
 </style>
 <body data-home data-prices>
 
@@ -820,6 +844,8 @@ footer a:hover{color:var(--coral)}
         <div><h3>Alerts where people are</h3><p>New tasks, reminders and approvals arrive on WhatsApp for each person who turns it on.</p></div>
         <div><h3>Reply to update</h3><p>Reply TASKS, DONE 2, UPDATE 2 with a note, IN or OUT to work without opening the app.</p></div>
         <div><h3>Voice notes become tasks</h3><p>A voice note comes back as a proposed task, added only when you reply YES.</p></div>
+        <div><h3>Forward a group message</h3><p>Forward any group message to Handlark and it becomes a task, once you reply YES.</p></div>
+        <div><h3>Upload a group chat</h3><p>Upload a group chat export and pick the tasks to keep. <span data-brand>Handlark</span> never reads your groups: you choose what to share.</p></div>
         <div><h3>Your own number, if you like</h3><p>Use the shared <span data-brand>Handlark</span> number, or connect your own WhatsApp Business number once.</p></div>
       </div>
     </div>
@@ -1036,7 +1062,7 @@ footer a:hover{color:var(--coral)}
       <details><summary>How does Proof mode work, and what does it cost?</summary><p>It is off until you switch it on for a client. Then, while someone times work for that client on a computer and shares their screen in Chrome, Edge or Firefox, the app takes 1 to 3 screenshots at random in each 10 minutes, blurred unless you choose sharp. Each one waits 10 minutes in the person&rsquo;s Proof tray, where they can delete it, before you see it. Time with no screenshots is flagged no proof, never stopped or deleted. Screenshots are kept 30 days by default (7, 14, 30 or 60, your choice) and count toward your file storage. No extra app, no extra price.</p></details>
       <details><summary>Can my clients see their work?</summary><p>Yes, if you work for clients. Each client gets a private link to their own page, with progress, comments, approvals and invoices, and no login. Private tasks never show there.</p></details>
       <details><summary>When my clients pay an invoice online, who holds the money?</summary><p>You do. Clients pay into your own Paystack account using your key. The money never passes through us, and the invoice is marked paid as soon as Paystack confirms it.</p></details>
-      <details><summary>How does WhatsApp work?</summary><p>It works out of the box through the shared <span data-brand>Handlark</span> number. An owner who wants messages to come from their own business can connect their own WhatsApp Business number once instead. Each person turns alerts on for themselves, then gets new tasks, reminders and approvals on WhatsApp and can reply TASKS, DONE 2, UPDATE 2 or IN to work without opening the app.</p></details>
+      <details><summary>How does WhatsApp work?</summary><p>It works out of the box through the shared <span data-brand>Handlark</span> number. An owner who wants messages to come from their own business can connect their own WhatsApp Business number once instead. Each person turns alerts on for themselves, then gets new tasks, reminders and approvals on WhatsApp and can reply TASKS, DONE 2, UPDATE 2 or IN to work without opening the app. WhatsApp does not let any app read your groups, so <span data-brand>Handlark</span> never does: forward any group message to Handlark and it becomes a task, or upload a group chat export and pick the tasks to keep.</p></details>
       <details><summary>What does the AI do, and does it see private work?</summary><p>It writes the daily summary from the updates your team posted, and turns pasted messages or voice notes into tasks you check before adding. Private tasks are never sent to it, and nothing is added without your tap. A voice note sent on WhatsApp comes back as a proposed task, added only when you reply YES.</p></details>
       <details><summary>Will it work on a weak connection?</summary><p>Yes. Changes are kept on the device and sent when the connection returns, and the app opens offline with the last saved view. It installs on iPhone and Android phones like an app.</p></details>
       <details><summary>Where is my data kept?</summary><p>In a secure database and private file storage. Each workspace is locked to its own members, files open through short lived links, and you can export everything as spreadsheets at any time. The <a href="privacy.html">privacy policy</a> has the details.</p></details>
