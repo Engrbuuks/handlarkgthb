@@ -65,6 +65,12 @@
   if(/^https:\/\/[^\s"'<>]+$/.test(purl)&&document.body.hasAttribute('data-prices')&&window.fetch){   // only pages whose policy allows it (site/_headers)
     fetch(purl,{credentials:'omit'}).then(function(r){return r.ok?r.json():null;}).then(applyPrices).catch(function(){});}
 
+  /* the hero headline turns through the problems Handlark solves and what it brings, one pair at a time (version 1.16.3).
+     Screen readers get the first pair only; with reduced motion, or with the tab hidden, it stays still. */
+  var rot=$$('.rotor .pair');
+  if(rot.length>1){var ri=0,still=false;try{still=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+    if(!still)setInterval(function(){if(document.hidden)return;rot[ri].classList.remove('on');ri=(ri+1)%rot.length;rot[ri].classList.add('on');},3400);}
+
   /* a customer's referral link: remember the code for sign up, and say what it is worth */
   try{var rf=new URLSearchParams(location.search).get('ref');if(/^[A-Za-z2-9]{7}$/.test(rf||''))localStorage.setItem('hv-ref',rf.toUpperCase());
     if(localStorage.getItem('hv-ref')&&$('.amt')){var bar=document.createElement('div');bar.className='refbar';bar.setAttribute('role','status');
